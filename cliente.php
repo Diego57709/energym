@@ -1,3 +1,6 @@
+<?php
+    require 'header.view.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +9,6 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Document</h1>
+    
 </body>
 </html>
