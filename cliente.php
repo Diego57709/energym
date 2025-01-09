@@ -84,22 +84,23 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
   
   <style>
     html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-        .main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .card {
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
     }
     .qr-img {
       width: 250px;
@@ -131,7 +132,7 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
   <div class="container my-5" style="max-width: 900px;">
     <div class="row">
       
-      <!-- COLUMNA PRINCIPA -->
+      <!-- COLUMNA PRINCIPAL -->
       <div class="col-md-8 mb-4">
         <div class="card p-4">
           <h1 class="text-center mb-4">
@@ -150,13 +151,8 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
           <!-- Botones -->
           <div class="d-flex justify-content-center mt-4">
             <!-- Ver datos -->
-            <a href="datos.php" class="btn-rutina me-2">Modificar datos</a>
+            <a href="clienteModificar.php" class="btn-rutina me-2">Modificar datos</a>
             <!-- Ampliar Suscripción (si quedan <7 días) -->
-            <?php if ($dias < 7 && $dias > 0): ?>
-              <a href="ampliarSuscripcion.php" class="btn btn-warning">
-                Ampliar Suscripción
-              </a>
-            <?php endif; ?>
           </div>
 
           <!-- Cerrar sesión -->
@@ -166,14 +162,33 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
         </div>
       </div>
 
-      <!-- COLUMNA LATERAL (recuento de asistencias) -->
+      <!-- COLUMNA LATERAL -->
       <div class="col-md-4">
+        <!-- BLOQUE DE PAGOS -->
+        <div class="card p-4">
+          <h5 class="mb-3">Pagos</h5>
+          <p>
+            <strong>Tu suscripción expira el:</strong><br>
+            <?php echo date('d F Y', $fechaFin); ?>
+          </p>
+          <div class="d-flex justify-content-center">
+            <a href="clientehistorialPagos.php" class="btn btn-secondary me-2">Ver Historial de Pagos</a>
+            <a href="ampliarSuscripcion.php" class="btn btn-warning">Ampliar Suscripción</a>
+          </div>
+        </div>
+
+        <!-- BLOQUE DE ASISTENCIAS -->
         <div class="card p-4">
           <h5 class="mb-3">Asistencias</h5>
-          <!-- Última asistencia y total del mes -->
           <p>
-            <strong>Última asistencia:</strong><br>
-            <?php echo date('d F Y, h:i A', strtotime($ultimaAsistencia)); ?>
+          <strong>Última asistencia:</strong><br>
+            <?php
+            if ($ultimaAsistencia !== 'Sin asistencias registradas') {
+                echo date('d F Y, h:i A', strtotime($ultimaAsistencia));
+            } else {
+                echo $ultimaAsistencia;
+            }
+            ?>
           </p>
           <p>
             <strong>Asistencias este mes:</strong> <?php echo $totalAsistenciasMes; ?>
@@ -182,15 +197,17 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
             ¡Sigue con tu entrenamiento y mantén tu progreso!
           </p>
           <!-- Link al historial -->
-          <a href="historialAsistencias.php" class="btn btn-sm btn-info">
-            Ver historial
+          <a href="clientehistorialAsistencias.php" class="btn btn-sm btn-info">
+            Ver historial de asistencias
           </a>
         </div>
+
       </div>
 
     </div>
   </div>
-            </div>
+  </div>
+
   <!-- Footer -->
   <?php require 'partials/footer.view.php'; ?>
 
