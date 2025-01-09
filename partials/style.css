@@ -1,0 +1,120 @@
+body {
+    margin: 0;
+    font-family: Calibri;
+}
+a {
+    text-decoration: none;
+    margin: 0;
+}
+
+.header-bar {
+    background-color: rgb(41, 48, 53);
+    width: 100%;
+    height: 7.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 5px solid rgb(15, 139, 141);
+}
+.header-icon {
+    top: 0rem;
+    width: 5rem;
+    padding: 1.25rem;
+    position: absolute;
+    left: 0.2rem;
+}
+.header-nav {
+    width: 5rem;
+}
+.header-cliente {
+    font-size: 1.5rem;
+    color: white;
+    text-transform: uppercase;
+    background-color: rgb(15, 139, 141);
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.header-cliente:hover {
+    background-color: rgb(10, 94, 95);
+}
+.dropdown {
+    position: absolute;
+    right: 0.2rem;
+    padding: 1.25rem;
+    width: 5rem;
+}
+.dropbtn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f1f1f1;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    top: 7.65rem;
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+@media (max-width: 768px) {
+    .header-bar {
+        height: 5vh;
+        flex-direction: column;
+        padding: 1rem 0; 
+    }
+
+    .header-icon {
+        width: 3.5em;
+        padding: 0.5rem;
+    }
+
+    .header-cliente {
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .dropdown {
+        padding: 0.5rem;
+    }
+
+    .dropdown-content {
+        min-width: 100%;
+        top: auto;
+        left: 0;
+        right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-cliente {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .header-icon {  
+        width: 3rem;
+        padding: 0.4rem; 
+    }
+    .dropdown-content {
+        font-size: 0.5rem;
+    }
+}
