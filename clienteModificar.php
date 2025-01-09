@@ -61,11 +61,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Modificar Datos | EnerGym</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
         body {
             display: flex;
             flex-direction: column;
         }
-        .main {
+
+            .main {
             flex: 1;
             display: flex;
             align-items: center;
@@ -82,6 +88,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .btn-success:hover {
             background-color: #138f9f;
+        }
+        .undo-container {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+            margin-top: 15px;
+            animation: slideUp 0.5s ease-out forwards;
+        }
+        .undo-btn {
+            color: white;
+            background-color: #0f8b8d;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -105,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <!-- Formulario de modificación -->
-                    <form method="POST" action="clienteModificar.php" class="form-section">
+                    <form method="POST" action="clienteModificar.php" class="form-section" id="datos-form">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="nombre" class="form-label fw-bold">Nombre</label>
@@ -149,6 +181,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <button type="submit" class="btn btn-success w-100 mt-4">Actualizar Datos</button>
+
+                        <!-- Cuadro de confirmación de deshacer -->
+                        <div class="undo-container text-center" id="undo-container">
+                            <p class="mb-2 fw-bold">¿Quieres deshacer los cambios realizados?</p>
+                            <button type="button" class="undo-btn" id="undo-button">Deshacer</button>
+                        </div>
                     </form>
                 </div>
 
@@ -166,6 +204,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php include 'partials/footer.view.php'; ?>
 
+    <script>
+        // Almacernar valores originales
+        const originalData = {
+            nombre: '<?= htmlspecialchars($cliente['nombre']) ?>',
+            email: '<?= htmlspecialchars($cliente['email']) ?>',
+            telefono: '<?= htmlspecialchars($cliente['telefono']) ?>',
+            direccion: '<?= htmlspecialchars($cliente['direccion']) ?>',
+            codigo_postal: '<?= htmlspecialchars($cliente['codigo_postal']) ?>',
+            fecha_nacimiento: '<?= htmlspecialchars($cliente['fecha_nacimiento']) ?>',
+            genero: '<?= htmlspecialchars($cliente['genero']) ?>',
+        };
+
+        const form = document.getElementById('datos-form');
+        const undoContainer = document.getElementById('undo-container');
+        const undoButton = document.getElementById('undo-button');
+
+        form.addEventListener('input', () => {
+            undoContainer.style.display = 'block';
+        });
+
+        undoButton.addEventListener('click', () => {
+            document.getElementById('nombre').value = originalData.nombre;
+            document.getElementById('email').value = originalData.email;
+            document.getElementById('telefono').value = originalData.telefono;
+            document.getElementById('direccion').value = originalData.direccion;
+            document.getElementById('codigo_postal').value = originalData.codigo_postal;
+            document.getElementById('fecha_nacimiento').value = originalData.fecha_nacimiento;
+            document.getElementById('genero').value = originalData.genero;
+            undoContainer.style.display = 'none';
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -158,6 +158,8 @@ session_start();
             </div>
         </div>
     </div>
+    <?php require 'partials/chatbot.php'; ?>
+
 </div>
 
 <!-- Footer -->
