@@ -152,11 +152,12 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
           <div class="d-flex justify-content-center mt-4">
             <!-- Ver datos -->
             <a href="clienteModificar.php" class="btn-rutina me-2">Modificar datos</a>
+            <a href="clientecambiarPassword.php" class="btn-rutina me-2">Cambiar contraseña</a>
             <!-- Ampliar Suscripción (si quedan <7 días) -->
           </div>
 
           <!-- Cerrar sesión -->
-          <form action="procesar_logout.php" method="post" class="text-center mt-4">
+          <form action="logoutProcesar.php" method="post" class="text-center mt-4">
             <button class="btn btn-danger">Cerrar sesión</button>
           </form>
         </div>

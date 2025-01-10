@@ -2,9 +2,7 @@
 require 'partials/header2.view.php';
 include 'partials/db.php';
 
-// -------------------------------------------
 // 1) Verificar si llega el token
-// -------------------------------------------
 if (!isset($_GET['token'])) {
     ?>
     <!DOCTYPE html>
@@ -46,7 +44,7 @@ if (!isset($_GET['token'])) {
             <div class="login-container">
                 <h2 class="mb-4">Token no válido</h2>
                 <p>El enlace ha expirado o ya fue utilizado. Solicita una nueva recuperación de contraseña.</p>
-                <a href="login.php" class="btn btn-primary mt-3 w-100">Volver al inicio de sesión</a>
+                <a href="login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
             </div>
         </div>
         <?php require 'partials/footer.view.php'; ?>
@@ -58,9 +56,7 @@ if (!isset($_GET['token'])) {
 
 $token = $_GET['token'];
 
-// -------------------------------------------
 // 2) Verificar el token en la BD
-// -------------------------------------------
 $sql = "SELECT * FROM clientes WHERE reset_token = '$token' LIMIT 1";
 $result = mysqli_query($conn, $sql);
 
@@ -105,7 +101,7 @@ if (!$result || mysqli_num_rows($result) === 0) {
             <div class="login-container">
                 <h2 class="mb-4">Token inválido</h2>
                 <p>El enlace ya no es válido. Por favor, solicita un nuevo enlace de recuperación.</p>
-                <a href="login.php" class="btn btn-primary mt-3 w-100">Volver al inicio de sesión</a>
+                <a href="login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
             </div>
         </div>
         <?php require 'partials/footer.view.php'; ?>
@@ -119,9 +115,7 @@ if (!$result || mysqli_num_rows($result) === 0) {
 $cliente = mysqli_fetch_assoc($result);
 $cliente_id = $cliente['cliente_id'];
 
-// -------------------------------------------
 // 3) Procesar el POST del formulario
-// -------------------------------------------
 $error = ""; // Para almacenar el mensaje de error si lo hay
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -182,7 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </style>
             </head>
             <body>
-                <?php require 'partials/header2.view.php'; ?>
                 <div class="main">
                     <div class="success-container">
                         <h4 class="alert-heading">¡Contraseña creada con éxito!</h4>

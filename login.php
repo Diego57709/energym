@@ -23,26 +23,29 @@ if (isset($_SESSION['id_cliente'])) {
             display: flex;
             flex-direction: column;
         }
-
-            .main {
+        .main {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
         .login-container {
             width: 400px;
             padding: 20px;
             background-color: #f8f9fa;
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             margin: 5rem auto;
         }
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .alert-danger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+        .alert-danger i {
+            font-size: 1.3rem;
+            color: #dc3545;
         }
     </style>
 </head>
@@ -56,7 +59,7 @@ if (isset($_SESSION['id_cliente'])) {
             <h2 class="text-center mb-4">Inicio de Sesión</h2>
 
             <!-- Formulario de inicio de sesión -->
-            <form action="procesar_login.php" method="POST">
+            <form action="loginProcesar.php" method="POST">
                 
                 <!-- Campo Email -->
                 <div class="mb-3">
@@ -72,8 +75,10 @@ if (isset($_SESSION['id_cliente'])) {
 
                 <!-- Mensaje de error -->
                 <?php if (isset($_GET['error'])): ?>
-                    <?php $error_message = htmlspecialchars($_GET['error']); ?>
-                    <div class="error-message"><?php echo 'Contraseña incorrecta'; ?></div>
+                    <div class="alert alert-danger mt-3" role="alert">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        Contraseña incorrecta. Por favor, inténtalo de nuevo.
+                    </div>
                 <?php endif; ?>
 
                 <!-- Botón de envío -->

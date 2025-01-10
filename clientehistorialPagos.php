@@ -14,10 +14,10 @@ $id_usuario = $_SESSION['id_cliente'];
 $nombreUsuario = $_SESSION['usuario'];
 
 // Filtros de mes y año
-$mesSeleccionado = $_GET['mes'] ?? date('m'); // Mes actual por defecto
-$anioSeleccionado = $_GET['anio'] ?? date('Y'); // Año actual por defecto
+$mesSeleccionado = $_GET['mes'] ?? date('m');
+$anioSeleccionado = $_GET['anio'] ?? date('Y');
 
-// Consulta SQL para obtener pagos del cliente
+// Obtener pagos del cliente
 $sqlHistorialPagos = "SELECT fecha_compra, metodo_pago FROM compras 
                       WHERE cliente_id = '$id_usuario' 
                       AND YEAR(fecha_compra) = '$anioSeleccionado'
