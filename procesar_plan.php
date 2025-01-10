@@ -64,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_query($conn, $updateTokenSql);
 
         // Construir el link para la página de crear contraseña
-        // Ajusta a tu dominio real:
         $linkCrearPassword = "http://energym.ddns.net/crear_password.php?token=" . urlencode($token);
 
         // Instanciamos PHPMailer (ya importado arriba)

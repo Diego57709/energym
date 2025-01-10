@@ -54,7 +54,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            text-decoration: none; /* Para que se vea como botón */
+            text-decoration: none;
         }
 
         .btn-back:hover {
@@ -69,13 +69,13 @@
 
     <div class="main">
         <div class="error-container">
-            <h1 class="error-title">Error 404</h1>
+            <h1 class="error-title">Error 321321404</h1>
             <p class="error-description">Lo sentimos, la página que buscas no fue encontrada. Te devolveremos al inicio...</p>
             <a href="index.php" class="btn-back text-center">Volver al Inicio</a>
             <script>
                 setTimeout(function(){
                     window.location.href = 'index.php';
-                }, 3000); // Redirect after 3 seconds
+                }, 3000);
             </script>
         </div>
     </div>

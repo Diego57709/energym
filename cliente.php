@@ -65,7 +65,7 @@ $resultUltimaAsistencia = mysqli_query($conn, $sqlUltimaAsistencia);
 $ultimaAsistencia = mysqli_fetch_assoc($resultUltimaAsistencia)['fecha_hora'] ?? 'Sin asistencias registradas';
 
 // Consulta de asistencias del mes actual
-$mesActual = date('Y-m'); // Formato "YYYY-MM"
+$mesActual = date('Y-m');
 $sqlAsistenciasMes = "SELECT COUNT(*) AS total_asistencias FROM asistencias WHERE cliente_id = '$id_usuario' AND DATE_FORMAT(fecha_hora, '%Y-%m') = '$mesActual'";
 $resultAsistenciasMes = mysqli_query($conn, $sqlAsistenciasMes);
 $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistencias'] ?? 0;

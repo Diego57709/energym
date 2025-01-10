@@ -55,9 +55,9 @@
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
-            display: hidden; /* Initially hidden */
-            opacity: 0; /* Initially invisible */
-            transition: opacity 0.5s ease; /* Smooth fade-in effect */
+            display: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
         .form-container button:hover {
             background-color: rgb(10, 94, 95);
@@ -82,7 +82,7 @@
         .status-message.error {
             color: red;
         }
-        /* Center the reCAPTCHA widget */
+        /* reCAPTCHA widget */
         .g-recaptcha {
             display: flex;
             justify-content: center;
@@ -93,7 +93,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 20px; /* Add some spacing above if needed */
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -171,21 +171,20 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<?php require 'partials/chatbot.php'; ?>
 
 <script>
-    // Function to enable the submit button after reCAPTCHA is solved
+    // Submit despues del CATPCHA
     function enableSubmitButton() {
         var submitButton = document.getElementById('submit-btn');
-        var recaptcha = document.querySelector('.g-recaptcha'); // Get the reCAPTCHA element
+        var recaptcha = document.querySelector('.g-recaptcha');
 
-        // Show the button with animation
-        submitButton.style.display = 'block'; // Make the button visible
+        // Animacion del boton
+        submitButton.style.display = 'block';
         setTimeout(function() {
-            submitButton.style.opacity = 1; // Fade in the button
-        }, 100); // Delay to allow reCAPTCHA to hide before starting animation
-        recaptcha.style.display = 'none'; // Hide the reCAPTCHA after it is solved
+            submitButton.style.opacity = 1;
+        }, 100);
+        recaptcha.style.display = 'none';
     }
 </script>
 
