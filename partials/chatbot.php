@@ -1,4 +1,4 @@
-<!-- Reemplaza este bloque si ya incluyes Bootstrap y Bootstrap Icons en otra parte -->
+<!-- Frontend del ChatBot -->
 <link 
   href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
   rel="stylesheet"
@@ -13,7 +13,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 9999; /* Queda por encima de otros elementos */
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -29,15 +29,25 @@
   }
   .chat-card {
     width: 320px;
-    height: 480px;
+    max-height: 50dvh;
+    height: 50dvh !important;
     margin-top: 10px; 
-    display: none; /* Oculto por defecto */
+    display: none;
     flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    border: none !important;
+    border-top: 4px solid #0d6efd;
+    border-bottom: 4px solid black;
+    transform: none !important;
+    box-shadow: none !important;
   }
   .chat-messages {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
+    border-left: 1px solid rgb(172, 172, 172) !important; 
+    border-right: 1px solid rgb(172, 172, 172) !important; 
   }
   .message {
     margin-bottom: 0.5rem;
@@ -55,7 +65,7 @@
     justify-content: flex-start;
   }
   .message.bot .bubble {
-    background: #eee;
+    background: #f1f1f1;
     color: #333;
     border-radius: 10px 10px 10px 0;
   }
@@ -63,17 +73,22 @@
     padding: 0.6rem 1rem;
     max-width: 70%;
     word-wrap: break-word;
+    border: 1px solid #ccc;
+    font-size: 0.85rem;
+    line-height: 1.3;
   }
   .chat-input-container {
     border-top: 1px solid #ccc;
     padding: 0.5rem;
     display: flex;
     gap: 0.5rem;
+    border: 1px solid rgb(172, 172, 172);
+    border-top: none !important;
   }
   .chat-input-container input {
     flex: 1;
+    font-size: 0.85rem;
   }
-  /* Animación de typing (3 puntos) */
   .typing-indicator {
     width: 35px;
     height: 10px;
@@ -98,33 +113,31 @@
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1); }
   }
+  #closeChatBtn {
+    border: none;
+    background: transparent;
+  }
 </style>
 
 <div class="chat-widget-container">
-  <!-- Botón flotante para abrir/cerrar el chat -->
-  <button 
-    id="chatToggleBtn" 
-    class="btn btn-primary chat-toggle-btn"
-    title="Abrir/Cerrar Chat"
-  >
-    <i class="bi bi-chat-dots"></i>
+  <!-- Botón flotante del chat -->
+  <button id="chatToggleBtn" class="btn btn-primary chat-toggle-btn" title="Abrir Chat">
+    <i class="bi bi-chat-dots" id="chatIcon"></i>
   </button>
 
-  <!-- Tarjeta/ventana del chat -->
+  <!-- Tarjeta del chat -->
   <div id="chatCard" class="card chat-card d-none">
-    <div class="card-header bg-primary text-white">
-      ChatBot del Gimnasio
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <span id="chatTitle">Chat con Lenny</span>
+      <!-- Botón de cierre en la barra superior -->
+      <button id="closeChatBtn" class="btn btn-sm" style="color:white;">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
     <div class="chat-messages" id="chatMessages">
-      <!-- Aquí se mostrarán los mensajes -->
     </div>
     <div class="chat-input-container">
-      <input 
-        type="text" 
-        id="chatInput" 
-        class="form-control" 
-        placeholder="Escribe tu consulta..."
-      />
+      <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta..." />
       <button class="btn btn-primary" id="sendBtn">
         <i class="bi bi-send"></i>
       </button>
@@ -132,7 +145,6 @@
   </div>
 </div>
 
-<!-- Si tu página no tiene Bootstrap JS incluido, añádelo aquí -->
 <script 
   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
 </script>
@@ -143,19 +155,27 @@
   const chatMessages = document.getElementById("chatMessages");
   const chatInput = document.getElementById("chatInput");
   const sendBtn = document.getElementById("sendBtn");
+  const chatTitle = document.getElementById("chatTitle");
+  const closeChatBtn = document.getElementById("closeChatBtn");
 
-  // Abre/cierra el chat
-  chatToggleBtn.addEventListener("click", () => {
-  chatCard.classList.toggle("d-none");
-});
+  // Lista de nombres aleatorios para el bot
+  const botNames = ["Lenny", "Max", "Charlie", "Alex", "Chris", "Sam", "Taylor", "Jordan"];
 
+  // Selección de nombre aleatorio al cargar la página
+  const randomName = botNames[Math.floor(Math.random() * botNames.length)];
+  chatTitle.innerText = `Chat con ${randomName}`;
 
-  // Enviar mensaje al hacer clic en el botón
-  sendBtn.addEventListener("click", () => {
-    sendMessage();
-  });
+  // Abrir/cerrar chat al hacer clic en el botón flotante
+  chatToggleBtn.addEventListener("click", toggleChat);
+  closeChatBtn.addEventListener("click", toggleChat);
 
-  // Enviar mensaje al presionar Enter
+  function toggleChat() {
+    chatCard.classList.toggle("d-none");
+    chatToggleBtn.style.display = chatCard.classList.contains("d-none") ? "flex" : "none"; // Mostrar u ocultar botón
+  }
+
+  // Enviar mensaje con el botón
+  sendBtn.addEventListener("click", sendMessage);
   chatInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -167,11 +187,9 @@
     const userText = chatInput.value.trim();
     if (!userText) return;
 
-    // 1. Agrega el mensaje del usuario (a la derecha)
     addMessage(userText, "user");
     chatInput.value = "";
 
-    // 2. Agrega el indicador de "typing" para el bot
     const typingIndicator = document.createElement("div");
     typingIndicator.classList.add("message", "bot");
     typingIndicator.innerHTML = `
@@ -186,23 +204,21 @@
     chatMessages.appendChild(typingIndicator);
     scrollToBottom();
 
-    // 3. Llamar a la API (ej. "response.php")
-    fetch("response.php", {
+    // Enviar al backend
+    fetch("/partials/response.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: userText }),
+      body: JSON.stringify({ text: userText, botName: randomName }), // Enviar nombre aleatorio al backend
     })
-      .then((res) => res.text())
-      .then((botReply) => {
-        // Remover indicador de escritura
-        chatMessages.removeChild(typingIndicator);
-
-        // Añadir mensaje del bot a la izquierda
-        addMessage(botReply, "bot");
-        scrollToBottom();
+      .then((res) => res.json())
+      .then((data) => {
+        setTimeout(() => {
+          chatMessages.removeChild(typingIndicator); // Quitar "typing" después del delay
+          addMessage(data.response || "No entendí tu pregunta. Inténtalo de nuevo.", "bot");
+          scrollToBottom();
+        }, 1000);
       })
       .catch((error) => {
-        // Manejo de errores
         chatMessages.removeChild(typingIndicator);
         addMessage("Error: " + error.message, "bot");
         scrollToBottom();

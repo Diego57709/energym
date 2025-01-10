@@ -207,13 +207,8 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
     </div>
   </div>
   </div>
-
+  <?php require 'partials/chatbot.php'; ?>
   <!-- Footer -->
   <?php require 'partials/footer.view.php'; ?>
-
-  <!-- Bootstrap JS (Bundle con Popper) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-  ></script>
 </body>
 </html>

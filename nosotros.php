@@ -51,8 +51,6 @@
             margin-bottom: 15px;
         }
 
-
-
         .card:hover {
             transform: scale(1.05);
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
@@ -169,8 +167,7 @@
         </div>
     </div>
 </div>
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<?php require 'partials/chatbot.php'; ?>
 <?php require 'partials/footer.view.php'; ?> 
 </body>
 </html>

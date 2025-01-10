@@ -76,8 +76,7 @@ if
 </html>
 
 <?php
+}
 require 'partials/footer.view.php';
-    } else {
-        header("Location: 404.php");
-    }
+
 ?>

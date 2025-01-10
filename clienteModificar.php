@@ -194,7 +194,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="summary-box">
                         <h4 class="fw-bold mb-3">Instrucciones</h4>
                         <p class="text-muted">Asegúrate de completar todos los campos con datos válidos antes de guardar los cambios.</p>
-                        <p class="text-muted">Si deseas regresar, utiliza el botón "Volver".</p>
+                        <p class="text-muted">Si deseas regresar, utiliza el botón "Deshacer".</p>
+                        <p class="text-muted">Si deseas deshacer los cambios, utiliza el botón "Volver".</p>
                         <a href="cliente.php" class="btn btn-secondary w-100 mt-3">Volver</a>
                     </div>
                 </div>
