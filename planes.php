@@ -269,7 +269,7 @@
                                                 <li>✔️ Todo desde Plan Comfort, y</li>
                                                 <li>✔️ Reserva con 48h de antelación ¡DOS CLASES!</li>
                                                 <li>✔️ YONGO Sports Water ahora por solo !1,90€! (precio oficial 4,90€)</li>
-                                                <li>✔️ Ven a entrenar con quien quieras de viernes a domingo</li>
+                                                <li>✔️ IA para asesoramientos de entrenamientos y nutrición</li>
                                             </ul>
                                             <p class="text-muted mb-2">€0,00 cuota de inscripción</p>
                                             <div class="text-center mt-auto option-selected">
