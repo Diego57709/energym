@@ -49,13 +49,18 @@ if ($diferenciaSegundos <= 0) {
 // Qué tipo de plan tiene
 $plan = ($clientes['plan'] == 1) ? 'Premiun' : 'Comfort';
 
-// Generamos el QR si no está vencido
+// Generamos el QR si no está caducado
+$qrToken = bin2hex(random_bytes(16)); // Token aleatorio de 32 caracteres
+$updateTokenSql = "UPDATE clientes SET qr_token = '$qrToken' WHERE cliente_id = '$id_usuario'";
+mysqli_query($conn, $updateTokenSql); // Guardar el token del QR en la BD
+
+// Generar el QR con el nuevo token
 if ($mostrarQR) {
     $options = new QROptions([
-        'version'           => 5,
-        'drawLightModules'  => true,
+        'version' => 5,
+        'drawLightModules' => true,
     ]);
-    $url = "https://energym.ddns.net?cliente_id={$id_usuario}&tiempo={$diferenciaSegundos}";
+    $url = $url = "https://energym.ddns.net/qr_verificacion.php?token={$qrToken}&cliente_id={$id_usuario}";
     $qrcode = (new QRCode($options))->render($url);
 }
 
