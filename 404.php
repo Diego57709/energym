@@ -69,7 +69,7 @@
 
     <div class="main">
         <div class="error-container">
-            <h1 class="error-title">Error 321321404</h1>
+            <h1 class="error-title">Error 404</h1>
             <p class="error-description">Lo sentimos, la página que buscas no fue encontrada. Te devolveremos al inicio...</p>
             <a href="index.php" class="btn-back text-center">Volver al Inicio</a>
             <script>
