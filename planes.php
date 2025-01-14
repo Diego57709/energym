@@ -342,11 +342,16 @@
                                 <input type="text" class="form-control" id="dni" name="dni" placeholder="Ej: 000000X" required>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label fw-bold">Nombre Completo:</label>
+                            <div class="mb-3 row">
+                            <div class="col-md-5">
+                                <label for="nombre" class="form-label fw-bold">Nombre:</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
                             </div>
-
+                            <div class="col-md-7">
+                                <label for="apellidos" class="form-label fw-bold">Apellidos:</label>
+                                <input type="text" class="form-control" id="apellidos" name="apellidos" placeholder="Ej: Juan Pérez" required>
+                            </div>
+                        </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label fw-bold">Correo Electrónico:</label>
                                 <input type="email" class="form-control" id="email" name="email" placeholder="Ej: juan.perez@example.com" required>

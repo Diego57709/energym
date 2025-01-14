@@ -25,7 +25,8 @@ if (mysqli_num_rows($result) == 1) {
     $clientes = mysqli_fetch_assoc($result);
 }
 
-$nombreUsuario = $_SESSION['usuario'];
+$nombreCliente = $_SESSION['usuario'];
+$apellidosCliente = $clientes['apellidos']; // Retrieving last name from the database
 
 // Tiempo que le queda del plan
 $fechaFin = strtotime($clientes['end_sub']);
@@ -60,7 +61,7 @@ if ($mostrarQR) {
         'version' => 5,
         'drawLightModules' => true,
     ]);
-    $url = $url = "https://energym.ddns.net/qr_verificacion.php?token={$qrToken}&cliente_id={$id_usuario}";
+    $url = "https://energym.ddns.net/qr_verificacion.php?token={$qrToken}&cliente_id={$id_usuario}";
     $qrcode = (new QRCode($options))->render($url);
 }
 
@@ -75,17 +76,15 @@ $sqlAsistenciasMes = "SELECT COUNT(*) AS total_asistencias FROM asistencias WHER
 $resultAsistenciasMes = mysqli_query($conn, $sqlAsistenciasMes);
 $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistencias'] ?? 0;
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Bienvenido, <?php echo htmlspecialchars($nombreUsuario); ?> | EnerGym</title>
+  <title>Bienvenido, <?php echo htmlspecialchars($nombreCliente); ?> | EnerGym</title>
   
   <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   
   <style>
     html, body {
@@ -134,84 +133,83 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
 
   <!-- Contenedor central con un ancho máximo -->
   <div class="main">
-  <div class="container my-5" style="max-width: 900px;">
-    <div class="row">
-      
-      <!-- COLUMNA PRINCIPAL -->
-      <div class="col-md-8 mb-4">
-        <div class="card p-4">
-          <h1 class="text-center mb-4">
-            ¡Hola, <?php echo htmlspecialchars($nombreUsuario); ?>!
-          </h1>
-          <p class="text-center">
-            Te queda <br>
-            <strong><?php echo $mensaje; ?></strong><br>
-            de tu plan <strong><?php echo $plan; ?></strong>.
-          </p>
+    <div class="container my-5" style="max-width: 900px;">
+      <div class="row">
+        
+        <!-- COLUMNA PRINCIPAL -->
+        <div class="col-md-8 mb-4">
+          <div class="card p-4">
+            <h1 class="text-center mb-4">
+              ¡Hola, <?php echo htmlspecialchars($apellidosCliente . ', ' . $nombreCliente); ?>!
+            </h1>
+            <p class="text-center">
+              Te queda <br>
+              <strong><?php echo $mensaje; ?></strong><br>
+              de tu plan <strong><?php echo $plan; ?></strong>.
+            </p>
 
-          <?php if ($mostrarQR): ?>
-            <img src="<?php echo $qrcode; ?>" alt="QR Code" class="qr-img mt-3">
-          <?php endif; ?>
+            <?php if ($mostrarQR): ?>
+              <img src="<?php echo $qrcode; ?>" alt="QR Code" class="qr-img mt-3">
+            <?php endif; ?>
 
-          <!-- Botones -->
-          <div class="d-flex justify-content-center mt-4">
-            <!-- Ver datos -->
-            <a href="clienteModificar.php" class="btn-rutina me-2">Modificar datos</a>
-            <a href="clientecambiarPassword.php" class="btn-rutina me-2">Cambiar contraseña</a>
-            <!-- Ampliar Suscripción (si quedan <7 días) -->
-          </div>
+            <!-- Botones -->
+            <div class="d-flex justify-content-center mt-4">
+              <!-- Ver datos -->
+              <a href="clienteModificar.php" class="btn-rutina me-2">Modificar datos</a>
+              <a href="clientecambiarPassword.php" class="btn-rutina me-2">Cambiar contraseña</a>
+            </div>
 
-          <!-- Cerrar sesión -->
-          <form action="logoutProcesar.php" method="post" class="text-center mt-4">
-            <button class="btn btn-danger">Cerrar sesión</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- COLUMNA LATERAL -->
-      <div class="col-md-4">
-        <!-- BLOQUE DE PAGOS -->
-        <div class="card p-4">
-          <h5 class="mb-3">Pagos</h5>
-          <p>
-            <strong>Tu suscripción expira el:</strong><br>
-            <?php echo date('d F Y', $fechaFin); ?>
-          </p>
-          <div class="d-flex justify-content-center">
-            <a href="clientehistorialPagos.php" class="btn btn-secondary me-2">Ver Historial de Pagos</a>
-            <a href="ampliarSuscripcion.php" class="btn btn-warning">Ampliar Suscripción</a>
+            <!-- Cerrar sesión -->
+            <form action="logoutProcesar.php" method="post" class="text-center mt-4">
+              <button class="btn btn-danger">Cerrar sesión</button>
+            </form>
           </div>
         </div>
 
-        <!-- BLOQUE DE ASISTENCIAS -->
-        <div class="card p-4">
-          <h5 class="mb-3">Asistencias</h5>
-          <p>
-          <strong>Última asistencia:</strong><br>
-            <?php
-            if ($ultimaAsistencia !== 'Sin asistencias registradas') {
-                echo date('d F Y, h:i A', strtotime($ultimaAsistencia));
-            } else {
-                echo $ultimaAsistencia;
-            }
-            ?>
-          </p>
-          <p>
-            <strong>Asistencias este mes:</strong> <?php echo $totalAsistenciasMes; ?>
-          </p>
-          <p class="text-muted">
-            ¡Sigue con tu entrenamiento y mantén tu progreso!
-          </p>
-          <!-- Link al historial -->
-          <a href="clientehistorialAsistencias.php" class="btn btn-sm btn-info">
-            Ver historial de asistencias
-          </a>
+        <!-- COLUMNA LATERAL -->
+        <div class="col-md-4">
+          <!-- BLOQUE DE PAGOS -->
+          <div class="card p-4">
+            <h5 class="mb-3">Pagos</h5>
+            <p>
+              <strong>Tu suscripción expira el:</strong><br>
+              <?php echo date('d F Y', $fechaFin); ?>
+            </p>
+            <div class="d-flex justify-content-center">
+              <a href="clientehistorialPagos.php" class="btn btn-secondary me-2">Ver Historial de Pagos</a>
+              <a href="ampliarSuscripcion.php" class="btn btn-warning">Ampliar Suscripción</a>
+            </div>
+          </div>
+
+          <!-- BLOQUE DE ASISTENCIAS -->
+          <div class="card p-4">
+            <h5 class="mb-3">Asistencias</h5>
+            <p>
+              <strong>Última asistencia:</strong><br>
+              <?php
+              if ($ultimaAsistencia !== 'Sin asistencias registradas') {
+                  echo date('d F Y, h:i A', strtotime($ultimaAsistencia));
+              } else {
+                  echo $ultimaAsistencia;
+              }
+              ?>
+            </p>
+            <p>
+              <strong>Asistencias este mes:</strong> <?php echo $totalAsistenciasMes; ?>
+            </p>
+            <p class="text-muted">
+              ¡Sigue con tu entrenamiento y mantén tu progreso!
+            </p>
+            <!-- Link al historial -->
+            <a href="clientehistorialAsistencias.php" class="btn btn-sm btn-info">
+              Ver historial de asistencias
+            </a>
+          </div>
+
         </div>
 
       </div>
-
     </div>
-  </div>
   </div>
   <?php require 'partials/chatbot.php'; ?>
   <!-- Footer -->

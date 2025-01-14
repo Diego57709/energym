@@ -116,7 +116,7 @@
             }
 
             const qrCodeSuccessCallback = (decodedText) => {
-                stopScanner();  // Stop scanning after QR is detected
+                stopScanner();
                 window.location.href = `qr_verificacion_e.php?token=${encodeURIComponent(decodedText)}`;
             };
 

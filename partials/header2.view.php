@@ -59,7 +59,7 @@
         <!-- Dropdown Menu -->
         <div class="dropdown">
             <button class="btn p-0 border-0 dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="img/nav.webp" alt="Navigation" class="dropdown-icon">
+                <img src="/img/nav.webp" alt="Navigation" class="dropdown-icon">
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                 <li><a class="dropdown-item" href="/index.php">Home</a></li>

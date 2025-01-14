@@ -33,7 +33,6 @@ if ($resClientes && mysqli_num_rows($resClientes) === 1) {
     } else {
         // Contraseña incorrecta
         header('Location: login.php?error=contraseña_incorrecta');
-        exit();
     }
 }
 
@@ -50,7 +49,7 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
         // Contraseña correcta
         $_SESSION['usuario']       = $trabajador['nombre']; 
         $_SESSION['id_trabajador'] = $trabajador['trabajador_id'];
-        header('Location: trabajador.php'); // Ajusta tu ruta si tienes otra
+        header('Location: trabajador.php');
         exit();
     } else {
         header('Location: login.php?error=contraseña_incorrecta');
