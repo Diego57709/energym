@@ -248,7 +248,7 @@
                                             </ul>
                                             <p class="text-muted mb-2">€0.00 cuota de inscripción</p>
                                             <div class="text-center mt-auto option-selected">
-                                                <input type="radio" id="comfort" name="plan" value="Comfort" onchange="actualizarResumen()">
+                                                <input type="radio" id="comfort" name="plan" value="1" onchange="actualizarResumen()">
                                                 <label for="comfort">Elegir Comfort</label>
                                             </div>
                                         </div>
@@ -273,7 +273,7 @@
                                             </ul>
                                             <p class="text-muted mb-2">€0,00 cuota de inscripción</p>
                                             <div class="text-center mt-auto option-selected">
-                                                <input type="radio" id="premium" name="plan" value="Premium" onchange="actualizarResumen()">
+                                                <input type="radio" id="premium" name="plan" value="2" onchange="actualizarResumen()">
                                                 <label for="premium">Elegir Premium</label>
                                             </div>
                                         </div>

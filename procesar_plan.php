@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insertar el nuevo cliente
     $sql = "INSERT INTO clientes 
         (dni, plan, extrasSelected, nombre, apellidos, email, telefono, direccion, codigo_postal, fecha_nacimiento, genero, metodo_pago, start_sub, end_sub, created_at)
-        VALUES ('$dni', '$plan_id', '$extras', '$nombre', '$apellidos', '$email', '$telefono', 
+        VALUES ('$dni', '$plan', '$extras', '$nombre', '$apellidos', '$email', '$telefono', 
                 '$direccion', '$codigo_postal', '$fecha_nacimiento', '$genero', 
                 '$metodo_pago', '$start_sub', '$end_sub', '$created_at')";
 

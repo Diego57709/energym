@@ -76,11 +76,11 @@
     <header class="header-bar d-flex align-items-center justify-content-between px-3 py-2">
         <!-- Logo -->
         <a href="/" class="d-flex align-items-center">
-            <img src="img/icon.webp" alt="Logo" class="header-icon">
+            <img src="/partials/img/icon.webp" alt="Logo" class="header-icon">
         </a>
 
         <!-- Area Cliente -->
-        <a href="login.php" class="header-cliente text-decoration-none">
+        <a href="/login.php" class="header-cliente text-decoration-none">
             Area Cliente
         </a>
 

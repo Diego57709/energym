@@ -1,17 +1,18 @@
 <?php
 declare(strict_types=1);
 
-include 'partials/db.php';
+include '../partials/db.php';
 session_start();
 
 // Redirigir al login si no hay sesión iniciada
-if (!isset($_SESSION['usuario']) && !isset($_SESSION['id_cliente'])) {
-    header("Location: login.php");
+if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
+    header("Location: ../login.php");
     exit;
 }
 
-$id_usuario = $_SESSION['id_cliente'];
-$nombreUsuario = $_SESSION['usuario'];
+$id_usuario = $_SESSION['id'];
+$nombreUsuario = $_SESSION['nombre'];
+$tipo = $_SESSION['usuario'];
 
 // Filtros de mes, año y tipo
 $mesSeleccionado = $_GET['mes'] ?? date('m'); // Mes actual por defecto
@@ -20,9 +21,10 @@ $tipoSeleccionado = $_GET['tipo'] ?? 'todos'; // 'todos' por defecto (sin filtro
 
 // Consulta SQL para obtener asistencias del cliente
 $sqlHistorial = "SELECT fecha_hora, tipo FROM asistencias 
-                 WHERE cliente_id = '$id_usuario' 
+                 WHERE usuario_id = '$id_usuario' 
                  AND YEAR(fecha_hora) = '$anioSeleccionado'
-                 AND MONTH(fecha_hora) = '$mesSeleccionado'";
+                 AND MONTH(fecha_hora) = '$mesSeleccionado'
+                 AND tipo_usuario = ";
 
 // Filtrar por tipo de asistencia si se selecciona "entrada" o "salida"
 if ($tipoSeleccionado !== 'todos') {
@@ -78,7 +80,7 @@ $asistencias = mysqli_fetch_all($resultHistorial, MYSQLI_ASSOC);
 <body>
 
     <!-- Header -->
-    <?php require 'partials/header1.view.php'; ?>
+    <?php require '../partials/header1.view.php'; ?>
     <div class="main">
         <div class="container my-5">
             <div class="table-container">
@@ -158,14 +160,14 @@ $asistencias = mysqli_fetch_all($resultHistorial, MYSQLI_ASSOC);
 
                 <!-- Botón de regreso -->
                 <div class="d-flex justify-content-center mt-4">
-                    <a href="cliente.php" class="btn btn-danger btn-back">Volver</a>
+                    <a href="index.php" class="btn btn-danger btn-back">Volver</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <?php require 'partials/footer.view.php'; ?>
+    <?php require '../partials/footer.view.php'; ?>
 
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"

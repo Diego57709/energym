@@ -25,14 +25,17 @@ if ($resClientes && mysqli_num_rows($resClientes) === 1) {
     // Verificar contraseña
     if (password_verify($password, $cliente['password'])) {
         // Contraseña correcta
-        $_SESSION['usuario']    = $cliente['nombre'];
-        $_SESSION['id_cliente'] = $cliente['cliente_id'];
-        $_SESSION['cliente_email'] = $cliente['email'];
-        header('Location: cliente.php');
+        $_SESSION['nombre']    = $cliente['nombre'];
+        $_SESSION['id'] = $cliente['cliente_id'];
+        $_SESSION['email'] = $cliente['email'];
+        $_SESSION['usuario'] = "cliente";
+        $_SESSION['timeout'] = time() + 1800;
+        header('Location: cliente/');
         exit();
     } else {
         // Contraseña incorrecta
-        header('Location: login.php?error=contraseña_incorrecta');
+        header('Location: /login.php?error=contraseña_incorrecta');
+        exit();
     }
 }
 
@@ -47,12 +50,15 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
 
     if (password_verify($password, $trabajador['password'])) {
         // Contraseña correcta
-        $_SESSION['usuario']       = $trabajador['nombre']; 
-        $_SESSION['id_trabajador'] = $trabajador['trabajador_id'];
-        header('Location: trabajador.php');
+        $_SESSION['nombre']       = $trabajador['nombre']; 
+        $_SESSION['id'] = $trabajador['trabajador_id'];
+        $_SESSION['email'] = $trabajador['email'];
+        $_SESSION['usuario'] = "trabajador";
+        $_SESSION['timeout'] = time() + 1800;
+        header('Location: trabajador/');
         exit();
     } else {
-        header('Location: login.php?error=contraseña_incorrecta');
+        header('Location: /login.php?error=contraseña_incorrecta');
         exit();
     }
 }
@@ -68,8 +74,11 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
 
     if (password_verify($password, $entrenador['password'])) {
         // Contraseña correcta
-        $_SESSION['usuario']        = $entrenador['nombre'];
-        $_SESSION['id_entrenador']  = $entrenador['entrenador_id'];
+        $_SESSION['nombre'] = $entrenador['nombre'];
+        $_SESSION['id'] = $entrenador['entrenador_id'];
+        $_SESSION['email'] = $entrenador['email'];
+        $_SESSION['usuario'] = "entrenador";
+        $_SESSION['timeout'] = time() + 1800;
         header('Location: entrenador.php'); // Ajusta tu ruta
         exit();
     } else {
@@ -126,6 +135,7 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
             </form>
         </div>
     </div>
+    <?php include '../partials/footer.php'?>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>

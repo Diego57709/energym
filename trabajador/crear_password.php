@@ -1,7 +1,7 @@
 <?php
-require 'partials/header2.view.php';
-include 'partials/db.php';
-session_start();
+require '../partials/header2.view.php';
+include '../partials/db.php';
+
 // 1) Verificar si llega el token
 if (!isset($_GET['token'])) {
     ?>
@@ -47,7 +47,7 @@ if (!isset($_GET['token'])) {
                 <a href="login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
             </div>
         </div>
-        <?php require 'partials/footer.view.php'; ?>
+        <?php require '../partials/footer.view.php'; ?>
     </body>
     </html>
     <?php
@@ -56,8 +56,8 @@ if (!isset($_GET['token'])) {
 
 $token = $_GET['token'];
 
-// 2) Verificar el token en la BD
-$sql = "SELECT * FROM clientes WHERE reset_token = '$token' LIMIT 1";
+// 2) Verificar el token en la tabla "trabajadores"
+$sql = "SELECT * FROM trabajadores WHERE reset_token = '$token' LIMIT 1";
 $result = mysqli_query($conn, $sql);
 
 if (!$result || mysqli_num_rows($result) === 0) {
@@ -104,7 +104,7 @@ if (!$result || mysqli_num_rows($result) === 0) {
                 <a href="login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
             </div>
         </div>
-        <?php require 'partials/footer.view.php'; ?>
+        <?php require '../partials/footer.view.php'; ?>
     </body>
     </html>
     <?php
@@ -112,8 +112,8 @@ if (!$result || mysqli_num_rows($result) === 0) {
 }
 
 // Aquí el token es válido
-$cliente = mysqli_fetch_assoc($result);
-$cliente_id = $cliente['cliente_id'];
+$trabajador = mysqli_fetch_assoc($result);
+$trabajador_id = $trabajador['trabajador_id'];
 
 // 3) Procesar el POST del formulario
 $error = ""; // Para almacenar el mensaje de error si lo hay
@@ -131,10 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Todo bien, actualizamos la contraseña
         $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
 
-        $updateSql = "UPDATE clientes 
+        $updateSql = "UPDATE trabajadores 
                       SET password = '$hashed_password',
                           reset_token = NULL
-                      WHERE cliente_id = $cliente_id";
+                      WHERE trabajador_id = $trabajador_id";
         $updateResult = mysqli_query($conn, $updateSql);
 
         if ($updateResult) {
@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="login.php" class="btn btn-success w-100">Ir al inicio de sesión</a>
                     </div>
                 </div>
-                <?php require 'partials/footer.view.php'; ?>
+                <?php require '../partials/footer.view.php'; ?>
             </body>
             </html>
             <?php
@@ -269,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
-<?php require 'partials/footer.view.php'; ?>
+<?php require '../partials/footer.view.php'; ?>
 
 </body>
 </html>

@@ -1,4 +1,5 @@
-<?php include 'partials/header1.view.php'; ?>
+<?php include 'partials/header1.view.php'; 
+session_start();?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

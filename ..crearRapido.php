@@ -1,31 +1,43 @@
 <?php
 // Include database connection file
 include 'partials/db.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Set up the worker's details
-$trabajador_id = '12345678A';  // Example DNI
+
+
+session_start();  // Asegúrate de que la sesión está iniciada
+
+// Datos del administrador
+$dni = '12345678A';  // DNI del administrador
 $nombre = 'Sigma Boy';
-$telefono = '666868686';  // Example phone number
-$email = 'sigmaboy@pene.com';
-$rol = 'Manager';  // Worker role
-$activo = 1;  // Active status
-$suelo = 1.00;  // Salary
-$fecha_contratacion = '2025-01-14';  // Hiring date
-$password = 'root';  // Raw password
+$apellidos = 'Admin Apellido';
+$fecha_nacimiento = '1980-01-01';  // Fecha de nacimiento
+$direccion = 'Calle Admin 123';  // Dirección
+$codigo_postal = '28045';  // Código postal
+$telefono = '666868686';  // Teléfono
+$email = 'chuhanli2005@gmail.com';  // Correo del administrador
+$rol = 'Manager';  // Rol del administrador
+$activo = 1;  // Estado activo
+$sueldo = 5000.00;  // Sueldo del administrador
+$fecha_contratacion = '2025-01-14';  // Fecha de contratación
+$password = 'root';  // Contraseña sin cifrar
 
-// Hash the password before storing it
+// Hash de la contraseña antes de insertarla en la base de datos
 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-// Insert the worker's details into the database
+// Insertar los datos del administrador en la tabla "trabajadores"
 $sql = "INSERT INTO trabajadores 
-        (dni, nombre, telefono, email, rol, activo, sueldo, fecha_contratacion, password) 
+        (dni, nombre, apellidos, fecha_nacimiento, direccion, codigo_postal, telefono, email, rol, activo, sueldo, fecha_contratacion, password) 
         VALUES 
-        ('$trabajador_id', '$nombre', '$telefono', '$email', '$rol', '$activo', '$suelo', '$fecha_contratacion', '$hashedPassword')";
+        ('$dni', '$nombre', '$apellidos', '$fecha_nacimiento', '$direccion', '$codigo_postal', '$telefono', '$email', '$rol', '$activo', '$sueldo', '$fecha_contratacion', '$hashedPassword')";
 
-// Execute the query
+// Ejecutar la consulta
 if (mysqli_query($conn, $sql)) {
-    echo "New trabajador created successfully!";
+    echo "Nuevo administrador creado con éxito.";
 } else {
-    echo "Error: " . mysqli_error($conn);
+    echo "Error al crear administrador: " . mysqli_error($conn);
 }
+
 ?>

@@ -1,3 +1,9 @@
+<?php
+session_start();
+//if (!isset($_SESSION['id'])) {
+ //   header('Location: 404.php');
+//}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

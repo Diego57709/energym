@@ -1,8 +1,18 @@
 <?php
 session_start();
-if (isset($_SESSION['id_cliente'])) {
-    header("Location: cliente.php");
+if (($_SESSION['usuario'] == 'cliente')) {
+    header("Location: /cliente/index.php");
+    exit(); 
 }
+else if (($_SESSION['usuario'] == 'trabajador')) {
+    header("Location: /trabajador/index.php");
+    exit(); 
+}
+else if (($_SESSION['usuario'] == 'entrenador')) {
+    header("Location: /entrenador/entrenador.php");
+    exit(); 
+}
+
 ?>
 
 <!DOCTYPE html>

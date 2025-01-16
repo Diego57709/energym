@@ -53,7 +53,7 @@
     <header class="header-bar d-flex align-items-center justify-content-between px-3 py-2">
         <!-- Logo -->
         <a href="/" class="d-flex align-items-center">
-            <img src="img/icon.webp" alt="Logo" class="header-icon">
+            <img src="/img/icon.webp" alt="Logo" class="header-icon">
         </a>
 
         <!-- Dropdown Menu -->

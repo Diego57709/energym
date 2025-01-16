@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 // Incluimos primero la autoload de Composer y luego la base de datos
-require_once __DIR__ . '/vendor/autoload.php';
-include 'partials/db.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+include '../partials/db.php';
 
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
@@ -11,13 +11,18 @@ use chillerlan\QRCode\QROptions;
 session_start();
 
 // Si no hay un usuario autenticado, redirigimos al login
-if (!isset($_SESSION['usuario']) && !isset($_SESSION['id_cliente'])) {
-    header("Location: login.php");
+if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
+    header("Location: ../login.php");
     exit;
 }
-
+if (time() > $_SESSION['timeout']) {
+  session_unset(); 
+  session_destroy();
+  header('Location: ../login.html');
+  exit();
+}
 // Obtenemos los datos del cliente
-$id_usuario = $_SESSION['id_cliente'];
+$id_usuario = $_SESSION['id'];
 $sql = "SELECT * FROM clientes WHERE cliente_id = '$id_usuario'";
 $result = mysqli_query($conn, $sql);
 
@@ -25,7 +30,7 @@ if (mysqli_num_rows($result) == 1) {
     $clientes = mysqli_fetch_assoc($result);
 }
 
-$nombreCliente = $_SESSION['usuario'];
+$nombreCliente = $clientes['nombre'];
 $apellidosCliente = $clientes['apellidos']; // Retrieving last name from the database
 
 // Tiempo que le queda del plan
@@ -129,7 +134,7 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
 </head>
 <body>
   <!-- Header -->
-  <?php require 'partials/header1.view.php'; ?>
+  <?php require '../partials/header1.view.php'; ?>
 
   <!-- Contenedor central con un ancho máximo -->
   <div class="main">
@@ -160,7 +165,7 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
             </div>
 
             <!-- Cerrar sesión -->
-            <form action="logoutProcesar.php" method="post" class="text-center mt-4">
+            <form action="../logoutProcesar.php" method="post" class="text-center mt-4">
               <button class="btn btn-danger">Cerrar sesión</button>
             </form>
           </div>
@@ -211,8 +216,8 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
       </div>
     </div>
   </div>
-  <?php require 'partials/chatbot.php'; ?>
+  <?php require '../partials/chatbot.php'; ?>
   <!-- Footer -->
-  <?php require 'partials/footer.view.php'; ?>
+  <?php require '../partials/footer.view.php'; ?>
 </body>
 </html>

@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/vendor/autoload.php';
-include 'partials/db.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+include '../partials/db.php';
 
 session_start();
 
 // Redirigir al login si no hay sesión iniciada
-if (!isset($_SESSION['usuario']) && !isset($_SESSION['id_cliente'])) {
-    header("Location: login.php");
+if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
+    header("Location: ../login.php");
     exit;
 }
 
-$id_usuario = $_SESSION['id_cliente'];
+$id_usuario = $_SESSION['id'];
 
 // Consulta para obtener los datos del cliente
 $sql = "SELECT * FROM clientes WHERE cliente_id = '$id_usuario'";
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-    <?php require 'partials/header2.view.php'; ?>
+    <?php require '../partials/header2.view.php'; ?>
 
     <div class="main py-4">
         <div class="container bg-white rounded shadow-sm p-4">
@@ -196,14 +196,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p class="text-muted">Asegúrate de completar todos los campos con datos válidos antes de guardar los cambios.</p>
                         <p class="text-muted">Si deseas regresar, utiliza el botón "Deshacer".</p>
                         <p class="text-muted">Si deseas deshacer los cambios, utiliza el botón "Volver".</p>
-                        <a href="cliente.php" class="btn btn-secondary w-100 mt-3">Volver</a>
+                        <a href="index.php" class="btn btn-secondary w-100 mt-3">Volver</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <?php include 'partials/footer.view.php'; ?>
+    <?php include '../partials/footer.view.php'; ?>
 
     <script>
         // Almacernar valores originales
