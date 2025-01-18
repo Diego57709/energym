@@ -27,7 +27,7 @@ require '../partials/timeout.php';
             min-height: 100vh;
         }
         .main-content {
-            flex: 1; /* Allows the main content to grow and fill available space */
+            flex: 1;
             padding: 40px;
             background-color: #f8f9fa;
         }
@@ -81,6 +81,7 @@ require '../partials/timeout.php';
             <a href="ver_usuarios.php"><i class="fas fa-users"></i> Ver Usuarios </a> 
             <a href="ver_pagos.php"><i class="fas fa-credit-card"></i> Ver pagos </a>
             <a href="ver_asistencias.php"><i class="fas fa-door-open"></i> Ver asistencias</a>
+            <a href="enviar_mails.php"><i class="fas fa-envelope"></i> Enviar correos</a>
             <a href="../logoutProcesar.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
 
