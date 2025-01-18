@@ -25,9 +25,9 @@ $tipoSeleccionado = $_GET['tipo'] ?? 'todos'; // 'todos' por defecto (sin filtro
 // Consulta SQL para obtener asistencias del trabajador
 $sqlHistorial = "SELECT fecha_hora, tipo FROM asistencias 
                  WHERE usuario_id = '$id_trabajador' 
+                 AND tipo_usuario = 'trabajador' 
                  AND YEAR(fecha_hora) = '$anioSeleccionado'
-                 AND MONTH(fecha_hora) = '$mesSeleccionado'
-                 AND tipo = '$tipo'";
+                 AND MONTH(fecha_hora) = '$mesSeleccionado'";
 
 // Filtrar por tipo de asistencia si se selecciona "entrada" o "salida"
 if ($tipoSeleccionado !== 'todos') {

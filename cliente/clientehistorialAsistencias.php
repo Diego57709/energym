@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
     exit;
 }
 
-$id_usuario = $_SESSION['id'];
+$id_cliente = $_SESSION['id'];
 $nombreUsuario = $_SESSION['nombre'];
 $tipo = $_SESSION['usuario'];
 
@@ -21,10 +21,10 @@ $tipoSeleccionado = $_GET['tipo'] ?? 'todos'; // 'todos' por defecto (sin filtro
 
 // Consulta SQL para obtener asistencias del cliente
 $sqlHistorial = "SELECT fecha_hora, tipo FROM asistencias 
-                 WHERE usuario_id = '$id_usuario' 
+                 WHERE usuario_id = '$id_cliente' 
+                 AND tipo_usuario = 'cliente' 
                  AND YEAR(fecha_hora) = '$anioSeleccionado'
-                 AND MONTH(fecha_hora) = '$mesSeleccionado'
-                 AND tipo_usuario = ";
+                 AND MONTH(fecha_hora) = '$mesSeleccionado'";
 
 // Filtrar por tipo de asistencia si se selecciona "entrada" o "salida"
 if ($tipoSeleccionado !== 'todos') {

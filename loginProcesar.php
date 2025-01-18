@@ -22,14 +22,69 @@ $resClientes = mysqli_query($conn, $sqlClientes);
 if ($resClientes && mysqli_num_rows($resClientes) === 1) {
     $cliente = mysqli_fetch_assoc($resClientes);
 
+    // Verificar si tiene contraseña asignada
+    if (empty($cliente['password'])) {
+        // No tiene contraseña asignada
+        ?>
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>Contraseña no asignada</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+                html, body {
+                    height: 100%;
+                    margin: 0;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .main {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .text-container {
+                    max-width: 400px;
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    border-radius: 10px;
+                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+        <div class="main">
+            <div class="text-container">
+                <h3>Contraseña no asignada</h3>
+                <p>Parece que aún no has creado tu contraseña.</p>
+                <p>Por favor, revisa tu correo electrónico para completarlo.</p>
+                <p>Redirigiendo al inicio de sesión en 3 segundos...</p>
+                <a href="login.php" class="btn btn-primary mt-3 w-100">Volver al inicio de sesión</a>
+            </div>
+        </div>
+        <script>
+            setTimeout(function () {
+                window.location.href = 'login.php';
+            }, 3000);
+        </script>
+        <?php include 'partials/footer.view.php'; ?>
+        </body>
+        </html>
+        <?php
+        exit();
+    }
+
     // Verificar contraseña
     if (password_verify($password, $cliente['password'])) {
         // Contraseña correcta
         $_SESSION['nombre']    = $cliente['nombre'];
-        $_SESSION['id'] = $cliente['cliente_id'];
-        $_SESSION['email'] = $cliente['email'];
-        $_SESSION['usuario'] = "cliente";
-        $_SESSION['timeout'] = time() + 1800;
+        $_SESSION['id']        = $cliente['cliente_id'];
+        $_SESSION['email']     = $cliente['email'];
+        $_SESSION['usuario']   = "cliente";
+        $_SESSION['timeout']   = time() + 1800;
         header('Location: cliente/');
         exit();
     } else {
@@ -51,10 +106,10 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
     if (password_verify($password, $trabajador['password'])) {
         // Contraseña correcta
         $_SESSION['nombre']       = $trabajador['nombre']; 
-        $_SESSION['id'] = $trabajador['trabajador_id'];
-        $_SESSION['email'] = $trabajador['email'];
-        $_SESSION['usuario'] = "trabajador";
-        $_SESSION['timeout'] = time() + 1800;
+        $_SESSION['id']           = $trabajador['trabajador_id'];
+        $_SESSION['email']        = $trabajador['email'];
+        $_SESSION['usuario']      = "trabajador";
+        $_SESSION['timeout']      = time() + 1800;
         header('Location: trabajador/');
         exit();
     } else {
@@ -74,12 +129,12 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
 
     if (password_verify($password, $entrenador['password'])) {
         // Contraseña correcta
-        $_SESSION['nombre'] = $entrenador['nombre'];
-        $_SESSION['id'] = $entrenador['entrenador_id'];
-        $_SESSION['email'] = $entrenador['email'];
-        $_SESSION['usuario'] = "entrenador";
-        $_SESSION['timeout'] = time() + 1800;
-        header('Location: entrenador.php'); // Ajusta tu ruta
+        $_SESSION['nombre']    = $entrenador['nombre'];
+        $_SESSION['id']        = $entrenador['entrenador_id'];
+        $_SESSION['email']     = $entrenador['email'];
+        $_SESSION['usuario']   = "entrenador";
+        $_SESSION['timeout']   = time() + 1800;
+        header('Location: entrenador/'); // Ajusta tu ruta
         exit();
     } else {
         header('Location: login.php?error=contraseña_incorrecta');
@@ -96,7 +151,6 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
 <head>
     <meta charset="UTF-8">
     <title>Usuario no encontrado</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         html, body {
@@ -111,40 +165,30 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
             align-items: center;
             justify-content: center;
         }
-        .login-container {
+        .text-container {
             max-width: 400px;
             padding: 20px;
             background-color: #f8f9fa;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            margin: 5rem auto;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="main">
-        <div class="login-container text-center">
-            <h3>Usuario no encontrado</h3>
-            <p>Volviendo a la página de inicio de sesión...</p>
-            <form action="login.php" method="POST">
-                <!-- Por si quieres recordar el email introducido -->
-                <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
-                <button type="submit" class="btn btn-warning mt-3 w-100" style="background-color:#28a745; color:white;">
-                    Haga clic aquí si no es redirigido automáticamente
-                </button>
-            </form>
-        </div>
+<div class="main">
+    <div class="text-container">
+        <h3>Usuario no encontrado</h3>
+        <p>El correo ingresado no está registrado.</p>
+        <p>Redirigiendo al inicio de sesión en 3 segundos...</p>
+        <a href="login.php" class="btn btn-primary mt-3 w-100">Volver al inicio de sesión</a>
     </div>
-    <?php include '../partials/footer.php'?>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <script>
-        setTimeout(function(){
-            window.location.href = 'login.php';
-        }, 3000);
-    </script>
+</div>
+<script>
+    setTimeout(function () {
+        window.location.href = 'login.php';
+    }, 3000);
+</script>
+<?php include 'partials/footer.view.php'; ?>
 </body>
 </html>
-<?php
-exit();

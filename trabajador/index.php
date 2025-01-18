@@ -1,7 +1,4 @@
 <?php 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 require_once __DIR__ . '/../vendor/autoload.php';
 include '../partials/db.php';
 
@@ -12,13 +9,13 @@ session_start();
 
 // Si no hay un usuario autenticado, redirigimos al login
 if (!isset($_SESSION['usuario']) || !isset($_SESSION['id'])) {
-    header("Location: ../login.php");
+    header("Location: /login.php");
     exit();
 }
 if (time() > $_SESSION['timeout']) {
   session_unset(); 
   session_destroy();
-  header('Location: login.html');
+  header('Location: /login.html');
   exit();
 }
 
@@ -194,4 +191,7 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
   <!-- Footer -->
   <?php require '../partials/footer.view.php'; ?>
 </body>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </html>

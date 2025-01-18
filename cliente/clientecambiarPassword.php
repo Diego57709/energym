@@ -29,7 +29,7 @@ $updateSql = "UPDATE clientes SET reset_token = '$token' WHERE cliente_id = $idC
 mysqli_query($conn, $updateSql);
 
 // Enlace para cambiar contraseña
-$linkCambiarPassword = "http://energym.ddns.net/crear_password.php?token=" . urlencode($token);
+$linkCambiarPassword = "http://energym.ddns.net/cliente/crear_password.php?token=" . urlencode($token);
 
 // Configuración de PHPMailer para enviar el correo
 $mail = new PHPMailer(true);

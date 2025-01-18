@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// 1) Primero, tu "use" y el autoload
+// Carga de PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -13,47 +13,58 @@ require 'phpmailer/src/SMTP.php';
 require 'partials/header2.view.php';
 include 'partials/db.php';
 
-// Asegurarnos de que se recibe POST
+// Validar que el método sea POST
 if ($_SERVER['REQUEST_METHOD'] !== "POST") {
     header("Location: 404.php");
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $dni = $_REQUEST['dni'];
-    $plan = $_REQUEST['plan'];
-    $extras = $_REQUEST['extrasSelected'];
-    $nombre = $_REQUEST['nombre'];
-    $apellidos = $_REQUEST['apellidos'];
-    $email  = $_REQUEST['email'];
-    $telefono = $_REQUEST['telefono'];
-    $direccion = $_REQUEST['direccion'];
-    $codigo_postal = $_REQUEST['codigo_postal'];
-    $fecha_nacimiento = $_REQUEST['fecha_nacimiento'];
-    $genero = $_REQUEST['genero'];
-    $metodo_pago = $_REQUEST['metodo_pago'];
+    // Recogemos datos del formulario
+    $dni              = trim($_POST['dni'] ?? '');
+    $plan             = trim($_POST['plan'] ?? '');
+    $extras           = trim($_POST['extrasSelected'] ?? '');
+    $nombre           = trim($_POST['nombre'] ?? '');
+    $apellidos        = trim($_POST['apellidos'] ?? '');
+    $email            = trim($_POST['email'] ?? '');
+    $telefono         = trim($_POST['telefono'] ?? '');
+    $direccion        = trim($_POST['direccion'] ?? '');
+    $codigo_postal    = trim($_POST['codigo_postal'] ?? '');
+    $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
+    $genero           = trim($_POST['genero'] ?? '');
+    $metodo_pago      = trim($_POST['metodo_pago'] ?? '');
 
-    // Check for duplicate email
-    $email_check_sql = "SELECT * FROM clientes WHERE email = '$email'";
-    $email_check_result = mysqli_query($conn, $email_check_sql);
-    if (mysqli_num_rows($email_check_result) > 0) {
-        $error_message = 'El correo electrónico ya está registrado.';
-    }
-    // Check for duplicate dni
-    $dni_check_sql = "SELECT * FROM clientes WHERE dni = '$dni'";
-    $dni_check_result = mysqli_query($conn, $dni_check_sql);
-    if (mysqli_num_rows($dni_check_result) > 0) {
-        $error_message = 'El DNI ya está registrado.';
-    }
-    // Check for duplicate telefono
-    $telefono_check_sql = "SELECT * FROM clientes WHERE telefono = '$telefono'";
-    $telefono_check_result = mysqli_query($conn, $telefono_check_sql);
-    if (mysqli_num_rows($telefono_check_result) > 0) {
-        $error_message = 'El número de teléfono ya está registrado.';
+    // Array para acumular posibles errores (duplicados)
+    $errores = [];
+
+    // ------------------------------------------------------------------------
+    // 1) Verificar duplicados (email, dni, telefono) con una sola consulta
+    // ------------------------------------------------------------------------
+    $sqlCheck = "
+        SELECT email, dni, telefono 
+        FROM clientes
+        WHERE email = '$email' OR dni = '$dni' OR telefono = '$telefono'
+    ";
+    $resultCheck = mysqli_query($conn, $sqlCheck);
+
+    // Si encontramos filas, verificamos qué campo coincide
+    while ($row = mysqli_fetch_assoc($resultCheck)) {
+        if ($row['email'] === $email) {
+            $errores[] = 'El correo electrónico ya está registrado.';
+        }
+        if ($row['dni'] === $dni) {
+            $errores[] = 'El DNI ya está registrado.';
+        }
+        if ($row['telefono'] === $telefono) {
+            $errores[] = 'El número de teléfono ya está registrado.';
+        }
     }
 
-    // If any duplicates are found, display an error page
-    if (isset($error_message)) {
+    // ------------------------------------------------------------------------
+    // 2) Si existen errores (ej: duplicados), mostramos la pantalla de error
+    // ------------------------------------------------------------------------
+    if (!empty($errores)) {
+        $error_message = implode('<br>', $errores);
         ?>
         <!DOCTYPE html>
         <html lang="es">
@@ -66,40 +77,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 html, body {
                     height: 100%;
                     margin: 0;
+                    padding: 0;
+                }
+                body {
                     display: flex;
                     flex-direction: column;
+                    background-color: #f8f9fa;
                 }
                 .main {
                     flex: 1;
                     display: flex;
-                    justify-content: center;
                     align-items: center;
-                }
-                .inner-text {
+                    justify-content: center;
                     text-align: center;
-                    color: #333;
-                    margin-top: 20px;
+                }
+                .container {
+                    max-width: 600px;
+                    padding: 20px;
+                }
+                .alert {
+                    text-align: center;
+                    font-size: 1.2rem;
                 }
             </style>
         </head>
         <body>
         <div class="main">
-            <div class="container text-center">
-                <h2 class="mb-4">Registro</h2>
+            <div class="container">
                 <div class="alert alert-danger" role="alert">
-                    <h3 class="inner-text">Error: <?php echo $error_message; ?></h3>
-                    <p class="mt-3">Por favor, corrige el problema e intenta nuevamente.</p>
-                    <p class="mt-3">Volviendo a la página de planes...</p>
+                    <h2>Error en el Registro</h2>
+                    <p><?php echo $error_message; ?></p>
+                    <p>Por favor, corrige los problemas e inténtalo de nuevo.</p>
                 </div>
-                <script>
-                    setTimeout(function() {
-                        window.location.href = 'planes.php';
-                    }, 5000);
-                </script>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
         </body>
         </html>
         <?php
@@ -107,42 +118,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Proceed with insertion if no duplicates are found
+    // ------------------------------------------------------------------------
+    // 3) Si no hay duplicados, procedemos con la inserción
+    // ------------------------------------------------------------------------
     $start_sub  = date("Y-m-d");
     $end_sub    = date("Y-m-d", strtotime("+30 days"));
     $created_at = date("Y-m-d");
+    $total      = ($plan === '1') ? 19.99 : 25.99; // Calcula el total según el plan
 
-    // Insertar el nuevo cliente
-    $sql = "INSERT INTO clientes 
-        (dni, plan, extrasSelected, nombre, apellidos, email, telefono, direccion, codigo_postal, fecha_nacimiento, genero, metodo_pago, start_sub, end_sub, created_at)
-        VALUES ('$dni', '$plan', '$extras', '$nombre', '$apellidos', '$email', '$telefono', 
-                '$direccion', '$codigo_postal', '$fecha_nacimiento', '$genero', 
-                '$metodo_pago', '$start_sub', '$end_sub', '$created_at')";
+    $sqlInsert = "
+        INSERT INTO clientes 
+        (dni, plan, extrasSelected, nombre, apellidos, email, telefono, 
+         direccion, codigo_postal, fecha_nacimiento, genero, metodo_pago, 
+         start_sub, end_sub, created_at)
+        VALUES (
+            '$dni',
+            '$plan',
+            '$extras',
+            '$nombre',
+            '$apellidos',
+            '$email',
+            '$telefono',
+            '$direccion',
+            '$codigo_postal',
+            '$fecha_nacimiento',
+            '$genero',
+            '$metodo_pago',
+            '$start_sub',
+            '$end_sub',
+            '$created_at'
+        )
+    ";
+    $resultado = mysqli_query($conn, $sqlInsert);
 
-    $result = mysqli_query($conn, $sql);
-
-    // Si se insertó con éxito, generamos token y enviamos email
-    if ($result) {
-        // Obtenemos el último ID insertado
+    if ($resultado) {
         $cliente_id = mysqli_insert_id($conn);
 
-        // Generar un token aleatorio
-        $token = bin2hex(random_bytes(16)); // 32 caracteres hexadecimales
+        $sqlHistorial = "
+            INSERT INTO historial_pagos 
+            (cliente_id, metodo_pago, total, recurrente) 
+            VALUES (
+                '$cliente_id',
+                '$metodo_pago',
+                '$total',
+                '1'
+            )
+        ";
+        mysqli_query($conn, $sqlHistorial);
 
-        // Guardamos el token en la tabla clientes
-        $updateTokenSql = "UPDATE clientes 
-                           SET reset_token = '$token'
-                           WHERE cliente_id = $cliente_id";
-        mysqli_query($conn, $updateTokenSql);
-
-        // Construir el link para la página de crear contraseña
+        $token = bin2hex(random_bytes(16));
         $linkCrearPassword = "http://energym.ddns.net/crear_password.php?token=" . urlencode($token);
 
-        // Instanciamos PHPMailer (ya importado arriba)
-        $mail = new PHPMailer(true);
+        $updateTokenSql = "
+            UPDATE clientes
+            SET reset_token = '$token'
+            WHERE cliente_id = $cliente_id
+        ";
+        mysqli_query($conn, $updateTokenSql);
 
+        $mail = new PHPMailer(true);
         try {
-            // Configuración del servidor
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
@@ -151,135 +186,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->SMTPSecure = 'ssl';
             $mail->Port       = 465;
 
-            // Remitente
             $mail->setFrom('energym.asir@gmail.com', 'EnerGym');
-
-            // Destinatario
             $mail->addAddress($email, $nombre);
 
-            // Contenido del correo
             $mail->isHTML(true);
             $mail->Subject = 'Bienvenido a EnerGym - Crea tu contraseña';
             $mail->Body    = "
                 <h2>¡Hola, $nombre $apellidos!</h2>
                 <p>Te damos la bienvenida a nuestro servicio. Para completar tu registro, haz clic en el enlace de abajo para crear tu contraseña:</p>
-                <p><a href='$linkCrearPassword' target='_blank'>Crear contraseña</a></p>
-                <p>Si no puedes hacer clic, copia y pega esta URL en tu navegador: <br>$linkCrearPassword</p>
-                <br>
-                <p>¡Gracias por registrarte con nosotros!</p>
+                <p><a href='$linkCrearPassword'>Crear contraseña</a></p>
             ";
-
-            // Enviar
             $mail->send();
 
-            // Mostrar mensaje de éxito
             ?>
             <!DOCTYPE html>
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Registro</title>
+                <title>Registro Exitoso</title>
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <style>
                     html, body {
                         height: 100%;
                         margin: 0;
+                        padding: 0;
+                    }
+                    body {
                         display: flex;
                         flex-direction: column;
+                        background-color: #f8f9fa;
                     }
                     .main {
                         flex: 1;
                         display: flex;
-                        justify-content: center;
                         align-items: center;
-                    }
-                    .inner-text {
+                        justify-content: center;
                         text-align: center;
-                        color: #333;
-                        margin-top: 20px;
                     }
+                    .container {
+                        max-width: 600px;
+                        padding: 20px;
+                    }
+                    .alert {
+                        text-align: center;
+                        font-size: 1.2rem;
+                    }
+
                 </style>
             </head>
             <body>
             <div class="main">
-                <div class="container text-center">
-                    <h2 class="mb-4">Registro</h2>
+                <div class="container">
                     <div class="alert alert-success" role="alert">
-                        <h3 class="inner-text">Usuario creado correctamente.</h3>
-                        <p class="mt-3">Te hemos enviado un correo para que crees tu contraseña.</p>
-                        <p class="mt-3">Volviendo al inicio de sesión...</p>
+                        <h2>¡Registro Exitoso!</h2>
+                        <p>Usuario registrado correctamente.</p>
+                        <p>Se ha enviado un correo electrónico para que puedas crear tu contraseña.</p>
+                        <p>Redirigiendo al inicio de sesión...</p>
+                        <script>
+                            setTimeout(function () {
+                                window.location.href = 'login.php';
+                            }, 5000); // Redirigir después de 5 segundos
+                        </script>
                     </div>
-                    <script>
-                        setTimeout(function(){
-                            window.location.href = 'login.php';
-                        }, 5000);
-                    </script>
                 </div>
             </div>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
             </body>
             </html>
             <?php
 
         } catch (Exception $e) {
-            // Si ocurre un error en el envío
-            echo "No se pudo enviar el correo. Error: {$mail->ErrorInfo}";
+            echo '<div class="alert alert-danger">Error al enviar el correo: ' . $mail->ErrorInfo . '</div>';
         }
 
     } else {
-        // Error al insertar el usuario
-        ?>
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Error - Registro</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <style>
-                html, body {
-                    height: 100%;
-                    margin: 0;
-                    display: flex;
-                    flex-direction: column;
-                }
-                .main {
-                    flex: 1;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-                .inner-text {
-                    text-align: center;
-                    color: #333;
-                    margin-top: 20px;
-                }
-            </style>
-        </head>
-        <body>
-        <div class="main">
-            <div class="container text-center">
-                <h2 class="mb-4">Registro</h2>
-                <div class="alert alert-danger" role="alert">
-                    <h3 class="inner-text">Error: No se pudo crear el usuario.</h3>
-                    <p class="mt-3">Hubo un problema al registrar tus datos. Por favor, intenta nuevamente.</p>
-                    <p class="mt-3">Volviendo a la página de planes...</p>
-                </div>
-                <script>
-                    setTimeout(function() {
-                        window.location.href = 'planes.php';
-                    }, 5000);  // Redirection to 'planes.php' after 5 seconds
-                </script>
-            </div>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-        </body>
-        </html>
-        <?php
+        echo '<div class="alert alert-danger">Error al registrar al cliente.</div>';
     }
 }
 
+require 'partials/footer.view.php';
 ?>

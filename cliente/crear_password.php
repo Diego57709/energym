@@ -1,6 +1,7 @@
 <?php
-require 'partials/header2.view.php';
-include 'partials/db.php';
+include '../partials/db.php';
+require '../partials/header2.view.php';
+include '../partials/db.php';
 session_start();
 // 1) Verificar si llega el token
 if (!isset($_GET['token'])) {
@@ -44,10 +45,10 @@ if (!isset($_GET['token'])) {
             <div class="login-container">
                 <h2 class="mb-4">Token no válido</h2>
                 <p>El enlace ha expirado o ya fue utilizado. Solicita una nueva recuperación de contraseña.</p>
-                <a href="login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
+                <a href="/login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
             </div>
         </div>
-        <?php require 'partials/footer.view.php'; ?>
+        <?php require '../partials/footer.view.php'; ?>
     </body>
     </html>
     <?php
@@ -101,10 +102,10 @@ if (!$result || mysqli_num_rows($result) === 0) {
             <div class="login-container">
                 <h2 class="mb-4">Token inválido</h2>
                 <p>El enlace ya no es válido. Por favor, solicita un nuevo enlace de recuperación.</p>
-                <a href="login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
+                <a href="/login.php" class="btn mt-3 w-100" style="background-color: #0f8b8d; color:white;">Volver al inicio de sesión</a>
             </div>
         </div>
-        <?php require 'partials/footer.view.php'; ?>
+        <?php require '../partials/footer.view.php'; ?>
     </body>
     </html>
     <?php
@@ -180,10 +181,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="success-container">
                         <h4 class="alert-heading">¡Contraseña creada con éxito!</h4>
                         <p class="mb-3">Ya puedes iniciar sesión con tu nueva contraseña.</p>
-                        <a href="login.php" class="btn btn-success w-100">Ir al inicio de sesión</a>
+                        <a href="/login.php" class="btn btn-success w-100">Ir al inicio de sesión</a>
                     </div>
                 </div>
-                <?php require 'partials/footer.view.php'; ?>
+                <?php require '../partials/footer.view.php'; ?>
             </body>
             </html>
             <?php
@@ -260,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="mt-3 text-center">
             <p>¿Ya tienes una cuenta? 
-               <a href="login.php" class="text-primary text-decoration-none">Iniciar sesión</a>.
+               <a href="/login.php" class="text-primary text-decoration-none">Iniciar sesión</a>.
             </p>
         </div>
     </div>
@@ -269,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
-<?php require 'partials/footer.view.php'; ?>
+<?php require '../partials/footer.view.php'; ?>
 
 </body>
 </html>

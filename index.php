@@ -102,10 +102,15 @@ session_start();
 </div>
 
 <!-- Newsletter Section -->
-<div class="bg-dark text-white py-5 custom-border p-4" style="border-top: 5px solid rgb(15, 139, 141); border-bottom: 5px solid rgb(15, 139, 141)">
+<div id="newsletter" class="bg-dark text-white py-5 custom-border p-4" style="border-top: 5px solid rgb(15, 139, 141); border-bottom: 5px solid rgb(15, 139, 141)">
     <div class="container">
         <h2>Suscríbete a nuestra Newsletter</h2>
-        <form action="procesar_newsletter.php" method="POST" class="row g-3">
+        <?php if (isset($_GET['status'])): ?>
+            <div class="alert <?php echo $_GET['status'] === 'success' ? 'alert-success' : 'alert-danger'; ?> mt-3">
+                <?php echo htmlspecialchars($_GET['message']); ?>
+            </div>
+        <?php endif; ?>
+        <form action="procesar_newsletter.php#newsletter" method="POST" class="row g-3">
             <div class="col-md-6">
                 <input type="text" name="nombre" placeholder="Tu nombre" class="form-control" required>
             </div>
@@ -124,6 +129,9 @@ session_start();
             <p class="fs-8">Recibe las últimas noticias, ofertas y consejos de entrenamiento directamente en tu correo.</p>
         </form>
     </div>
+</div>
+
+
 </div>
 
 <!-- Events Section -->

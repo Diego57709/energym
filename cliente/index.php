@@ -1,5 +1,9 @@
 <?php
 declare(strict_types=1);
+include '../partials/db.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Incluimos primero la autoload de Composer y luego la base de datos
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -31,7 +35,7 @@ if (mysqli_num_rows($result) == 1) {
 }
 
 $nombreCliente = $clientes['nombre'];
-$apellidosCliente = $clientes['apellidos']; // Retrieving last name from the database
+$apellidosCliente = $clientes['apellidos'];
 
 // Tiempo que le queda del plan
 $fechaFin = strtotime($clientes['end_sub']);
@@ -71,13 +75,13 @@ if ($mostrarQR) {
 }
 
 // Consulta de última asistencia
-$sqlUltimaAsistencia = "SELECT fecha_hora FROM asistencias WHERE cliente_id = '$id_usuario' ORDER BY fecha_hora DESC LIMIT 1";
+$sqlUltimaAsistencia = "SELECT fecha_hora FROM asistencias WHERE usuario_id = '$id_usuario' ORDER BY fecha_hora DESC LIMIT 1";
 $resultUltimaAsistencia = mysqli_query($conn, $sqlUltimaAsistencia);
 $ultimaAsistencia = mysqli_fetch_assoc($resultUltimaAsistencia)['fecha_hora'] ?? 'Sin asistencias registradas';
 
 // Consulta de asistencias del mes actual
 $mesActual = date('Y-m');
-$sqlAsistenciasMes = "SELECT COUNT(*) AS total_asistencias FROM asistencias WHERE cliente_id = '$id_usuario' AND DATE_FORMAT(fecha_hora, '%Y-%m') = '$mesActual'";
+$sqlAsistenciasMes = "SELECT COUNT(*) AS total_asistencias FROM asistencias WHERE usuario_id = '$id_usuario' AND DATE_FORMAT(fecha_hora, '%Y-%m') = '$mesActual'";
 $resultAsistenciasMes = mysqli_query($conn, $sqlAsistenciasMes);
 $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistencias'] ?? 0;
 ?>
@@ -220,4 +224,7 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
   <!-- Footer -->
   <?php require '../partials/footer.view.php'; ?>
 </body>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </html>

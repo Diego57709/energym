@@ -21,8 +21,10 @@ else if (($_SESSION['usuario'] == 'entrenador')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de Sesión</title>
-    <!-- Bootstrap CDN -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         html, body {
             height: 100%;
@@ -57,6 +59,23 @@ else if (($_SESSION['usuario'] == 'entrenador')) {
             font-size: 1.3rem;
             color: #dc3545;
         }
+        .password-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .password-container input {
+            flex: 1;
+        }
+        .toggle-password {
+            cursor: pointer;
+            margin-left: -35px;
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+        .toggle-password:hover {
+            color: #495057;
+        }
     </style>
 </head>
 
@@ -80,7 +99,10 @@ else if (($_SESSION['usuario'] == 'entrenador')) {
                 <!-- Campo Contraseña -->
                 <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
-                    <input type="password" id="password" name="password" class="form-control">
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" class="form-control">
+                        <span id="toggle-password" class="toggle-password bi bi-eye" onclick="togglePassword()"></span>
+                    </div>
                 </div>
 
                 <!-- Mensaje de error -->
@@ -96,8 +118,11 @@ else if (($_SESSION['usuario'] == 'entrenador')) {
 
             </form>
 
-            <!-- Enlace para registrarse -->
+            <!-- Enlaces adicionales -->
             <div class="mt-3 text-center">
+                <a href="loginOlvidado.php" class="text-decoration-none text-danger">¿Te has olvidado de la contraseña?</a>
+            </div>
+            <div class="mt-2 text-center">
                 <p>¿No estás registrado? <a href="planes.php" class="text-primary text-decoration-none">Elige tu plan</a>.</p>
             </div>
 
@@ -107,6 +132,23 @@ else if (($_SESSION['usuario'] == 'entrenador')) {
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById("password");
+            const toggleIcon = document.getElementById("toggle-password");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("bi-eye");
+                toggleIcon.classList.add("bi-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("bi-eye-slash");
+                toggleIcon.classList.add("bi-eye");
+            }
+        }
+    </script>
 
 </body>
 
