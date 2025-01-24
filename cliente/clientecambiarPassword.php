@@ -107,7 +107,7 @@ try {
         <p>Hemos enviado un correo a tu dirección <strong><?php echo htmlspecialchars($email); ?></strong>.</p>
         <p>Por favor, revisa tu bandeja de entrada y sigue el enlace para cambiar tu contraseña.</p>
         <p class="text-muted mt-3">Si no lo ves, revisa tu carpeta de spam o intenta enviar la solicitud nuevamente.</p>
-        <a href="cliente.php" class="btn w-100 mt-3" style="background-color: #0f8b8d; color:white;">Volver a mi cuenta</a>
+        <a href="index.php" class="btn w-100 mt-3" style="background-color: #0f8b8d; color:white;">Volver a mi cuenta</a>
     </div>
 </div>
 

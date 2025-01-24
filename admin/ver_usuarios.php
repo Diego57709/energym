@@ -16,7 +16,7 @@ $queryTrabajadores = "SELECT 'Trabajador' AS role, trabajador_id AS id, nombre C
 $queryEntrenadores = "SELECT 'Entrenador' AS role, entrenador_id AS id, nombre COLLATE utf8mb4_general_ci AS nombre, email COLLATE utf8mb4_general_ci AS email FROM entrenadores";
 
 // Combinar las queries con el UNION
-$queryAll = "$queryClientes UNION ALL $queryTrabajadores UNION ALL $queryEntrenadores ORDER BY role, nombre";
+$queryAll = "$queryClientes UNION ALL $queryTrabajadores UNION ALL $queryEntrenadores ORDER BY id, role DESC";
 
 if ($roleFilter !== 'todos') {
     $queryAll = "SELECT * FROM ($queryAll) AS users WHERE role = '$roleFilter'";
@@ -63,6 +63,7 @@ $countEntrenadores = mysqli_fetch_assoc($countEntrenadoresResult)['count'];
             flex: 1;
             padding: 40px;
             background-color: #f8f9fa;
+            height: 100%;
         }
         .sidebar {
             width: 250px;
@@ -115,6 +116,8 @@ $countEntrenadores = mysqli_fetch_assoc($countEntrenadoresResult)['count'];
             <a href="ver_usuarios.php" class="active-link"><i class="fas fa-users"></i> Ver Usuarios </a> 
             <a href="ver_pagos.php"><i class="fas fa-credit-card"></i> Ver pagos </a>
             <a href="ver_asistencias.php"><i class="fas fa-door-open"></i> Ver asistencias</a>
+            <a href="ver_clases.php"><i class="fas fa-bicycle"></i> Ver clases</a>
+            <a href="/trabajador/"><i class="fas fa-sign-out-alt"></i> Salir</a>
             <a href="../logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
 
@@ -176,22 +179,17 @@ $countEntrenadores = mysqli_fetch_assoc($countEntrenadoresResult)['count'];
                                     <th>Nombre</th>
                                     <th>Email</th>
                                     <th>Tipo</th>
-                                    <th>Acciones</th> <!-- Actions column -->
+                                    <th style="width: 80px;">Acciones</th> <!-- Actions column -->
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($usuarios as $index => $usuario): ?>
                                     <tr>
-                                        <td><?= $index + 1 ?></td>
+                                        <td><?= htmlspecialchars($usuario['id']) ?></td>
                                         <td><?= htmlspecialchars($usuario['nombre']) ?></td>
                                         <td><?= htmlspecialchars($usuario['email']) ?></td>
                                         <td><?= htmlspecialchars($usuario['role']) ?></td>
                                         <td>
-                                            <!-- Modificar Button -->
-                                            <a href="ver_usuarios_modificar.php?id=<?= urlencode($usuario['id']) ?>&role=<?= urlencode($usuario['role']) ?>"
-                                            class="btn btn-warning btn-sm">
-                                                Cambiar contraseña
-                                            </a>
                                             <!-- Eliminar Button -->
                                             <form action="ver_usuarios_modificar_eliminar.php" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
                                                 <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id']) ?>">

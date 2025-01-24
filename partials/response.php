@@ -52,12 +52,12 @@ Si el usuario pregunta algo no relacionado con el gimnasio, responde educadament
 Si te preguntan por ayuda para empezar o rutinas respondeles: 'Perdona, pero no estoy capacitado para esa tarea, pero puedes <a href='/planes.php'>contratar</a> sesiones con un entrenador personal'
 Respuestas concisas, pero que respondan a lo que preguntan
 
-Puedes también redirigir a las siguientes páginas:
-Home: /index.php
-Sobre Nosotros: /nosotros.php
-Servicios: /servicios.php
-Contáctanos: /contactanos.php
-FAQ: /faq.php
+Puedes también redirigir a las siguientes páginas si es necesario y te preguntan
+Home: <a href='/index.php'></a>
+Sobre Nosotros: <a href='/nosotros.php'></a>
+Servicios: <a href='/servicios.php'></a>
+Contáctanos: <a href='/contactanos.php'></a>
+FAQ: <a href='/faq.php'></a>
 
 " . $userMessage;
 

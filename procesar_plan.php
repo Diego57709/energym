@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_query($conn, $sqlHistorial);
 
         $token = bin2hex(random_bytes(16));
-        $linkCrearPassword = "http://energym.ddns.net/crear_password.php?token=" . urlencode($token);
+        $linkCrearPassword = "http://energym.ddns.net/cliente/crear_password.php?token=" . urlencode($token);
 
         $updateTokenSql = "
             UPDATE clientes

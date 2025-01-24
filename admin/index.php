@@ -81,7 +81,9 @@ require '../partials/timeout.php';
             <a href="ver_usuarios.php"><i class="fas fa-users"></i> Ver Usuarios </a> 
             <a href="ver_pagos.php"><i class="fas fa-credit-card"></i> Ver pagos </a>
             <a href="ver_asistencias.php"><i class="fas fa-door-open"></i> Ver asistencias</a>
-            <a href="enviar_mails.php"><i class="fas fa-envelope"></i> Enviar correos</a>
+            <a href="mails_enviar.php"><i class="fas fa-envelope"></i> Enviar correos</a>
+            <a href="ver_clases.php"><i class="fas fa-bicycle"></i> Ver clases</a>
+            <a href="/trabajador/"><i class="fas fa-sign-out-alt"></i> Salir</a>
             <a href="../logoutProcesar.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
 
@@ -90,12 +92,12 @@ require '../partials/timeout.php';
             <div class="main-content">
                 <h1 class="mb-4">Bienvenido al panel de Admin</h1>
 
-                <div class="row">
+                <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
                     <div class="col-md-4">
                         <div class="card text-center p-4">
                             <i class="fas fa-users fa-3x text-primary mb-3"></i>
                             <h4>Modificar Usuarios</h4>
-                            <p>Ver y modificar los usuarios.</p>
+                            <p>Ver y eliminar los usuarios.</p>
                             <a href="ver_usuarios.php" class="btn btn-primary">Go</a>
                         </div>
                     </div>
@@ -103,7 +105,7 @@ require '../partials/timeout.php';
                         <div class="card text-center p-4">
                             <i class="fas fa-credit-card fa-3x text-warning mb-3"></i>
                             <h4>Ver pagos</h4>
-                            <p>Ver pagos.</p>
+                            <p>Ver los pagos.</p>
                             <a href="ver_pagos.php" class="btn btn-warning">Go</a>
                         </div>
                     </div>
@@ -111,8 +113,24 @@ require '../partials/timeout.php';
                         <div class="card text-center p-4">
                             <i class="fas fa-door-open fa-3x text-success mb-3"></i>
                             <h4>Ver asistencias</h4>
-                            <p>Ver asistencias.</p>
-                            <a href="#" class="btn btn-success">Go</a>
+                            <p>Consultar las asistencias.</p>
+                            <a href="ver_asistencias.php" class="btn btn-success">Go</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-3">
+                        <div class="card text-center p-4">
+                            <i class="fas fa-envelope fa-3x text-danger mb-3"></i>
+                            <h4>Enviar mails</h4>
+                            <p>Enviar mails.</p>
+                            <a href="mails_enviar.php" class="btn btn-danger">Go</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-3">
+                        <div class="card text-center p-4">
+                            <i class="fas fa-bicycle fa-3x text-info mb-3"></i>
+                            <h4>Ver clases</h4>
+                            <p>Ver, modificar o cancelar clases.</p>
+                            <a href="ver_mails.php" class="btn btn-info">Go</a>
                         </div>
                     </div>
                 </div>
