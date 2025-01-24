@@ -3,9 +3,9 @@ include 'partials/db.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+require 'components/phpmailer/src/Exception.php';
+require 'components/phpmailer/src/PHPMailer.php';
+require 'components/phpmailer/src/SMTP.php';
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);

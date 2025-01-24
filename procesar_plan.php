@@ -6,9 +6,9 @@ error_reporting(E_ALL);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+require 'components/phpmailer/src/Exception.php';
+require 'components/phpmailer/src/PHPMailer.php';
+require 'components/phpmailer/src/SMTP.php';
 
 require 'partials/header2.view.php';
 include 'partials/db.php';
@@ -242,6 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h2>¡Registro Exitoso!</h2>
                         <p>Usuario registrado correctamente.</p>
                         <p>Se ha enviado un correo electrónico para que puedas crear tu contraseña.</p>
+                        <p class="text-muted mt-3">Si no lo ves, revisa tu carpeta de spam o intenta enviar la solicitud nuevamente.</p>
                         <p>Redirigiendo al inicio de sesión...</p>
                         <script>
                             setTimeout(function () {

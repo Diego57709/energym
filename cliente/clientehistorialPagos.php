@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-
 include '../partials/db.php';
 session_start();
 
@@ -10,19 +9,22 @@ if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
     exit;
 }
 
-$id_usuario = $_SESSION['id'];
 $nombreUsuario = $_SESSION['usuario'];
+$id_cliente = $_SESSION['id'];
 
 // Filtros de mes y año
-$mesSeleccionado = $_GET['mes'] ?? date('m');
-$anioSeleccionado = $_GET['anio'] ?? date('Y');
+$mesSeleccionado = $_GET['mes'] ?? null;
+$anioSeleccionado = $_GET['anio'] ?? null;
 
-// Obtener pagos del cliente
-$sqlHistorialPagos = "SELECT fecha_compra, metodo_pago FROM compras 
-                      WHERE cliente_id = '$id_usuario' 
-                      AND YEAR(fecha_compra) = '$anioSeleccionado'
-                      AND MONTH(fecha_compra) = '$mesSeleccionado' 
-                      ORDER BY fecha_compra DESC";
+// Base de la consulta
+$sqlHistorialPagos = "SELECT cliente_id, metodo_pago, fecha_pago, total, recurrente FROM historial_pagos WHERE cliente_id = '$id_cliente' ";
+
+// Agregar filtros si se seleccionaron mes y año
+if ($mesSeleccionado && $anioSeleccionado) {
+    $sqlHistorialPagos .= " WHERE YEAR(fecha_pago) = '$anioSeleccionado' AND MONTH(fecha_pago) = '$mesSeleccionado'";
+}
+
+$sqlHistorialPagos .= " ORDER BY fecha_pago DESC";
 
 $resultHistorialPagos = mysqli_query($conn, $sqlHistorialPagos);
 $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
@@ -32,7 +34,7 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Historial de Pagos | EnerGym</title>
+    <title>Todos los Pagos | EnerGym</title>
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -48,7 +50,7 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
             flex-direction: column;
         }
 
-            .main {
+        .main {
             flex: 1;
             display: flex;
             align-items: center;
@@ -75,12 +77,13 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
     <div class="main">
         <div class="container my-5">
             <div class="table-container">
-                <h1 class="text-center mb-4">Historial de Pagos</h1>
+                <h1 class="text-center mb-4">Todos los Pagos</h1>
 
                 <!-- Filtros de mes y año -->
                 <form method="GET" class="mb-4 d-flex justify-content-center gap-3 flex-wrap">
                     <!-- Filtro de mes -->
                     <select name="mes" class="form-select" style="width: auto;">
+                        <option value="">Todos los meses</option>
                         <option value="01" <?= $mesSeleccionado == '01' ? 'selected' : '' ?>>Enero</option>
                         <option value="02" <?= $mesSeleccionado == '02' ? 'selected' : '' ?>>Febrero</option>
                         <option value="03" <?= $mesSeleccionado == '03' ? 'selected' : '' ?>>Marzo</option>
@@ -97,6 +100,7 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
 
                     <!-- Filtro de año -->
                     <select name="anio" class="form-select" style="width: auto;">
+                        <option value="">Todos los años</option>
                         <?php for ($anio = date('Y'); $anio >= 2020; $anio--): ?>
                             <option value="<?= $anio ?>" <?= $anioSeleccionado == $anio ? 'selected' : '' ?>>
                                 <?= $anio ?>
@@ -113,17 +117,19 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
                     <table class="table table-bordered table-striped">
                         <thead class="table-dark">
                             <tr>
-                                <th>#</th>
-                                <th>Fecha de Compra</th>
+                                <th>Fecha de Pago</th>
                                 <th>Método de Pago</th>
+                                <th>Total</th>
+                                <th>Recurrente</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($pagos as $index => $pago): ?>
                                 <tr>
-                                    <td><?= $index + 1 ?></td>
-                                    <td><?= date('d F Y, h:i A', strtotime($pago['fecha_compra'])) ?></td>
+                                    <td><?= date('d F Y, h:i A', strtotime($pago['fecha_pago'])) ?></td>
                                     <td><?= htmlspecialchars($pago['metodo_pago']) ?></td>
+                                    <td><?= number_format((float)$pago['total'], 2) ?></td>
+                                    <td><?= $pago['recurrente'] ? 'Sí' : 'No' ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

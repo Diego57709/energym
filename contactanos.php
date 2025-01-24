@@ -112,8 +112,6 @@ session_start();?>
 
 <!-- Info y Formulario -->
 <div class="container py-5">
-    <h2 class="text-center mb-4">¡Ponte en contacto con nosotros!</h2>
-
     <div class="row justify-content-center">
         <!-- Información de contacto -->
         <div class="col-md-4">
@@ -128,6 +126,7 @@ session_start();?>
         <!-- Formulario -->
         <div class="col-md-8">
             <div class="form-container">
+            <h2 class="text-center mb-4">¡Ponte en contacto con nosotros!</h2>
                 <form action="procesar_email.php" method="post">
                     <div class="mb-3">
                         <label for="name" class="form-label">Nombre</label>
@@ -154,16 +153,14 @@ session_start();?>
                         <button type="submit" class="btn btn-lg" name="send" id="submit-btn">Enviar Mensaje</button>
                     </div>
                 </form>
-                <!-- Verificar si exito o error -->
+                <!-- Verificar si hay un mensaje de éxito o error -->
                 <?php if (isset($_GET['status'])): ?>
-                    <div class="status-message <?php echo ($_GET['status'] == 'success') ? 'success' : 'error'; ?>">
-                        <?php
-                        if ($_GET['status'] == 'success') {
-                            echo "El correo fue enviado correctamente.";
-                        } else {
-                            echo "Hubo un error al enviar el correo. Por favor, intenta nuevamente.";
-                        }
-                        ?>
+                    <div class="alert <?= ($_GET['status'] == 'success') ? 'alert-success' : 'alert-danger'; ?> alert-dismissible fade show" role="alert">
+                        <i class="fas <?= ($_GET['status'] == 'success') ? 'fa-check-circle' : 'fa-exclamation-circle'; ?>"></i>
+                        <?= ($_GET['status'] == 'success') 
+                            ? "El correo fue enviado correctamente." 
+                            : "Hubo un error al enviar el correo. Por favor, intenta nuevamente."; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
             </div>

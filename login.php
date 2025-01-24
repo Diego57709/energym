@@ -1,15 +1,15 @@
 <?php
 session_start();
 if (($_SESSION['usuario'] == 'cliente')) {
-    header("Location: /cliente/index.php");
+    header("Location: /cliente/");
     exit(); 
 }
 else if (($_SESSION['usuario'] == 'trabajador')) {
-    header("Location: /trabajador/index.php");
+    header("Location: /trabajador/");
     exit(); 
 }
 else if (($_SESSION['usuario'] == 'entrenador')) {
-    header("Location: /entrenador/entrenador.php");
+    header("Location: /entrenador/");
     exit(); 
 }
 

@@ -2,9 +2,10 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+require 'components/phpmailer/src/Exception.php';
+require 'components/phpmailer/src/PHPMailer.php';
+require 'components/phpmailer/src/SMTP.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== "POST") {
     header("Location: 404.php");
     exit();
@@ -41,26 +42,33 @@ if (isset($_REQUEST['send'])) {
     $userName = htmlspecialchars($_REQUEST['name']);
     $userBody = htmlspecialchars($_REQUEST['body']);
 
-    // A quien enviamos
     $mail->addAddress($userEmail);
-
-    // El CC
-    $mail->addAddress('energym.asir@gmail.com'); 
-
     $mail->isHTML(true);
-
-    // Asunto del mail
     $mail->Subject = $_REQUEST['subject'];
-
-    // El cuerpo
     $mail->Body = "
-    Hola $userName, hemos recibido tu email sobre: \"$userBody\".<br>
-    Responderemos cuanto antes. ¡Gracias por contactarnos!";
+        Hola $userName, hemos recibido tu email sobre: \"$userBody\".<br>
+        Responderemos cuanto antes. ¡Gracias por contactarnos!
+        <br><br>
+        <p>Atentamente,<br>El equipo de EnerGym</p>";
+        
 
-    // Intentamos enviar
     try {
         $mail->send();
-        // Si fufa, a contactanos con exito
+
+        $mail->clearAddresses();
+        $mail->addAddress('energym.asir@gmail.com');
+
+        $mail->Subject = "Nuevo correo recibido de $userName";
+        $mail->Body = "
+            <h3>Has recibido un nuevo mensaje de contacto:</h3>
+            <p><strong>Nombre:</strong> $userName</p>
+            <p><strong>Email:</strong> $userEmail</p>
+            <p><strong>Asunto:</strong> " . htmlspecialchars($_REQUEST['subject']) . "</p>
+            <p><strong>Mensaje:</strong><br>$userBody</p>";
+
+        $mail->send();
+
+        // Redirigir con éxito
         header('Location: contactanos.php?status=success');
         exit;
     } catch (Exception $e) {
@@ -69,4 +77,5 @@ if (isset($_REQUEST['send'])) {
         exit;
     }
 }
+
 ?>
