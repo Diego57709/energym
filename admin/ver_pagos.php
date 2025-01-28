@@ -1,10 +1,5 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_start();
-
-// Verificar permisos de manager
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'Manager') {
     header('Location: ../index.php?error=permisos_insuficientes');
     exit();
@@ -23,7 +18,6 @@ if (!empty($fechaFilter1) && !empty($fechaFilter2)) {
     }
 }
 
-// Consulta básica
 $queryPagos = "
     SELECT hp.metodo_pago, hp.fecha_pago, hp.total, hp.recurrente, c.nombre
     FROM historial_pagos hp
@@ -31,14 +25,12 @@ $queryPagos = "
     WHERE 1 = 1
 ";
 
-// Agregar filtros de fecha si están definidos
 if (!empty($fechaFilter1) && !empty($fechaFilter2)) {
     $queryPagos .= " AND hp.fecha_pago BETWEEN '$fechaFilter1' AND '$fechaFilter2'";
 }
 
 $queryPagos .= " ORDER BY fecha_pago DESC";
 
-// Ejecutar la consulta
 $result = mysqli_query($conn, $queryPagos);
 if (!$result) {
     die("Error en la consulta: " . mysqli_error($conn));

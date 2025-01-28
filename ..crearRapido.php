@@ -5,39 +5,32 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+session_start();  // Ensure session is started
 
+// Datos del entrenador
+$entrenador_id = null;  // Set to auto-increment if the column is auto-generated
+$dni = '87654321B';
+$nombre = 'John Doe'; // Updated name
+$apellidos = 'Smith';
+$fecha_nacimiento = '1990-05-20';
+$calle = 'Calle Fitness 456';
+$codigo_postal = '28046';
+$email = 'johndoe@gmail.com';
+$telefono = '777123456';
+$especialidad = 'Cardio Training';  // Updated specialty
+$reset_token = null;  // Set to NULL if unused
+$qr_token = null;  // Set to NULL if unused
 
-session_start();  // Asegúrate de que la sesión está iniciada
-
-// Datos del administrador
-$dni = '12345678A';  // DNI del administrador
-$nombre = 'Sigma Boy';
-$apellidos = 'Admin Apellido';
-$fecha_nacimiento = '1980-01-01';  // Fecha de nacimiento
-$direccion = 'Calle Admin 123';  // Dirección
-$codigo_postal = '28045';  // Código postal
-$telefono = '666868686';  // Teléfono
-$email = 'chuhanli2005@gmail.com';  // Correo del administrador
-$rol = 'Manager';  // Rol del administrador
-$activo = 1;  // Estado activo
-$sueldo = 5000.00;  // Sueldo del administrador
-$fecha_contratacion = '2025-01-14';  // Fecha de contratación
-$password = 'root';  // Contraseña sin cifrar
-
-// Hash de la contraseña antes de insertarla en la base de datos
-$hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-// Insertar los datos del administrador en la tabla "trabajadores"
-$sql = "INSERT INTO trabajadores 
-        (dni, nombre, apellidos, fecha_nacimiento, direccion, codigo_postal, telefono, email, rol, activo, sueldo, fecha_contratacion, password) 
+// Prepare the SQL statement for insertion
+$sql = "INSERT INTO entrenadores 
+        (dni, nombre, apellidos, fecha_nacimiento, calle, codigo_postal, email, telefono, especialidad, reset_token, qr_token) 
         VALUES 
-        ('$dni', '$nombre', '$apellidos', '$fecha_nacimiento', '$direccion', '$codigo_postal', '$telefono', '$email', '$rol', '$activo', '$sueldo', '$fecha_contratacion', '$hashedPassword')";
+        ('$dni', '$nombre', '$apellidos', '$fecha_nacimiento', '$calle', '$codigo_postal', '$email', '$telefono', '$especialidad', '$reset_token', '$qr_token')";
 
-// Ejecutar la consulta
+// Execute the query
 if (mysqli_query($conn, $sql)) {
-    echo "Nuevo administrador creado con éxito.";
+    echo "Nuevo entrenador creado con éxito.";
 } else {
-    echo "Error al crear administrador: " . mysqli_error($conn);
+    echo "Error al crear entrenador: " . mysqli_error($conn);
 }
-
 ?>

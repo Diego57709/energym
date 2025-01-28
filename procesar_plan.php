@@ -121,9 +121,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ------------------------------------------------------------------------
     // 3) Si no hay duplicados, procedemos con la inserción
     // ------------------------------------------------------------------------
-    $start_sub  = date("Y-m-d");
-    $end_sub    = date("Y-m-d", strtotime("+30 days"));
-    $created_at = date("Y-m-d");
+    $duracion_dias = 30;
+    $sqlPlan = "SELECT duracion_dias FROM planes WHERE plan_id = '$plan'";
+    $resultPlan = mysqli_query($conn, $sqlPlan);
+
+    if ($resultPlan && $row = mysqli_fetch_assoc($resultPlan)) {
+        $duracion_dias = (int) $row['duracion_dias'];
+    }
+
+    // Calculate subscription dates
+    $start_sub = date("Y-m-d H:i:s");
+    $end_sub = date("Y-m-d H:i:s", strtotime("+$duracion_dias days"));
+    $created_at = date("Y-m-d H:i:s");
     $total      = ($plan === '1') ? 19.99 : 25.99; // Calcula el total según el plan
 
     $sqlInsert = "

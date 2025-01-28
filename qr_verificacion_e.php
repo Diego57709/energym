@@ -22,24 +22,37 @@ if (isset($parsedUrl['query'])) {
 
 // Función para registrar asistencia
 function registrarAsistencia($conn, $usuarioId, $tipoUsuario, $qrToken, $tabla, $campoId) {
-    $sql = "SELECT $campoId FROM $tabla WHERE $campoId = '$usuarioId' AND qr_token = '$qrToken' LIMIT 1";
-    $result = mysqli_query($conn, $sql);
+    // Check if there's a previous "ENTRADA" without a corresponding "SALIDA"
+    $sqlCheckPrevious = "SELECT asistencia_id, tipo FROM asistencias WHERE usuario_id = '$usuarioId' AND tipo_usuario = '$tipoUsuario' ORDER BY fecha_hora DESC LIMIT 1";
+    $resultCheckPrevious = mysqli_query($conn, $sqlCheckPrevious);
 
-    if (mysqli_num_rows($result) === 1) {
-        $fechaHora = date("Y-m-d H:i:s");
-        $sqlAsistencia = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo_usuario) VALUES ('$usuarioId', '$fechaHora', '$tipoUsuario')";
-        mysqli_query($conn, $sqlAsistencia);
+    $fechaHora = date("Y-m-d H:i:s");
 
-        $updateTokenSql = "UPDATE $tabla SET qr_token = NULL WHERE $campoId = '$usuarioId'";
-        mysqli_query($conn, $updateTokenSql);
+    if (mysqli_num_rows($resultCheckPrevious) === 1) {
+        $row = mysqli_fetch_assoc($resultCheckPrevious);
 
-        header("Location: camara.php?status=success&message=Asistencia de $tipoUsuario registrada correctamente!");
-        exit();
-    } else {
-        header("Location: camara.php?status=error&message=Token inválido o ya utilizado para $tipoUsuario.");
-        exit();
+        if ($row['tipo'] === 'ENTRADA') {
+            // Register "SALIDA"
+            $sqlSalida = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES ('$usuarioId', '$fechaHora', 'SALIDA', '$tipoUsuario')";
+            mysqli_query($conn, $sqlSalida);
+
+            header("Location: camara.php?status=success&message=Salida registrada correctamente para $tipoUsuario.");
+            exit();
+        }
     }
+
+    // If no previous "ENTRADA" or last record was "SALIDA", register new "ENTRADA"
+    $sqlEntrada = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES ('$usuarioId', '$fechaHora', 'ENTRADA', '$tipoUsuario')";
+    mysqli_query($conn, $sqlEntrada);
+
+    // Update token status
+    $updateTokenSql = "UPDATE $tabla SET qr_token = NULL WHERE $campoId = '$usuarioId'";
+    mysqli_query($conn, $updateTokenSql);
+
+    header("Location: camara.php?status=success&message=Entrada registrada correctamente para $tipoUsuario.");
+    exit();
 }
+
 
 // Determinar el tipo de usuario y registrar asistencia
 if ($trabajadorId && $qrToken) {

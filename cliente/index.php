@@ -6,7 +6,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Incluimos primero la autoload de Composer y luego la base de datos
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../components/vendor/autoload.php';
 include '../partials/db.php';
 
 use chillerlan\QRCode\QRCode;
@@ -177,6 +177,18 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
 
         <!-- COLUMNA LATERAL -->
         <div class="col-md-4">
+          <!-- BLOQUE DE ClASES -->
+          <div class="card p-4">
+            <h5 class="mb-3">Pagos</h5>
+            <p>
+              <strong>Tienes una clase el dia:</strong><br>
+              <?php echo date('d F Y', $fechaFin); ?>
+            </p>
+            <div class="d-flex justify-content-center">
+              <a href="clienteClasesGrupales.php" class="btn btn-primary me-2">Clases grupales</a>
+            </div>
+          </div>
+
           <!-- BLOQUE DE PAGOS -->
           <div class="card p-4">
             <h5 class="mb-3">Pagos</h5>
@@ -185,7 +197,7 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
               <?php echo date('d F Y', $fechaFin); ?>
             </p>
             <div class="d-flex justify-content-center">
-              <a href="clientehistorialPagos.php" class="btn btn-secondary me-2">Ver Historial de Pagos</a>
+              <a href="clientehistorialPagos.php" class="btn btn-secondary me-2">Historial de Pagos</a>
               <a href="ampliarSuscripcion.php" class="btn btn-warning">Ampliar Suscripción</a>
             </div>
           </div>
@@ -205,9 +217,6 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
             </p>
             <p>
               <strong>Asistencias este mes:</strong> <?php echo $totalAsistenciasMes; ?>
-            </p>
-            <p class="text-muted">
-              ¡Sigue con tu entrenamiento y mantén tu progreso!
             </p>
             <!-- Link al historial -->
             <a href="clientehistorialAsistencias.php" class="btn btn-sm btn-info">

@@ -10,7 +10,7 @@ require '../components/phpmailer/src/SMTP.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = $_POST['titulo'] ?? '';
-    $mensaje = $_POST['mensaje'] ?? ''; // Captura el contenido generado por Summernote como HTML
+    $mensaje = $_POST['mensaje'] ?? '';
     $destinatarios = $_POST['destinatarios'] ?? '';
 
     if (empty($titulo) || empty($mensaje) || empty($destinatarios)) {
@@ -20,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $emails = [];
 
-    // Obtener correos según el grupo seleccionado
     if ($destinatarios === 'clientes') {
         $result = mysqli_query($conn, "SELECT email FROM clientes");
     } elseif ($destinatarios === 'trabajadores') {

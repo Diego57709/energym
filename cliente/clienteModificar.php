@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../components/vendor/autoload.php';
 include '../partials/db.php';
 
 session_start();
@@ -14,13 +14,13 @@ if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
 
 $id_usuario = $_SESSION['id'];
 
-// Consulta para obtener los datos del cliente
+// Consulta para obtener los datos del clientes
 $sql = "SELECT * FROM clientes WHERE cliente_id = '$id_usuario'";
 $result = mysqli_query($conn, $sql);
-$cliente = mysqli_fetch_assoc($result);
+$clientes = mysqli_fetch_assoc($result);
 
-if (!$cliente) {
-    die("Error al obtener los datos del cliente.");
+if (!$clientes) {
+    die("Error al obtener los datos del clientes.");
 }
 
 // Si se envía el formulario
@@ -141,43 +141,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="nombre" class="form-label fw-bold">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?= htmlspecialchars($cliente['nombre']) ?>" required>
+                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?= htmlspecialchars($clientes['nombre']) ?>" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="email" class="form-label fw-bold">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($cliente['email']) ?>" required>
+                                <label for="apellidos" class="form-label fw-bold">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?= htmlspecialchars($clientes['apellidos'] ?? '') ?>" required>
                             </div>
                         </div>
 
                         <div class="row g-3 mt-3">
                             <div class="col-md-6">
-                                <label for="telefono" class="form-label fw-bold">Teléfono</label>
-                                <input type="text" class="form-control" id="telefono" name="telefono" value="<?= htmlspecialchars($cliente['telefono']) ?>" required>
+                                <label for="email" class="form-label fw-bold">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($clientes['email']) ?>" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="direccion" class="form-label fw-bold">Dirección</label>
-                                <input type="text" class="form-control" id="direccion" name="direccion" value="<?= htmlspecialchars($cliente['direccion']) ?>" required>
+                                <label for="telefono" class="form-label fw-bold">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono" name="telefono" value="<?= htmlspecialchars($clientes['telefono']) ?>" required>
                             </div>
                         </div>
+
+                        <div class="row g-3 mt-3">
+                            <div class="col-12">
+                                <label for="direccion" class="form-label fw-bold">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion" value="<?= htmlspecialchars($clientes['direccion']) ?>" required>
+                            </div>
+                        </div>
+
 
                         <div class="row g-3 mt-3">
                             <div class="col-md-6">
                                 <label for="codigo_postal" class="form-label fw-bold">Código Postal</label>
-                                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?= htmlspecialchars($cliente['codigo_postal']) ?>" required>
+                                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?= htmlspecialchars($clientes['codigo_postal']) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="fecha_nacimiento" class="form-label fw-bold">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?= htmlspecialchars($cliente['fecha_nacimiento']) ?>" required>
+                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?= htmlspecialchars($clientes['fecha_nacimiento']) ?>" required>
                             </div>
-                        </div>
-
-                        <div class="mt-3">
-                            <label for="genero" class="form-label fw-bold">Género</label>
-                            <select class="form-select" id="genero" name="genero" required>
-                                <option value="masculino" <?= $cliente['genero'] == 'masculino' ? 'selected' : '' ?>>Masculino</option>
-                                <option value="femenino" <?= $cliente['genero'] == 'femenino' ? 'selected' : '' ?>>Femenino</option>
-                                <option value="otro" <?= $cliente['genero'] == 'otro' ? 'selected' : '' ?>>Otro</option>
-                            </select>
                         </div>
 
                         <button type="submit" class="btn btn-success w-100 mt-4">Actualizar Datos</button>
@@ -208,13 +207,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         // Almacernar valores originales
         const originalData = {
-            nombre: '<?= htmlspecialchars($cliente['nombre']) ?>',
-            email: '<?= htmlspecialchars($cliente['email']) ?>',
-            telefono: '<?= htmlspecialchars($cliente['telefono']) ?>',
-            direccion: '<?= htmlspecialchars($cliente['direccion']) ?>',
-            codigo_postal: '<?= htmlspecialchars($cliente['codigo_postal']) ?>',
-            fecha_nacimiento: '<?= htmlspecialchars($cliente['fecha_nacimiento']) ?>',
-            genero: '<?= htmlspecialchars($cliente['genero']) ?>',
+            nombre: '<?= htmlspecialchars($clientes['nombre']) ?>',
+            email: '<?= htmlspecialchars($clientes['email']) ?>',
+            telefono: '<?= htmlspecialchars($clientes['telefono']) ?>',     
+            direccion: '<?= htmlspecialchars($clientes['direccion']) ?>',
+            codigo_postal: '<?= htmlspecialchars($clientes['codigo_postal']) ?>',
+            fecha_nacimiento: '<?= htmlspecialchars($clientes['fecha_nacimiento']) ?>',
+            genero: '<?= htmlspecialchars($clientes['genero']) ?>',
         };
 
         const form = document.getElementById('datos-form');

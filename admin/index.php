@@ -130,7 +130,7 @@ require '../partials/timeout.php';
                             <i class="fas fa-bicycle fa-3x text-info mb-3"></i>
                             <h4>Ver clases</h4>
                             <p>Ver, modificar o cancelar clases.</p>
-                            <a href="ver_mails.php" class="btn btn-info">Go</a>
+                            <a href="ver_clases.php" class="btn btn-info">Go</a>
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,9 @@
 <?php
 session_start();
-//if (!isset($_SESSION['id'])) {
- //   header('Location: 404.php');
-//}
+// Uncomment this block if you want session validation.
+// if (!isset($_SESSION['id'])) {
+//     header('Location: 404.php');
+// }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -99,60 +100,35 @@ session_start();
                 <div id="reader"></div>
                 <div class="scan-box"></div>
             </div>
-
-            <!-- Buttons to Start/Stop Camera -->
-            <div class="btn-group mt-3">
-                <button id="start-btn" class="btn btn-primary" onclick="startScanner()">Iniciar Cámara</button>
-                <button id="stop-btn" class="btn btn-danger" onclick="stopScanner()" disabled>Detener Cámara</button>
-            </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         let html5QrCode;
-        let isScanning = false;
 
         function startScanner() {
-            const startBtn = document.getElementById('start-btn');
-            const stopBtn = document.getElementById('stop-btn');
-
             if (!html5QrCode) {
                 html5QrCode = new Html5Qrcode("reader");
             }
 
             const qrCodeSuccessCallback = (decodedText) => {
-                stopScanner();
+                // Redirect with token
                 window.location.href = `qr_verificacion_e.php?token=${encodeURIComponent(decodedText)}`;
             };
 
             const config = { fps: 10, qrbox: { width: 220, height: 220 } };
             html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-                .then(() => {
-                    isScanning = true;
-                    startBtn.disabled = true;
-                    stopBtn.disabled = false;
-                })
                 .catch(err => {
                     console.error("Unable to start scanner:", err);
                     alert("Error al acceder a la cámara. Verifica los permisos.");
                 });
         }
 
-        function stopScanner() {
-            const startBtn = document.getElementById('start-btn');
-            const stopBtn = document.getElementById('stop-btn');
-
-            if (html5QrCode && isScanning) {
-                html5QrCode.stop()
-                    .then(() => {
-                        isScanning = false;
-                        startBtn.disabled = false;
-                        stopBtn.disabled = true;
-                    })
-                    .catch(err => console.error("Failed to stop scanner:", err));
-            }
-        }
+        // Automatically start the scanner when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            startScanner();
+        });
     </script>
 
     <!-- Footer -->

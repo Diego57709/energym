@@ -64,7 +64,7 @@
                         No se encontró una cuenta con ese correo electrónico.
                     </div>
                 <?php endif; ?>
-
+                    <p class="text-muted mt-3">Si no lo ves, revisa tu carpeta de spam o intenta enviar la solicitud nuevamente.</p>
                 <!-- Botón de envío -->
                 <button type="submit" class="btn w-100 mt-3" style="background-color:#28a745; color:white;">Recuperar Contraseña</button>
             </form>

@@ -8,9 +8,9 @@ require 'partials/header1.view.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+require 'components/phpmailer/src/Exception.php';
+require 'components/phpmailer/src/PHPMailer.php';
+require 'components/phpmailer/src/SMTP.php';
 
 // Verificar si el formulario fue enviado
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -149,7 +149,7 @@ if (empty($email)) {
 </head>
 <body>
 <div class="main">
-    <div class="container-box">
+    <div class="container-box mt-5 mb-5">
         <?php if ($status === 'empty'): ?>
             <h2>Correo no ingresado</h2>
             <p>Por favor, proporciona tu correo electrónico.</p>
@@ -160,6 +160,7 @@ if (empty($email)) {
             <h2>Solicitud enviada</h2>
             <p>Hemos enviado un correo a <strong><?php echo htmlspecialchars($email); ?></strong>.</p>
             <p>Sigue las instrucciones para recuperar tu contraseña.</p>
+            <p class="text-muted mt-3">Si no lo ves, revisa tu carpeta de spam o intenta enviar la solicitud nuevamente.</p>  
         <?php else: ?>
             <h2>Error al enviar el correo</h2>
             <p>Hubo un problema al intentar enviar el correo. Por favor, inténtalo de nuevo más tarde.</p>

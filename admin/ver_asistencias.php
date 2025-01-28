@@ -1,12 +1,10 @@
 <?php
-// Start session and check if user is a Manager
 session_start();
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'Manager') {
     header('Location: ../index.php?error=permisos_insuficientes');
     exit();
 }
 
-// Include timeout and database connection
 require '../partials/timeout.php';
 include '../partials/db.php';
 
@@ -16,7 +14,6 @@ $tipoUsuarioFilter = $_GET['tipo_usuario'] ?? 'todos';
 $startDate = $_GET['start_date'] ?? '';
 $endDate = $_GET['end_date'] ?? '';
 
-// Base query with strict JOINs to ensure correct table based on tipo_usuario
 $queryAsistencias = "
     SELECT 
         a.asistencia_id, 
