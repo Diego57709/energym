@@ -100,41 +100,62 @@ session_start();
                 <div id="reader"></div>
                 <div class="scan-box"></div>
             </div>
+
+            <!-- Start/Stop Camera Button -->
+            <div class="text-center mt-3">
+                <button id="toggleCamera" class="btn btn-primary">Iniciar Cámara</button>
+            </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         let html5QrCode;
+        let isScanning = false;
 
-        function startScanner() {
-            if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("reader");
+        function toggleScanner() {
+            const button = document.getElementById("toggleCamera");
+
+            if (!isScanning) {
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
+
+                const qrCodeSuccessCallback = (decodedText) => {
+                    window.location.href = `qr_verificacion_e.php?token=${encodeURIComponent(decodedText)}`;
+                };
+
+                const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+                html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+                    .then(() => {
+                        isScanning = true;
+                        button.textContent = "Detener Cámara";
+                        button.classList.remove("btn-primary");
+                        button.classList.add("btn-danger");
+                    })
+                    .catch(err => {
+                        console.error("Error al acceder a la cámara:", err);
+                        alert("Error al acceder a la cámara. Verifica los permisos.");
+                    });
+            } else {
+                html5QrCode.stop()
+                    .then(() => {
+                        isScanning = false;
+                        button.textContent = "Iniciar Cámara";
+                        button.classList.remove("btn-danger");
+                        button.classList.add("btn-primary");
+                    })
+                    .catch(err => {
+                        console.error("Error al detener la cámara:", err);
+                    });
             }
-
-            const qrCodeSuccessCallback = (decodedText) => {
-                // Redirect with token
-                window.location.href = `qr_verificacion_e.php?token=${encodeURIComponent(decodedText)}`;
-            };
-
-            const config = { fps: 10, qrbox: { width: 220, height: 220 } };
-            html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-                .catch(err => {
-                    console.error("Unable to start scanner:", err);
-                    alert("Error al acceder a la cámara. Verifica los permisos.");
-                });
         }
 
-        // Automatically start the scanner when the page loads
-        document.addEventListener("DOMContentLoaded", () => {
-            startScanner();
-        });
+        document.getElementById("toggleCamera").addEventListener("click", toggleScanner);
     </script>
 
     <!-- Footer -->
-    <footer>
-        <?php include 'partials/footer.view.php'; ?>
-    </footer>
+    <?php include 'partials/footer.view.php'; ?>
 
 </body>
 </html>

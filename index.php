@@ -136,37 +136,46 @@ session_start();
 
 <!-- Events Section -->
 <div class="container py-5">
-    <h2 class="text-center mb-4">Eventos próximos</h2>
+    <h2 class="text-center mb-4">Eventos Próximos</h2>
     <div class="row">
+        <!-- Evento: Competencia de Levantamiento de Pesas -->
         <div class="col-md-4 col-sm-6 mb-4">
             <div class="card shadow-lg">
-                <img src="https://86982a2a87.clvaw-cdnwnd.com/46c34b2886f94a9f866428b26bb1dba1/200000561-d97a0d97a2/entrenador-fitness.png?ph=86982a2a87" alt="Instalaciones" class="card-img-top">
+                <img src="https://i.ytimg.com/vi/YuK9FUj_3NE/maxresdefault.jpg" 
+                     alt="Competencia de Levantamiento" class="card-img-top">
                 <div class="card-body">
-                    <h3 class="card-title">Instalaciones Modernas</h3>
-                    <p class="card-text">Disfruta de equipos de última generación y áreas dedicadas.</p>
+                    <h3 class="card-title">Competencia de Levantamiento</h3>
+                    <p class="card-text">Demuestra tu fuerza en nuestra competencia de levantamiento de pesas. Inscripciones abiertas.</p>
                 </div>
             </div>
         </div>
+
+        <!-- Evento: Clase Especial de HIIT -->
         <div class="col-md-4 col-sm-6 mb-4">
             <div class="card shadow-lg">
-                <img src="https://www.adfisioterapiavalencia.com/wp-content/uploads/2020/07/nutricion-deportiva.jpg" alt="Actividades" class="card-img-top">
+                <img src="https://kingsbox.com/blog/wp-content/uploads/2024/03/HYROX-KINGSBOX.png" 
+                     alt="Clase Especial de HIIT" class="card-img-top">
                 <div class="card-body">
-                    <h3 class="card-title">Clases Dirigidas</h3>
-                    <p class="card-text">Participa en clases dinámicas como yoga, spinning y más.</p>
+                    <h3 class="card-title">Clase Especial de HIIT</h3>
+                    <p class="card-text">Únete a nuestra sesión de alta intensidad con entrenadores certificados. ¡Quema calorías al máximo!</p>
                 </div>
             </div>
         </div>
+
+        <!-- Evento: Seminario de Nutrición Deportiva -->
         <div class="col-md-4 col-sm-6 mb-4">
             <div class="card shadow-lg">
-                <img src="https://hips.hearstapps.com/hmg-prod/images/yoga-1638533114.jpg?crop=0.6666666666666666xw:1xh;center,top&resize=1200:*" alt="Horario" class="card-img-top">
+                <img src="https://www.efadeporte.com/blog/wp-content/uploads/2013/05/nutricion_620x368.jpg" 
+                     alt="Seminario de Nutrición Deportiva" class="card-img-top">
                 <div class="card-body">
-                    <h3 class="card-title">Horarios Amplios</h3>
-                    <p class="card-text">Aprovecha nuestra apertura 24/7 para entrenar cuando quieras.</p>
+                    <h3 class="card-title">Seminario de Nutrición Deportiva</h3>
+                    <p class="card-text">Aprende a optimizar tu dieta para mejorar tu rendimiento y alcanzar tus metas fitness.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <?php require 'partials/chatbot.php'; ?>
 <!-- Footer -->
 <?php require 'partials/footer.view.php'; ?>

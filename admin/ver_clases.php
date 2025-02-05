@@ -10,6 +10,20 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'Manager') {
 require '../partials/timeout.php';
 include '../partials/db.php';
 
+// Manejo de eliminación de clase (si se recibe delete_clase_id)
+$deleteClaseId = isset($_GET['delete_clase_id']) ? (int)$_GET['delete_clase_id'] : null;
+if ($deleteClaseId) {
+    $queryDelete = "DELETE FROM clases_grupales WHERE clase_id = $deleteClaseId";
+    $deleteResult = mysqli_query($conn, $queryDelete);
+    if (!$deleteResult) {
+        die("Error al eliminar la clase: " . mysqli_error($conn));
+    }
+    // Redirección para evitar reenvío del formulario/URL
+    header("Location: ver_clases.php");
+    exit();
+}
+
+// Consultar plantillas de clases
 $queryPlantillas = "
     SELECT 
         plantilla_id, 
@@ -20,6 +34,7 @@ $queryPlantillas = "
 ";
 $resultP = mysqli_query($conn, $queryPlantillas);
 
+// Consultar entrenadores
 $queryEntrenador = "
     SELECT 
         entrenador_id,
@@ -58,9 +73,9 @@ if (!$resultC) {
 $clases = mysqli_fetch_all($resultC, MYSQLI_ASSOC);
 
 // Añadir una nueva clase
-$add_startDate = $_GET['add_start_date']  ?? null;
-$entrenador_id = $_GET['entrenador_id']   ?? null; 
-$clase_id      = $_GET['clase_id']        ?? null; 
+$add_startDate = $_POST['add_start_date']  ?? null;
+$entrenador_id = $_POST['entrenador_id']   ?? null; 
+$clase_id      = $_POST['clase_id']        ?? null; 
 
 if ($add_startDate) {
     $fechaHora = str_replace('T', ' ', $add_startDate) . ':00';
@@ -77,7 +92,7 @@ if (!empty($fechaHora) && !empty($entrenador_id) && $entrenador_id != 0 && !empt
 
         $nombreClase = $rowPlantilla['nombre'];
         $capacidad   = $rowPlantilla['capacidad'];
-        $duracion    = $rowPlantilla['duracion']; // minutes
+        $duracion    = $rowPlantilla['duracion']; // minutos
 
         $fechaHoraFin = date('Y-m-d H:i:s', strtotime($fechaHora . " + $duracion minutes"));
 
@@ -102,9 +117,13 @@ if (!empty($fechaHora) && !empty($entrenador_id) && $entrenador_id != 0 && !empt
         if (!$insertResult) {
             die("Error inserting class: " . mysqli_error($conn));
         }
-    
+
+        // **Redirigimos inmediatamente después de insertar**
+        header("Location: ver_clases.php?msg=ClaseCreada");
+        exit();
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -190,18 +209,13 @@ if (!empty($fechaHora) && !empty($entrenador_id) && $entrenador_id != 0 && !empt
             <div class="main-content">
                 <h1 class="mb-4">Clases Grupales</h1>
                 <!-- Formulario para Agregar Clase -->
-                <form method="GET" class="filter-form row">
+                <form method="POST" class="filter-form row">
                     <div class="col-md-2">
                         <label for="clase_id" class="form-label">Clase:</label>
                         <select name="clase_id" id="clase_id" class="form-select form-select-sm">
                             <option value="0">Elige una clase</option>
                             <?php
-                            // Since we've already fetched $resultP once, we either:
-                            // 1) run it again, OR
-                            // 2) store results in an array from the beginning 
-                            // For simplicity, let's run again quickly (or store above).
-                            
-                            // Reset pointer or re-run the query if needed:
+                            // Reiniciar puntero para la consulta de plantillas
                             mysqli_data_seek($resultP, 0);
                             while ($row = mysqli_fetch_assoc($resultP)): 
                             ?>
@@ -226,7 +240,6 @@ if (!empty($fechaHora) && !empty($entrenador_id) && $entrenador_id != 0 && !empt
                         <select name="entrenador_id" id="entrenador_id" class="form-select form-select-sm">
                             <option value="0">Elige un entrenador</option>
                             <?php
-                            // Reset pointer or re-run for entrenadores too:
                             mysqli_data_seek($resultE, 0);
                             while ($rowE = mysqli_fetch_assoc($resultE)): 
                             ?>
@@ -283,6 +296,7 @@ if (!empty($fechaHora) && !empty($entrenador_id) && $entrenador_id != 0 && !empt
                                     <th>Entrenador ID</th>
                                     <th>Fecha y Hora Inicio</th>
                                     <th>Fecha y Hora Fin</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -294,6 +308,16 @@ if (!empty($fechaHora) && !empty($entrenador_id) && $entrenador_id != 0 && !empt
                                         <td><?= htmlspecialchars($clase['entrenador_id']) ?></td>
                                         <td><?= htmlspecialchars($clase['fecha_hora_c']) ?></td>
                                         <td><?= htmlspecialchars($clase['fecha_hora_f']) ?></td>
+                                        <td>
+                                            <!-- Botón para borrar clase -->
+                                            <a 
+                                                href="ver_clases.php?delete_clase_id=<?= $clase['clase_id'] ?>"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('¿Estás seguro de borrar esta clase?')"
+                                            >
+                                                Borrar
+                                            </a>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
