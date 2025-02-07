@@ -14,8 +14,9 @@ include 'token.php';
 include '../../partials/encrypt.php';
 // Cargar el autoload de Composer y las librerías
 require_once __DIR__ . '/../../components/vendor/autoload.php';
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
+use chillerlan\QRCode\{QRCode, QROptions};
+use chillerlan\QRCode\Output\QRSvg;
+use chillerlan\QRCode\Common\EccLevel;
 
 // Función para desencriptar datos utilizando AES-256-CBC
 function decryptData($encryptedData) {
@@ -31,7 +32,7 @@ function decryptData($encryptedData) {
 $input = file_get_contents("php://input");
 $update = json_decode($input, true);
 
-// Registrar la actualización en un log para depuración
+// Registrar fallos en caso de que no vaya
 file_put_contents('bot_debug.log', "Received input: " . print_r($update, true), FILE_APPEND);
 
 if (isset($update['message'])) {
@@ -92,7 +93,7 @@ if (isset($update['callback_query'])) {
     sendMenu($chat_id);
 }
 
-// Función para enviar mensajes a los usuarios de Telegram
+// Función para enviar mensajes de vuelta
 function sendMessage($chat_id, $text) {
     $url = "https://api.telegram.org/bot" . TELEGRAM_BOT_TOKEN . "/sendMessage";
     $data = ['chat_id' => $chat_id, 'text' => $text];
@@ -100,11 +101,10 @@ function sendMessage($chat_id, $text) {
     file_get_contents($url . '?' . http_build_query($data));
 }
 
-// Función para enviar el menú con la opción "Generar QR"
+// Función del mensaje que da la opcion de QR
 function sendMenu($chat_id) {
     $url = "https://api.telegram.org/bot" . TELEGRAM_BOT_TOKEN . "/sendMessage";
     
-    // Configuración del teclado inline de Telegram
     $keyboard = [
         "inline_keyboard" => [
             [
@@ -164,9 +164,10 @@ function generateQRCode($chat_id) {
     // Generar el código QR utilizando la librería chillerlan/php-qrcode
     try {
         $options = new QROptions([
-            'version' => 5,
+            'version' => 6,
             'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'eccLevel' => QRCode::ECC_L,
+            'eccLevel' => EccLevel::M,
+            'scale'           => 5,
         ]);
 
         $qrcode = new QRCode($options);

@@ -1,104 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EnerGym</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .header-bar {
-            background-color: rgb(41, 48, 53);
-            border-bottom: 5px solid rgb(15, 139, 141);
-        }
-        .header-icon {
-            width: 6.75rem;
-            padding: 1.25rem;
-        }
-        .header-cliente {
-            font-size: 1.5rem;
-            color: white;
-            text-transform: uppercase;
-            background-color: rgb(15, 139, 141);
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .header-cliente:hover {
-            background-color: rgb(10, 94, 95);
-        }
-        .dropdown-icon {
-            width: 6rem;
-            padding: 1rem;
-        }
-        .dropdown-menu {
-            margin-top: 10px !important;
-        }
-        @media (max-width: 768px) {
-            .header-icon {
-                width: 5rem;
-            }
-            .header-cliente {
-                font-size: 1.2rem;
-                padding: 0.5rem 1rem;
-            }
-            .dropdown-icon {
-                width: 5rem;
-            }
-            .dropdown-menu {
-                width: 100vw;
-                left: 0;
-                right: 0;
-                padding: 0;
-                border-radius: 0;
-            }
-            .dropdown-menu .dropdown-item {
-                display: block;
-                text-align: center;
-                padding: 1rem;
-            }
-        }
-        @media (max-width: 480px) {
-            .header-cliente {
-                font-size: 1rem;
-                padding: 0.4rem 0.8rem;
-            }
-            .dropdown-icon {
-                width: 4rem;
-                
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EnerGym</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .header-bar {
+      background-color: rgb(41, 48, 53);
+      border-bottom: 5px solid rgb(15, 139, 141);
+    }
+    .header-icon {
+      width: 8rem;
+      padding: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+    .header-icon:hover {
+      transform: scale(1.05);
+    }
+    .header-cliente {
+      font-size: 1.5rem;
+      color: white;
+      text-transform: uppercase;
+      background-color: rgb(15, 139, 141);
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .header-cliente:hover {
+      background-color: rgb(10, 94, 95);
+    }
+    .dropdown-icon {
+      width: 8rem;
+      padding: 1rem;
+      transition: transform 0.3s ease;
+    }
+    .dropdown-icon:hover {
+      transform: scale(1.05);
+    }
+    /* Estilos para el menú offcanvas sin fade ni fondo oscuro */
+    .offcanvas {
+      z-index: 1055;
+      background-color: #fff;
+      box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1);
+      border-left: 1px solid #ddd;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+      transition: none;
+    }
+    .offcanvas .offcanvas-header {
+      border-bottom: 1px solid #ddd;
+      background-color: #f8f9fa;
+    }
+    .offcanvas .offcanvas-body {
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 300px; /* Fuerza que el contenido tenga suficiente altura para empujar el grupo final al fondo */
+    }
+    .offcanvas a.dropdown-item {
+      color: #333;
+      font-size: 1.2rem;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .offcanvas a.dropdown-item:hover {
+      color: rgb(15, 139, 141);
+      background-color: rgba(15, 139, 141, 0.1);
+      text-decoration: none;
+    }
+    /* Estilos para el botón "Inscríbete" (mismo estilo que Área Cliente) */
+    .inscribete-btn a {
+      display: block;
+      text-align: center;
+    }
+    /* Estilos para el pie del menú lateral */
+    .offcanvas-footer {
+      text-align: center;
+      padding-top: 1rem;
+      border-top: 1px solid #ddd;
+      font-size: 0.9rem;
+      color: #555;
+    }
+    @media (max-width: 768px) {
+      .header-icon {
+        width: 5rem;
+      }
+      .header-cliente {
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem;
+      }
+      .dropdown-icon {
+        width: 5rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .header-cliente {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+      }
+      .dropdown-icon {
+        width: 4rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <header class="header-bar d-flex align-items-center justify-content-between px-3 py-2">
-        <!-- Logo -->
-        <a href="/" class="d-flex align-items-center">
-            <img src="/partials/img/icon.webp" alt="Logo" class="header-icon">
-        </a>
+  <header class="header-bar d-flex align-items-center px-3 py-2">
+    <!-- Izquierda: Logo -->
+    <div class="flex-shrink-0">
+      <a href="/" class="d-flex align-items-center">
+        <img src="/partials/img/icon.webp" alt="Logo" class="header-icon">
+      </a>
+    </div>
+    
+    <!-- Centro: Área Cliente -->
+    <div class="flex-grow-1 text-center">
+      <a href="/login.php" class="header-cliente text-decoration-none">Area Cliente</a>
+    </div>
+    
+    <!-- Derecha: Botón para abrir el menú lateral -->
+    <div class="flex-shrink-0">
+      <button class="btn p-0 border-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+        <img src="/img/nav.webp" alt="Navigation" class="dropdown-icon">
+      </button>
+    </div>
+  </header>
 
-        <!-- Area Cliente -->
-        <a href="/login.php" class="header-cliente text-decoration-none">
-            Area Cliente
-        </a>
-
-        <!-- Dropdown Menu -->
-        <div class="dropdown">
-            <button class="btn p-0 border-0 dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="/img/nav.webp" alt="Navigation" class="dropdown-icon">
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="/index.php">Home</a></li>
-                <li><a class="dropdown-item" href="/nosotros.php">Sobre Nosotros</a></li>
-                <li><a class="dropdown-item" href="/contactanos.php">Contactanos</a></li>
-                <li><a class="dropdown-item" href="/faq.php">FAQ</a></li>
-            </ul>
+  <!-- Menú lateral (Offcanvas) sin fade, sin fondo oscuro y permitiendo scroll -->
+  <div class="offcanvas offcanvas-end" data-bs-backdrop="false" data-bs-scroll="true" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menú</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+      <!-- Opciones de menú -->
+      <div>
+        <ul class="list-unstyled">
+          <li><a class="dropdown-item" href="/index.php">Home</a></li>
+          <li><a class="dropdown-item" href="/nosotros.php">Sobre Nosotros</a></li>
+          <li><a class="dropdown-item" href="/contactanos.php">Contactanos</a></li>
+          <li><a class="dropdown-item" href="/faq.php">FAQ</a></li>
+        </ul>
+      </div>
+      <!-- Grupo final: el botón "Inscríbete" y, debajo, el footer -->
+      <div class="mt-auto">
+        <div class="inscribete-btn mb-3">
+          <a href="/planes.php" class="header-cliente text-decoration-none">Inscríbete</a>
         </div>
-    </header>
+        <div class="offcanvas-footer">
+          <p>© 2024 EnerGym. All Rights Reserved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
