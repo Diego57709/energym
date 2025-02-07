@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
-include '../partials/db.php';
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+include '../partials/db.php';
+include '../partials/encrypt.php';
 
 require_once __DIR__ . '/../components/vendor/autoload.php';
 include '../partials/db.php';
@@ -113,6 +114,15 @@ $sqlAsistenciasMes = "
 ";
 $resultAsistenciasMes = mysqli_query($conn, $sqlAsistenciasMes);
 $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistencias'] ?? 0;
+
+//Encriptar ID
+function encryptData($data) {
+  $cipher = "aes-256-cbc";
+  $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cipher));
+  $encrypted = openssl_encrypt($data, $cipher, ENCRYPTION_KEY, 0, $iv);
+  return base64_encode($iv . $encrypted);
+}
+$encrypted_id = encryptData((string)$_SESSION['id']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -175,7 +185,7 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
       <div class="row">
         
         <!-- COLUMNA PRINCIPAL -->
-        <div class="col-md-8 mb-4">
+        <div class="<?php echo $mostrarQR ? 'col-md-8' : 'col-md-12'; ?> mb-4">
           <div class="card p-4">
             <h1 class="text-center mb-4">
               ¡Hola, <?php echo htmlspecialchars($apellidosCliente . ', ' . $nombreCliente); ?>!
@@ -189,6 +199,16 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
             <?php if ($mostrarQR): ?>
               <img src="<?php echo $qrcode; ?>" alt="QR Code" class="qr-img mt-3">
             <?php endif; ?>
+            <?php if (!empty($clientes['chat_id'])): ?>
+                <p class="text-success" style="text-align: center;">Conectado a Telegram</p>
+            <?php else: ?>
+              <a href="tg://resolve?domain=energymAsir_bot&start=<?php echo urlencode($encrypted_id); ?>" 
+                  class="btn btn-primary">
+                  📲 Conectar con Telegram
+                </a>
+
+            <?php endif; ?>
+
 
             <!-- Botones -->
             <div class="d-flex justify-content-center mt-4">
@@ -203,14 +223,15 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
             </form>
           </div>
         </div>
-
+            
+        <?php if ($mostrarQR): ?> 
         <!-- COLUMNA LATERAL -->
         <div class="col-md-4">
-          <!-- BLOQUE DE ClASES -->
+          <!-- BLOQUE DE CLASES -->
           <div class="card p-4">
-            <h5 class="mb-3">Pagos</h5>
+            <h5 class="mb-3">Clases</h5>
             <p>
-              <strong>Tienes una clase el dia:</strong><br>
+              <strong>Tienes una clase el día:</strong><br>
               <?php echo date('d F Y', $fechaFin); ?>
             </p>
             <div class="d-flex justify-content-center">
@@ -256,6 +277,8 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
               Ver historial de asistencias
             </a>
           </div>
+        </div>
+        <?php endif; ?> 
         </div>
       </div>
     </div>
