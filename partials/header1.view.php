@@ -20,7 +20,7 @@
       transform: scale(1.05);
     }
     .header-cliente {
-      font-size: 1.5rem;
+      font-size: 2rem; /* Texto más grande */
       color: white;
       text-transform: uppercase;
       background-color: rgb(15, 139, 141);
@@ -44,6 +44,7 @@
     /* Estilos para el menú offcanvas sin fade ni fondo oscuro */
     .offcanvas {
       z-index: 1055;
+      width: 350px; /* Menú más ancho */
       background-color: #fff;
       box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1);
       border-left: 1px solid #ddd;
@@ -59,13 +60,14 @@
       padding: 1rem 1.5rem;
       display: flex;
       flex-direction: column;
-      min-height: 300px; /* Fuerza que el contenido tenga suficiente altura para empujar el grupo final al fondo */
+      min-height: 300px;
     }
     .offcanvas a.dropdown-item {
       color: #333;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
+      font-weight: bold;
       transition: color 0.3s ease, background-color 0.3s ease;
-      padding: 0.5rem 1rem;
+      padding: 0.75rem 1.25rem;
       border-radius: 4px;
       margin-bottom: 0.5rem;
     }
@@ -78,6 +80,8 @@
     .inscribete-btn a {
       display: block;
       text-align: center;
+      font-size: 2rem; /* Texto más grande */
+      font-weight: bold;
     }
     /* Estilos para el pie del menú lateral */
     .offcanvas-footer {
@@ -92,20 +96,32 @@
         width: 5rem;
       }
       .header-cliente {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
         padding: 0.5rem 1rem;
       }
       .dropdown-icon {
         width: 5rem;
       }
+      .inscribete-btn a {
+        font-size: 1.5rem;
+      }
+      .offcanvas a.dropdown-item {
+        font-size: 1.3rem;
+      }
     }
     @media (max-width: 480px) {
       .header-cliente {
-        font-size: 1rem;
+        font-size: 1.2rem;
         padding: 0.4rem 0.8rem;
       }
       .dropdown-icon {
         width: 4rem;
+      }
+      .inscribete-btn a {
+        font-size: 1.2rem;
+      }
+      .offcanvas a.dropdown-item {
+        font-size: 1.1rem;
       }
     }
   </style>
@@ -121,7 +137,7 @@
     
     <!-- Centro: Área Cliente -->
     <div class="flex-grow-1 text-center">
-      <a href="/login.php" class="header-cliente text-decoration-none">Area Cliente</a>
+      <a href="/login.php" class="header-cliente text-decoration-none">Área Cliente</a>
     </div>
     
     <!-- Derecha: Botón para abrir el menú lateral -->
@@ -135,7 +151,7 @@
   <!-- Menú lateral (Offcanvas) sin fade, sin fondo oscuro y permitiendo scroll -->
   <div class="offcanvas offcanvas-end" data-bs-backdrop="false" data-bs-scroll="true" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
     <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menú</h5>
+      <h5 class="offcanvas-title" id="offcanvasMenuLabel">Energym</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column">
@@ -144,7 +160,7 @@
         <ul class="list-unstyled">
           <li><a class="dropdown-item" href="/index.php">Home</a></li>
           <li><a class="dropdown-item" href="/nosotros.php">Sobre Nosotros</a></li>
-          <li><a class="dropdown-item" href="/contactanos.php">Contactanos</a></li>
+          <li><a class="dropdown-item" href="/contactanos.php">Contáctanos</a></li>
           <li><a class="dropdown-item" href="/faq.php">FAQ</a></li>
         </ul>
       </div>

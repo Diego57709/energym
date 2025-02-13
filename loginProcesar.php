@@ -1,13 +1,13 @@
 <?php
-require 'partials/header1.view.php';
+session_start();
 include 'partials/db.php';
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: 404.php');
     exit();
 }
-
-session_start();
 
 // Recuperar datos del formulario
 $email    = $_POST['email']    ?? '';
@@ -145,6 +145,7 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
 // -----------------------------------
 // 4) NO SE ENCONTRÓ EN NINGUNA TABLA
 // -----------------------------------
+include 'partials/header1.view.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

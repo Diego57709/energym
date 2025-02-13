@@ -130,10 +130,10 @@
     <div class="row">
         <div class="col-md-3 col-sm-6 mb-4">
             <div class="card shadow-lg">
-                <img src="/img/nosotros/diego2.webp" alt="Instalaciones" class="card-img-top">
+                <img src="img/nosotros/billetes.webp" alt="Billetes" class="card-img-top">
                 <div class="card-body">
-                    <h3 class="card-title">Doraemon</h3>
-                    <p class="card-text">Aprovecha sesiones personalizadas para alcanzar tus objetivos.</p>
+                    <h3 class="card-title">Billetes</h3>
+                    <p class="card-text">º sesiones personalizadas para alcanzar tus objetivos.</p>
                 </div>
             </div>
         </div>

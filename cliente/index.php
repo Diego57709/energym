@@ -288,41 +288,52 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
 
   <!-- PayPal Payment Trigger -->
   <script>
-    const payButton = document.getElementById('payWithPaypal');
-    payButton.addEventListener('click', function(event){
-        event.preventDefault();  // Evitar comportamiento de enlace
+// Declare a flag variable
+let paypalRendered = false;
 
+const payButton = document.getElementById('payWithPaypal');
 
-        paypal.Buttons({
-            createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            // Aseguramos que el precio sea en string con dos decimales
-                            value: '<?php echo number_format($precioPlan, 2, '.', ''); ?>' 
-                        }
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    let transactionId = details.id;
+payButton.addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent the default link behavior
 
-                    // Redirigir a clienteAmpliar.php con datos del pago
-                    window.location.href = "clienteAmpliar.php?transaction_id=" + transactionId 
-                        + "&cliente_id=<?php echo $id_usuario; ?>" 
-                        + "&monto=<?php echo number_format($precioPlan, 2, '.', ''); ?>";
-                });
-            },
-            onError: function(err) {
-                console.error('Error en PayPal:', err);
-                alert('Hubo un problema con el pago. Inténtalo de nuevo.');
-                // Rehabilitamos el botón si ocurre error
-                payButton.classList.remove('disabled');
-                payButton.textContent = 'Ampliar Suscripción (<?php echo number_format($precioPlan, 2, '.', ''); ?>€)';
-            }
-        }).render('#payWithPaypal');
-    });
+    // If the PayPal Buttons have already been rendered, exit the handler
+    if (paypalRendered) {
+        return;
+    }
+    paypalRendered = true; // Set the flag to prevent further renders
+
+    // Render the PayPal Buttons
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        // Ensure the amount is a string with two decimals
+                        value: '<?php echo number_format($precioPlan, 2, '.', ''); ?>' 
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                let transactionId = details.id;
+                // Redirect to clienteAmpliar.php with payment details
+                window.location.href = "clienteAmpliar.php?transaction_id=" + transactionId 
+                    + "&cliente_id=<?php echo $id_usuario; ?>" 
+                    + "&monto=<?php echo number_format($precioPlan, 2, '.', ''); ?>";
+            });
+        },
+        onError: function(err) {
+            console.error('Error en PayPal:', err);
+            alert('Hubo un problema con el pago. Inténtalo de nuevo.');
+            // Re-enable the button if an error occurs so the user can try again
+            paypalRendered = false;
+            payButton.classList.remove('disabled');
+            payButton.textContent = 'Ampliar Suscripción (<?php echo number_format($precioPlan, 2, '.', ''); ?>€)';
+        }
+    }).render('#payWithPaypal');
+});
+
   </script>
 
   <!-- Footer -->

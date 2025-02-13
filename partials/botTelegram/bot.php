@@ -167,7 +167,7 @@ function generateQRCode($chat_id) {
             'version' => 6,
             'outputType' => QRCode::OUTPUT_IMAGE_PNG,
             'eccLevel' => EccLevel::M,
-            'scale'           => 5,
+            'scale' => 5,
         ]);
 
         $qrcode = new QRCode($options);
