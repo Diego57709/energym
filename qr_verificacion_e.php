@@ -22,37 +22,48 @@ if (isset($parsedUrl['query'])) {
 
 // Función para registrar asistencia
 function registrarAsistencia($conn, $usuarioId, $tipoUsuario, $qrToken, $tabla, $campoId) {
-    // Check if there's a previous "ENTRADA" without a corresponding "SALIDA"
-    $sqlCheckPrevious = "SELECT asistencia_id, tipo FROM asistencias WHERE usuario_id = '$usuarioId' AND tipo_usuario = '$tipoUsuario' ORDER BY fecha_hora DESC LIMIT 1";
-    $resultCheckPrevious = mysqli_query($conn, $sqlCheckPrevious);
+    // Consulta preparada para revisar si existe una "ENTRADA" previa sin "SALIDA"
+    $sqlCheckPrevious = "SELECT asistencia_id, tipo FROM asistencias WHERE usuario_id = ? AND tipo_usuario = ? ORDER BY fecha_hora DESC LIMIT 1";
+    $stmt = mysqli_prepare($conn, $sqlCheckPrevious);
+    mysqli_stmt_bind_param($stmt, "is", $usuarioId, $tipoUsuario);
+    mysqli_stmt_execute($stmt);
+    $resultCheckPrevious = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
 
     $fechaHora = date("Y-m-d H:i:s");
 
     if (mysqli_num_rows($resultCheckPrevious) === 1) {
         $row = mysqli_fetch_assoc($resultCheckPrevious);
-
         if ($row['tipo'] === 'ENTRADA') {
-            // Register "SALIDA"
-            $sqlSalida = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES ('$usuarioId', '$fechaHora', 'SALIDA', '$tipoUsuario')";
-            mysqli_query($conn, $sqlSalida);
+            // Registrar "SALIDA" con sentencia preparada
+            $sqlSalida = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES (?, ?, 'SALIDA', ?)";
+            $stmtSalida = mysqli_prepare($conn, $sqlSalida);
+            mysqli_stmt_bind_param($stmtSalida, "iss", $usuarioId, $fechaHora, $tipoUsuario);
+            mysqli_stmt_execute($stmtSalida);
+            mysqli_stmt_close($stmtSalida);
 
             header("Location: camara.php?status=success&message=Salida registrada correctamente para $tipoUsuario.");
             exit();
         }
     }
 
-    // If no previous "ENTRADA" or last record was "SALIDA", register new "ENTRADA"
-    $sqlEntrada = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES ('$usuarioId', '$fechaHora', 'ENTRADA', '$tipoUsuario')";
-    mysqli_query($conn, $sqlEntrada);
+    // Registrar "ENTRADA" con sentencia preparada
+    $sqlEntrada = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES (?, ?, 'ENTRADA', ?)";
+    $stmtEntrada = mysqli_prepare($conn, $sqlEntrada);
+    mysqli_stmt_bind_param($stmtEntrada, "iss", $usuarioId, $fechaHora, $tipoUsuario);
+    mysqli_stmt_execute($stmtEntrada);
+    mysqli_stmt_close($stmtEntrada);
 
-    // Update token status
-    $updateTokenSql = "UPDATE $tabla SET qr_token = NULL WHERE $campoId = '$usuarioId'";
-    mysqli_query($conn, $updateTokenSql);
+    // Actualizar token: aquí $tabla y $campoId son variables dinámicas (no se pueden parametrizar)
+    $updateTokenSql = "UPDATE $tabla SET qr_token = NULL WHERE $campoId = ?";
+    $stmtUpdate = mysqli_prepare($conn, $updateTokenSql);
+    mysqli_stmt_bind_param($stmtUpdate, "i", $usuarioId);
+    mysqli_stmt_execute($stmtUpdate);
+    mysqli_stmt_close($stmtUpdate);
 
     header("Location: camara.php?status=success&message=Entrada registrada correctamente para $tipoUsuario.");
     exit();
 }
-
 
 // Determinar el tipo de usuario y registrar asistencia
 if ($trabajadorId && $qrToken) {
@@ -65,3 +76,4 @@ if ($trabajadorId && $qrToken) {
     header("Location: camara.php?status=error&message=No se especificó un tipo de usuario válido.");
     exit();
 }
+?>

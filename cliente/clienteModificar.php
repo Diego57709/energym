@@ -14,18 +14,18 @@ if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
 
 $id_usuario = $_SESSION['id'];
 
-// Consulta para obtener los datos del clientes
+// Consulta para obtener los datos del cliente
 $sql = "SELECT * FROM clientes WHERE cliente_id = '$id_usuario'";
 $result = mysqli_query($conn, $sql);
 $clientes = mysqli_fetch_assoc($result);
 
 if (!$clientes) {
-    die("Error al obtener los datos del clientes.");
+    die("Error al obtener los datos del cliente.");
 }
 
-// Si se envía el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
+    $apellidos = trim($_POST['apellidos']);
     $email = trim($_POST['email']);
     $telefono = trim($_POST['telefono']);
     $direccion = trim($_POST['direccion']);
@@ -33,23 +33,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fecha_nacimiento = $_POST['fecha_nacimiento'];
     $genero = $_POST['genero'];
 
+    // Preparar el sq para actualizar los datos del cliente
     $sqlUpdate = "UPDATE clientes SET 
-                    nombre = '$nombre', 
-                    email = '$email', 
-                    telefono = '$telefono', 
-                    direccion = '$direccion', 
-                    codigo_postal = '$codigo_postal', 
-                    fecha_nacimiento = '$fecha_nacimiento', 
-                    genero = '$genero' 
-                  WHERE cliente_id = '$id_usuario'";
+                    nombre = ?, 
+                    apellidos = ?, 
+                    email = ?, 
+                    telefono = ?, 
+                    direccion = ?, 
+                    codigo_postal = ?, 
+                    fecha_nacimiento = ?, 
+                    genero = ?
+                  WHERE cliente_id = ?";
+    $stmt = $conn->prepare($sqlUpdate);
+    if (!$stmt) {
+        die("Error al preparar la consulta: " . $conn->error);
+    }
+    // Asignamos los el tipo de valor a los parametros
+    $stmt->bind_param("ssssssssi", $nombre, $apellidos, $email, $telefono, $direccion, $codigo_postal, $fecha_nacimiento, $genero, $id_usuario);
 
-    if (mysqli_query($conn, $sqlUpdate)) {
+    if ($stmt->execute()) {
         $mensaje = "Datos actualizados con éxito.";
-        header("Location: clienteModificar.php?mensaje=$mensaje");
+        header("Location: clienteModificar.php?mensaje=" . urlencode($mensaje));
         exit;
     } else {
-        $error = "Error al actualizar los datos: " . mysqli_error($conn);
+        $error = "Error al actualizar los datos: " . $stmt->error;
     }
+    $stmt->close();
 }
 ?>
 
@@ -70,8 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             flex-direction: column;
         }
-
-            .main {
+        .main {
             flex: 1;
             display: flex;
             align-items: center;
@@ -166,8 +174,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="text" class="form-control" id="direccion" name="direccion" value="<?= htmlspecialchars($clientes['direccion']) ?>" required>
                             </div>
                         </div>
-
-
                         <div class="row g-3 mt-3">
                             <div class="col-md-6">
                                 <label for="codigo_postal" class="form-label fw-bold">Código Postal</label>
@@ -176,6 +182,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-md-6">
                                 <label for="fecha_nacimiento" class="form-label fw-bold">Fecha de Nacimiento</label>
                                 <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?= htmlspecialchars($clientes['fecha_nacimiento']) ?>" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-3">
+                            <div class="col-12">
+                                <label for="genero" class="form-label fw-bold">Género</label>
+                                <select class="form-control" id="genero" name="genero" required>
+                                    <option value="">Selecciona...</option>
+                                    <option value="M" <?= ($clientes['genero'] === 'M' ? 'selected' : '') ?>>Masculino</option>
+                                    <option value="F" <?= ($clientes['genero'] === 'F' ? 'selected' : '') ?>>Femenino</option>
+                                    <option value="O" <?= ($clientes['genero'] === 'O' ? 'selected' : '') ?>>Otro</option>
+                                </select>
                             </div>
                         </div>
 
@@ -205,9 +223,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include '../partials/footer.view.php'; ?>
 
     <script>
-        // Almacernar valores originales
+        // Almacenar valores originales
         const originalData = {
             nombre: '<?= htmlspecialchars($clientes['nombre']) ?>',
+            apellidos: '<?= htmlspecialchars($clientes['apellidos'] ?? '') ?>',
             email: '<?= htmlspecialchars($clientes['email']) ?>',
             telefono: '<?= htmlspecialchars($clientes['telefono']) ?>',     
             direccion: '<?= htmlspecialchars($clientes['direccion']) ?>',
@@ -226,6 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         undoButton.addEventListener('click', () => {
             document.getElementById('nombre').value = originalData.nombre;
+            document.getElementById('apellidos').value = originalData.apellidos;
             document.getElementById('email').value = originalData.email;
             document.getElementById('telefono').value = originalData.telefono;
             document.getElementById('direccion').value = originalData.direccion;

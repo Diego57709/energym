@@ -6693,3 +6693,167 @@ Presiona el botón para generar tu QR.
 [SEND PHOTO] Telegram response code: 200
 [SEND PHOTO] Telegram response: {"ok":true,"result":{"message_id":179,"from":{"id":7597671853,"is_bot":true,"first_name":"Asistente Energym","username":"energymAsir_bot"},"chat":{"id":700431987,"first_name":"Ram\u00f3n","last_name":"Gonzales","type":"private"},"date":1739261474,"photo":[{"file_id":"AgACAgQAAxkDAAOzZ6sGIgrPyMwUq52G59mls267PL4AAl_DMRtLp1hR1bpPRtxXvD8BAAMCAANzAAM2BA","file_unique_id":"AQADX8MxG0unWFF4","file_size":3447,"width":90,"height":90},{"file_id":"AgACAgQAAxkDAAOzZ6sGIgrPyMwUq52G59mls267PL4AAl_DMRtLp1hR1bpPRtxXvD8BAAMCAANtAAM2BA","file_unique_id":"AQADX8MxG0unWFFy","file_size":24079,"width":245,"height":245}],"caption":"Aqu\u00ed est\u00e1 tu c\u00f3digo QR para acceder al gimnasio:"}}
 [SEND PHOTO] QR sent successfully to chat_id: 700431987
+Received input: Array
+(
+    [update_id] => 926999939
+    [callback_query] => Array
+        (
+            [id] => 3008332477776474691
+            [from] => Array
+                (
+                    [id] => 700431987
+                    [is_bot] => 
+                    [first_name] => Ramón
+                    [last_name] => Gonzales
+                    [language_code] => es
+                )
+
+            [message] => Array
+                (
+                    [message_id] => 180
+                    [from] => Array
+                        (
+                            [id] => 7597671853
+                            [is_bot] => 1
+                            [first_name] => Asistente Energym
+                            [username] => energymAsir_bot
+                        )
+
+                    [chat] => Array
+                        (
+                            [id] => 700431987
+                            [first_name] => Ramón
+                            [last_name] => Gonzales
+                            [type] => private
+                        )
+
+                    [date] => 1739261475
+                    [text] => 🏋️ Acceso al gimnasio 
+Presiona el botón para generar tu QR.
+                    [entities] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [offset] => 4
+                                    [length] => 18
+                                    [type] => bold
+                                )
+
+                        )
+
+                    [reply_markup] => Array
+                        (
+                            [inline_keyboard] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [text] => 📲 Generar QR de acceso
+                                                    [callback_data] => generate_qr
+                                                )
+
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+            [chat_instance] => -410249835922814288
+            [data] => generate_qr
+        )
+
+)
+[QR] Received request from chat_id: 700431987
+[QR] User ID found: 40
+[QR] Token updated successfully for user ID: 40
+[QR] Saving QR to: /var/www/energym/partials/botTelegram/qr_codes/700431987.png
+[QR] QR Code correctly saved at /var/www/energym/partials/botTelegram/qr_codes/700431987.png
+[SEND PHOTO] Preparing to send photo from: /var/www/energym/partials/botTelegram/qr_codes/700431987.png
+[SEND PHOTO] Telegram response code: 200
+[SEND PHOTO] Telegram response: {"ok":true,"result":{"message_id":181,"from":{"id":7597671853,"is_bot":true,"first_name":"Asistente Energym","username":"energymAsir_bot"},"chat":{"id":700431987,"first_name":"Ram\u00f3n","last_name":"Gonzales","type":"private"},"date":1739802044,"photo":[{"file_id":"AgACAgQAAxkDAAO1Z7NFvEvJdHvkmpIBwo73hgABgf4ZAAKhxzEb1veZUSxkdWAZaAMVAQADAgADcwADNgQ","file_unique_id":"AQADoccxG9b3mVF4","file_size":3455,"width":90,"height":90},{"file_id":"AgACAgQAAxkDAAO1Z7NFvEvJdHvkmpIBwo73hgABgf4ZAAKhxzEb1veZUSxkdWAZaAMVAQADAgADbQADNgQ","file_unique_id":"AQADoccxG9b3mVFy","file_size":23903,"width":245,"height":245}],"caption":"Aqu\u00ed est\u00e1 tu c\u00f3digo QR para acceder al gimnasio:"}}
+[SEND PHOTO] QR sent successfully to chat_id: 700431987
+Entrada recibida: Array
+(
+    [update_id] => 926999940
+    [callback_query] => Array
+        (
+            [id] => 3008332479572797241
+            [from] => Array
+                (
+                    [id] => 700431987
+                    [is_bot] => 
+                    [first_name] => Ramón
+                    [last_name] => Gonzales
+                    [language_code] => es
+                )
+
+            [message] => Array
+                (
+                    [message_id] => 182
+                    [from] => Array
+                        (
+                            [id] => 7597671853
+                            [is_bot] => 1
+                            [first_name] => Asistente Energym
+                            [username] => energymAsir_bot
+                        )
+
+                    [chat] => Array
+                        (
+                            [id] => 700431987
+                            [first_name] => Ramón
+                            [last_name] => Gonzales
+                            [type] => private
+                        )
+
+                    [date] => 1739802044
+                    [text] => 🏋️ Acceso al gimnasio 
+Presiona el botón para generar tu QR.
+                    [entities] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [offset] => 4
+                                    [length] => 18
+                                    [type] => bold
+                                )
+
+                        )
+
+                    [reply_markup] => Array
+                        (
+                            [inline_keyboard] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [text] => 📲 Generar QR de acceso
+                                                    [callback_data] => generate_qr
+                                                )
+
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+            [chat_instance] => -410249835922814288
+            [data] => generate_qr
+        )
+
+)
+[QR] Solicitud recibida de chat_id: 700431987
+[QR] ID de usuario encontrado: 40
+[QR] Token actualizado correctamente para el ID de usuario: 40
+[QR] Guardando QR en: /var/www/energym/partials/botTelegram/qr_codes/700431987.png
+[QR] Código QR guardado correctamente en: /var/www/energym/partials/botTelegram/qr_codes/700431987.png
+[ENVIAR FOTO] Preparando para enviar la foto desde: /var/www/energym/partials/botTelegram/qr_codes/700431987.png
+[ENVIAR FOTO] Código de respuesta de Telegram: 200
+[ENVIAR FOTO] Respuesta de Telegram: {"ok":true,"result":{"message_id":183,"from":{"id":7597671853,"is_bot":true,"first_name":"Asistente Energym","username":"energymAsir_bot"},"chat":{"id":700431987,"first_name":"Ram\u00f3n","last_name":"Gonzales","type":"private"},"date":1740036771,"photo":[{"file_id":"AgACAgQAAxkDAAO3Z7bao6O0M6FE84vKhMW910L4nywAAsTCMRu8nrhRaIkLGxCCNMwBAAMCAANzAAM2BA","file_unique_id":"AQADxMIxG7yeuFF4","file_size":3465,"width":90,"height":90},{"file_id":"AgACAgQAAxkDAAO3Z7bao6O0M6FE84vKhMW910L4nywAAsTCMRu8nrhRaIkLGxCCNMwBAAMCAANtAAM2BA","file_unique_id":"AQADxMIxG7yeuFFy","file_size":24031,"width":245,"height":245}],"caption":"Aqu\u00ed est\u00e1 tu c\u00f3digo QR para acceder al gimnasio:"}}
+[ENVIAR FOTO] QR enviado correctamente al chat_id: 700431987

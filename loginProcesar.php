@@ -4,10 +4,6 @@ include 'partials/db.php';
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: 404.php');
-    exit();
-}
 
 // Recuperar datos del formulario
 $email    = $_POST['email']    ?? '';
@@ -16,8 +12,10 @@ $password = $_POST['password'] ?? '';
 // -----------------------------------
 // 1) BUSCAR EN CLIENTES
 // -----------------------------------
-$sqlClientes = "SELECT * FROM clientes WHERE email = '$email' LIMIT 1";
-$resClientes = mysqli_query($conn, $sqlClientes);
+$stmtClientes = mysqli_prepare($conn, "SELECT * FROM clientes WHERE email = ? LIMIT 1");
+mysqli_stmt_bind_param($stmtClientes, "s", $email);
+mysqli_stmt_execute($stmtClientes);
+$resClientes = mysqli_stmt_get_result($stmtClientes);
 
 if ($resClientes && mysqli_num_rows($resClientes) === 1) {
     $cliente = mysqli_fetch_assoc($resClientes);
@@ -97,15 +95,17 @@ if ($resClientes && mysqli_num_rows($resClientes) === 1) {
 // -----------------------------------
 // 2) NO ESTÁ EN CLIENTES -> BUSCAR EN TRABAJADORES
 // -----------------------------------
-$sqlTrab = "SELECT * FROM trabajadores WHERE email = '$email' LIMIT 1";
-$resTrab = mysqli_query($conn, $sqlTrab);
+$stmtTrab = mysqli_prepare($conn, "SELECT * FROM trabajadores WHERE email = ? LIMIT 1");
+mysqli_stmt_bind_param($stmtTrab, "s", $email);
+mysqli_stmt_execute($stmtTrab);
+$resTrab = mysqli_stmt_get_result($stmtTrab);
 
 if ($resTrab && mysqli_num_rows($resTrab) === 1) {
     $trabajador = mysqli_fetch_assoc($resTrab);
 
     if (password_verify($password, $trabajador['password'])) {
         // Contraseña correcta
-        $_SESSION['nombre']       = $trabajador['nombre']; 
+        $_SESSION['nombre']       = $trabajador['nombre'];
         $_SESSION['id']           = $trabajador['trabajador_id'];
         $_SESSION['email']        = $trabajador['email'];
         $_SESSION['usuario']      = "trabajador";
@@ -121,8 +121,10 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
 // -----------------------------------
 // 3) NO ESTÁ EN TRABAJADORES -> BUSCAR EN ENTRENADORES
 // -----------------------------------
-$sqlEntr = "SELECT * FROM entrenadores WHERE email = '$email' LIMIT 1";
-$resEntr = mysqli_query($conn, $sqlEntr);
+$stmtEntr = mysqli_prepare($conn, "SELECT * FROM entrenadores WHERE email = ? LIMIT 1");
+mysqli_stmt_bind_param($stmtEntr, "s", $email);
+mysqli_stmt_execute($stmtEntr);
+$resEntr = mysqli_stmt_get_result($stmtEntr);
 
 if ($resEntr && mysqli_num_rows($resEntr) === 1) {
     $entrenador = mysqli_fetch_assoc($resEntr);
@@ -134,7 +136,7 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
         $_SESSION['email']     = $entrenador['email'];
         $_SESSION['usuario']   = "entrenador";
         $_SESSION['timeout']   = time() + 1800;
-        header('Location: entrenador/'); // Ajusta tu ruta
+        header('Location: entrenador/'); // Ajusta tu ruta si es necesario
         exit();
     } else {
         header('Location: login.php?error=contraseña_incorrecta');

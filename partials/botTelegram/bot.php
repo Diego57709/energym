@@ -33,7 +33,7 @@ $input = file_get_contents("php://input");
 $update = json_decode($input, true);
 
 // Registrar fallos en caso de que no vaya
-file_put_contents('bot_debug.log', "Received input: " . print_r($update, true), FILE_APPEND);
+file_put_contents('bot_debug.log', "Entrada recibida: " . print_r($update, true), FILE_APPEND);
 
 if (isset($update['message'])) {
     // Obtener el chat_id y el texto del mensaje enviado por el usuario
@@ -47,7 +47,7 @@ if (isset($update['message'])) {
 
         // Desencriptar el cliente_id
         $cliente_id = decryptData($encrypted_cliente_id);
-        file_put_contents('bot_debug.log', "Decrypted Client ID: " . $cliente_id . "\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "ID de cliente desencriptado: " . $cliente_id . "\n", FILE_APPEND);
 
         // Validar que el ID desencriptado es válido y numérico
         if ($cliente_id && is_numeric($cliente_id)) {
@@ -101,7 +101,7 @@ function sendMessage($chat_id, $text) {
     file_get_contents($url . '?' . http_build_query($data));
 }
 
-// Función del mensaje que da la opcion de QR
+// Función del mensaje que da la opción de QR
 function sendMenu($chat_id) {
     $url = "https://api.telegram.org/bot" . TELEGRAM_BOT_TOKEN . "/sendMessage";
     
@@ -128,7 +128,7 @@ function generateQRCode($chat_id) {
     global $conn;
 
     // Registrar en el log la solicitud de generación de QR
-    file_put_contents('bot_debug.log', "[QR] Received request from chat_id: {$chat_id}\n", FILE_APPEND);
+    file_put_contents('bot_debug.log', "[QR] Solicitud recibida de chat_id: {$chat_id}\n", FILE_APPEND);
 
     // Obtener el ID del usuario desde la base de datos usando el chat_id
     $sql = "SELECT cliente_id FROM clientes WHERE chat_id = ?";
@@ -142,24 +142,24 @@ function generateQRCode($chat_id) {
 
     if (!$id_usuario) {
         // Si no se encuentra el usuario, registrar el error y notificarlo al usuario
-        file_put_contents('bot_debug.log', "[QR ERROR] No user found for chat_id: {$chat_id}\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[QR ERROR] No se encontró usuario para chat_id: {$chat_id}\n", FILE_APPEND);
         sendMessage($chat_id, "⚠️ No se encontró tu cuenta en el sistema. Contacta a soporte: energym.asir@gmail.com.");
         return;
     }
 
-    file_put_contents('bot_debug.log', "[QR] User ID found: {$id_usuario}\n", FILE_APPEND);
+    file_put_contents('bot_debug.log', "[QR] ID de usuario encontrado: {$id_usuario}\n", FILE_APPEND);
 
     // Generar un nuevo token para el QR
     $qrToken = bin2hex(random_bytes(16));
     $updateTokenSql = "UPDATE clientes SET qr_token = '$qrToken' WHERE cliente_id = '$id_usuario'";
 
     if (!mysqli_query($conn, $updateTokenSql)) {
-        file_put_contents('bot_debug.log', "[QR ERROR] Failed to update qr_token in database: " . mysqli_error($conn) . "\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[QR ERROR] Error al actualizar el qr_token en la base de datos: " . mysqli_error($conn) . "\n", FILE_APPEND);
         sendMessage($chat_id, "⚠️ Hubo un error al generar tu QR. Contacta a soporte.");
         return;
     }
 
-    file_put_contents('bot_debug.log', "[QR] Token updated successfully for user ID: {$id_usuario}\n", FILE_APPEND);
+    file_put_contents('bot_debug.log', "[QR] Token actualizado correctamente para el ID de usuario: {$id_usuario}\n", FILE_APPEND);
 
     // Generar el código QR utilizando la librería chillerlan/php-qrcode
     try {
@@ -176,23 +176,23 @@ function generateQRCode($chat_id) {
 
         // Ruta donde se guardará el código QR generado
         $qr_path = __DIR__ . "/qr_codes/{$chat_id}.png";
-        file_put_contents('bot_debug.log', "[QR] Saving QR to: {$qr_path}\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[QR] Guardando QR en: {$qr_path}\n", FILE_APPEND);
 
         // Guardar el código QR como imagen PNG
         $qrcode->render($url, $qr_path);
 
         // Verificar que el archivo se haya guardado correctamente
         if (!file_exists($qr_path) || filesize($qr_path) == 0) {
-            file_put_contents('bot_debug.log', "[QR ERROR] QR file was not saved at {$qr_path}\n", FILE_APPEND);
+            file_put_contents('bot_debug.log', "[QR ERROR] El archivo QR no se guardó en: {$qr_path}\n", FILE_APPEND);
             sendMessage($chat_id, "⚠️ Error: el QR no se guardó correctamente.");
             return;
         }
 
-        file_put_contents('bot_debug.log', "[QR] QR Code correctly saved at {$qr_path}\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[QR] Código QR guardado correctamente en: {$qr_path}\n", FILE_APPEND);
 
     } catch (Exception $e) {
         // Registrar y notificar cualquier excepción al generar el QR
-        file_put_contents('bot_debug.log', "[QR ERROR] Failed to save PNG: " . $e->getMessage() . "\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[QR ERROR] Error al guardar PNG: " . $e->getMessage() . "\n", FILE_APPEND);
         sendMessage($chat_id, "⚠️ Error al generar el código QR.");
         return;
     }
@@ -203,11 +203,11 @@ function generateQRCode($chat_id) {
 
 // Función para enviar una imagen (código QR) a través de Telegram
 function sendPhoto($chat_id, $caption, $photo_path) {
-    file_put_contents('bot_debug.log', "[SEND PHOTO] Preparing to send photo from: {$photo_path}\n", FILE_APPEND);
+    file_put_contents('bot_debug.log', "[ENVIAR FOTO] Preparando para enviar la foto desde: {$photo_path}\n", FILE_APPEND);
 
     // Verificar que el archivo de imagen existe
     if (!file_exists($photo_path)) {
-        file_put_contents('bot_debug.log', "[SEND PHOTO ERROR] File does not exist: {$photo_path}\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[ENVIAR FOTO ERROR] El archivo no existe: {$photo_path}\n", FILE_APPEND);
         sendMessage($chat_id, "⚠️ Error: el archivo de QR no fue encontrado.");
         return;
     }
@@ -233,14 +233,14 @@ function sendPhoto($chat_id, $caption, $photo_path) {
     curl_close($ch);
 
     // Registrar la respuesta de Telegram para depuración
-    file_put_contents('bot_debug.log', "[SEND PHOTO] Telegram response code: {$http_code}\n", FILE_APPEND);
-    file_put_contents('bot_debug.log', "[SEND PHOTO] Telegram response: {$response}\n", FILE_APPEND);
+    file_put_contents('bot_debug.log', "[ENVIAR FOTO] Código de respuesta de Telegram: {$http_code}\n", FILE_APPEND);
+    file_put_contents('bot_debug.log', "[ENVIAR FOTO] Respuesta de Telegram: {$response}\n", FILE_APPEND);
 
     if ($error) {
-        file_put_contents('bot_debug.log', "[SEND PHOTO ERROR] cURL Error: {$error}\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[ENVIAR FOTO ERROR] Error de cURL: {$error}\n", FILE_APPEND);
         sendMessage($chat_id, "⚠️ Hubo un error al enviar el QR.");
     } else {
-        file_put_contents('bot_debug.log', "[SEND PHOTO] QR sent successfully to chat_id: {$chat_id}\n", FILE_APPEND);
+        file_put_contents('bot_debug.log', "[ENVIAR FOTO] QR enviado correctamente al chat_id: {$chat_id}\n", FILE_APPEND);
     }
 }
 

@@ -117,7 +117,7 @@ $cliente = mysqli_fetch_assoc($result);
 $cliente_id = $cliente['cliente_id'];
 
 // 3) Procesar el POST del formulario
-$error = ""; // Para almacenar el mensaje de error si lo hay
+$error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_password     = $_POST['new_password'] ?? '';
@@ -126,10 +126,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($new_password) || empty($confirm_password)) {
         $error = "Por favor, rellena ambos campos de contraseña.";
     } elseif ($new_password !== $confirm_password) {
-        // Mostrar error en rojo
         $error = "Las contraseñas no coinciden. Inténtalo de nuevo.";
     } else {
-        // Todo bien, actualizamos la contraseña
         $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
 
         $updateSql = "UPDATE clientes 
@@ -238,15 +236,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="main">
     <div class="login-container mx-auto">
         <h2 class="text-center mb-4">Crear tu nueva contraseña</h2>
-
-        <!-- Mensaje de error si existiese -->
         <?php if (!empty($error)): ?>
             <div class="alert alert-danger text-center">
                 <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
             </div>
         <?php endif; ?>
 
-        <!-- Formulario para nueva contraseña -->
         <form method="POST">
             <div class="mb-3">
                 <label for="new_password" class="form-label">Nueva contraseña</label>

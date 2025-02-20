@@ -3,24 +3,24 @@ declare(strict_types=1);
 include '../partials/db.php';
 session_start();
 
-// Redirect to login if the user is not logged in
+// Redirigir al inicio de sesión si el usuario no ha iniciado sesión
 if (!isset($_SESSION['usuario']) || !isset($_SESSION['id'])) {
     header("Location: login.php");
     exit;
 }
 
-$nombreUsuario = $_SESSION['usuario'];
-$id_cliente = $_SESSION['id'];
+$usuario = $_SESSION['usuario'];
+$clienteId = $_SESSION['id'];
 
-// Handle "Desapuntarse" action
+// Manejar la acción de "Desapuntarse"
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'desapuntarse') {
-    $clase_id = (int)$_POST['clase_id'];
-    $sqlDelete = "DELETE FROM clases_inscripciones WHERE clase_id = '$clase_id' AND cliente_id = '$id_cliente'";
-    mysqli_query($conn, $sqlDelete);
+    $claseId = (int) $_POST['clase_id'];
+    $sqlEliminar = "DELETE FROM clases_inscripciones WHERE clase_id = '$claseId' AND cliente_id = '$clienteId'";
+    mysqli_query($conn, $sqlEliminar);
 }
 
-// Query for current and future classes
-$sqlUpcomingClasses = "
+// Consulta para obtener las clases actuales y futuras
+$sqlClasesFuturas = "
     SELECT 
         cg.clase_id,
         cg.nombre_clase,
@@ -30,16 +30,15 @@ $sqlUpcomingClasses = "
     FROM clases_inscripciones ci
     JOIN clases_grupales cg ON ci.clase_id = cg.clase_id
     JOIN entrenadores e ON cg.entrenador_id = e.entrenador_id
-    WHERE ci.cliente_id = '$id_cliente' 
+    WHERE ci.cliente_id = '$clienteId' 
     AND DATE(cg.fecha_hora_c) >= CURDATE()
     ORDER BY cg.fecha_hora_c ASC
 ";
+$resultadoClasesFuturas = mysqli_query($conn, $sqlClasesFuturas);
+$clasesFuturas = mysqli_fetch_all($resultadoClasesFuturas, MYSQLI_ASSOC);
 
-$resultUpcoming = mysqli_query($conn, $sqlUpcomingClasses);
-$upcomingClasses = mysqli_fetch_all($resultUpcoming, MYSQLI_ASSOC);
-
-// Query for past classes
-$sqlPastClasses = "
+// Consulta para obtener las clases pasadas
+$sqlClasesPasadas = "
     SELECT 
         cg.clase_id,
         cg.nombre_clase,
@@ -49,13 +48,12 @@ $sqlPastClasses = "
     FROM clases_inscripciones ci
     JOIN clases_grupales cg ON ci.clase_id = cg.clase_id
     JOIN entrenadores e ON cg.entrenador_id = e.entrenador_id
-    WHERE ci.cliente_id = '$id_cliente' 
+    WHERE ci.cliente_id = '$clienteId' 
     AND DATE(cg.fecha_hora_c) < CURDATE()
     ORDER BY cg.fecha_hora_c DESC
 ";
-
-$resultPast = mysqli_query($conn, $sqlPastClasses);
-$pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
+$resultadoClasesPasadas = mysqli_query($conn, $sqlClasesPasadas);
+$clasesPasadas = mysqli_fetch_all($resultadoClasesPasadas, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -111,10 +109,10 @@ $pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
 <body>
 
 <div class="main-container">
-    <!-- Header -->
+    <!-- Encabezado -->
     <?php require '../partials/header1.view.php'; ?>
 
-    <!-- Content Section -->
+    <!-- Sección de contenido -->
     <div class="content">
         <div class="table-container">
             <h2 class="text-center mb-4">Clases Grupales</h2>
@@ -124,9 +122,9 @@ $pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
                     <i class="fas fa-calendar-plus"></i> Apuntarse a Clases Grupales
                 </a>
             </div>
-            <!-- Current and Future Classes -->
+            <!-- Clases actuales y futuras -->
             <h2 class="text-center mt-4">Próximas Clases</h2>
-            <?php if (count($upcomingClasses) > 0): ?>
+            <?php if (count($clasesFuturas) > 0): ?>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover">
                         <thead>
@@ -139,7 +137,7 @@ $pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($upcomingClasses as $clase): ?>
+                            <?php foreach ($clasesFuturas as $clase): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($clase['nombre_clase']) ?></td>
                                     <td><?= htmlspecialchars($clase['nombre_entrenador']) ?></td>
@@ -163,9 +161,9 @@ $pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
                 <p class="text-center text-muted">No tienes clases programadas.</p>
             <?php endif; ?>
 
-            <!-- Past Classes -->
+            <!-- Clases pasadas -->
             <h2 class="text-center mt-5">Clases Pasadas</h2>
-            <?php if (count($pastClasses) > 0): ?>
+            <?php if (count($clasesPasadas) > 0): ?>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead>
@@ -177,7 +175,7 @@ $pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($pastClasses as $clase): ?>
+                            <?php foreach ($clasesPasadas as $clase): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($clase['nombre_clase']) ?></td>
                                     <td><?= htmlspecialchars($clase['nombre_entrenador']) ?></td>
@@ -192,7 +190,7 @@ $pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
                 <p class="text-center text-muted">No tienes clases pasadas registradas.</p>
             <?php endif; ?>
 
-            <!-- Back button -->
+            <!-- Botón para volver -->
             <div class="d-flex justify-content-center mt-4">
                 <a href="index.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Volver
@@ -201,13 +199,13 @@ $pastClasses = mysqli_fetch_all($resultPast, MYSQLI_ASSOC);
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Pie de página -->
     <?php require '../partials/footer.view.php'; ?>
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- FontAwesome for icons -->
+<!-- FontAwesome para íconos -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 </body>

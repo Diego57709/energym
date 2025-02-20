@@ -115,6 +115,16 @@ $sqlAsistenciasMes = "
 $resultAsistenciasMes = mysqli_query($conn, $sqlAsistenciasMes);
 $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistencias'] ?? 0;
 
+$sqlSiguienteClase = "SELECT fecha_hora_c FROM clases_grupales WHERE fecha_hora_c > NOW() ORDER BY fecha_hora_c ASC LIMIT 1";
+$resultSiguienteClase = mysqli_query($conn, $sqlSiguienteClase);
+if ($resultSiguienteClase && mysqli_num_rows($resultSiguienteClase) > 0) {
+    $rowSiguienteClase = mysqli_fetch_assoc($resultSiguienteClase);
+    $SiguienteClaseDate = strtotime($rowSiguienteClase['fecha_hora_c']);
+} else {
+    $SiguienteClaseDate = false;
+}
+
+
 //Encriptar ID
 function encryptData($data) {
   $cipher = "aes-256-cbc";
@@ -232,7 +242,13 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
             <h5 class="mb-3">Clases</h5>
             <p>
               <strong>Tienes una clase el día:</strong><br>
-              <?php echo date('d F Y', $fechaFin); ?>
+              <?php 
+                if ($SiguienteClaseDate) {
+                    echo date('d F Y', $SiguienteClaseDate);
+                } else {
+                    echo "No hay clases programadas";
+                }
+                ?>
             </p>
             <div class="d-flex justify-content-center">
               <a href="clienteClasesGrupales.php" class="btn btn-primary me-2">Clases grupales</a>

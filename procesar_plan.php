@@ -37,15 +37,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Array para acumular posibles errores (duplicados)
     $errores = [];
 
-    // ------------------------------------------------------------------------
+    
     // 1) Verificar duplicados (email, dni, telefono) con una sola consulta
-    // ------------------------------------------------------------------------
-    $sqlCheck = "
-        SELECT email, dni, telefono 
-        FROM clientes
-        WHERE email = '$email' OR dni = '$dni' OR telefono = '$telefono'
-    ";
-    $resultCheck = mysqli_query($conn, $sqlCheck);
+    
+    $sqlCheck = "SELECT email, dni, telefono FROM clientes WHERE email = ? OR dni = ? OR telefono = ?";
+    $stmtCheck = mysqli_prepare($conn, $sqlCheck);
+    mysqli_stmt_bind_param($stmtCheck, "sss", $email, $dni, $telefono);
+    mysqli_stmt_execute($stmtCheck);
+    $resultCheck = mysqli_stmt_get_result($stmtCheck);
+    mysqli_stmt_close($stmtCheck);
 
     // Si encontramos filas, verificamos qué campo coincide
     while ($row = mysqli_fetch_assoc($resultCheck)) {
@@ -60,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // ------------------------------------------------------------------------
+    
     // 2) Si existen errores (ej: duplicados), mostramos la pantalla de error
-    // ------------------------------------------------------------------------
+    
     if (!empty($errores)) {
         $error_message = implode('<br>', $errores);
         ?>
@@ -118,73 +118,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // ------------------------------------------------------------------------
+    
     // 3) Si no hay duplicados, procedemos con la inserción
-    // ------------------------------------------------------------------------
     $duracion_dias = 30;
-    $sqlPlan = "SELECT duracion_dias FROM planes WHERE plan_id = '$plan'";
-    $resultPlan = mysqli_query($conn, $sqlPlan);
-
+    $sqlPlan = "SELECT duracion_dias FROM planes WHERE plan_id = ?";
+    $stmtPlan = mysqli_prepare($conn, $sqlPlan);
+    mysqli_stmt_bind_param($stmtPlan, "s", $plan);
+    mysqli_stmt_execute($stmtPlan);
+    $resultPlan = mysqli_stmt_get_result($stmtPlan);
     if ($resultPlan && $row = mysqli_fetch_assoc($resultPlan)) {
         $duracion_dias = (int) $row['duracion_dias'];
     }
+    mysqli_stmt_close($stmtPlan);
 
-    // Calculate subscription dates
-    $start_sub = date("Y-m-d H:i:s");
-    $end_sub = date("Y-m-d H:i:s", strtotime("+$duracion_dias days"));
+    // Calcular fechas de suscripción
+    $start_sub  = date("Y-m-d H:i:s");
+    $end_sub    = date("Y-m-d H:i:s", strtotime("+$duracion_dias days"));
     $created_at = date("Y-m-d H:i:s");
     $total      = ($plan === '1') ? 19.99 : 25.99; // Calcula el total según el plan
 
-    $sqlInsert = "
-        INSERT INTO clientes 
+    // Inserción en clientes mediante sentencia preparada
+    $sqlInsert = "INSERT INTO clientes 
         (dni, plan, extrasSelected, nombre, apellidos, email, telefono, 
          direccion, codigo_postal, fecha_nacimiento, genero, metodo_pago, 
          start_sub, end_sub, created_at)
-        VALUES (
-            '$dni',
-            '$plan',
-            '$extras',
-            '$nombre',
-            '$apellidos',
-            '$email',
-            '$telefono',
-            '$direccion',
-            '$codigo_postal',
-            '$fecha_nacimiento',
-            '$genero',
-            '$metodo_pago',
-            '$start_sub',
-            '$end_sub',
-            '$created_at'
-        )
-    ";
-    $resultado = mysqli_query($conn, $sqlInsert);
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmtInsert = mysqli_prepare($conn, $sqlInsert);
+    mysqli_stmt_bind_param($stmtInsert, "sssssssssssssss", 
+        $dni, $plan, $extras, $nombre, $apellidos, $email, $telefono, 
+        $direccion, $codigo_postal, $fecha_nacimiento, $genero, $metodo_pago, 
+        $start_sub, $end_sub, $created_at);
+    mysqli_stmt_execute($stmtInsert);
+    $resultado = mysqli_stmt_affected_rows($stmtInsert) > 0;
+    $cliente_id = mysqli_insert_id($conn);
+    mysqli_stmt_close($stmtInsert);
 
     if ($resultado) {
-        $cliente_id = mysqli_insert_id($conn);
-
-        $sqlHistorial = "
-            INSERT INTO historial_pagos 
-            (cliente_id, metodo_pago, total, recurrente) 
-            VALUES (
-                '$cliente_id',
-                '$metodo_pago',
-                '$total',
-                '1'
-            )
-        ";
-        mysqli_query($conn, $sqlHistorial);
+        // Inserción en historial_pagos mediante sentencia preparada
+        $sqlHistorial = "INSERT INTO historial_pagos (cliente_id, metodo_pago, total, recurrente) VALUES (?, ?, ?, ?)";
+        $stmtHistorial = mysqli_prepare($conn, $sqlHistorial);
+        $recurrente = 1;
+        mysqli_stmt_bind_param($stmtHistorial, "isdi", $cliente_id, $metodo_pago, $total, $recurrente);
+        mysqli_stmt_execute($stmtHistorial);
+        mysqli_stmt_close($stmtHistorial);
 
         $token = bin2hex(random_bytes(16));
         $linkCrearPassword = "http://energym.ddns.net/cliente/crear_password.php?token=" . urlencode($token);
 
-        $updateTokenSql = "
-            UPDATE clientes
-            SET reset_token = '$token'
-            WHERE cliente_id = $cliente_id
-        ";
-        mysqli_query($conn, $updateTokenSql);
+        // Actualizar token en clientes mediante sentencia preparada
+        $updateTokenSql = "UPDATE clientes SET reset_token = ? WHERE cliente_id = ?";
+        $stmtUpdateToken = mysqli_prepare($conn, $updateTokenSql);
+        mysqli_stmt_bind_param($stmtUpdateToken, "si", $token, $cliente_id);
+        mysqli_stmt_execute($stmtUpdateToken);
+        mysqli_stmt_close($stmtUpdateToken);
 
+        // Enviar correo con PHPMailer
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
@@ -241,7 +229,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         text-align: center;
                         font-size: 1.2rem;
                     }
-
                 </style>
             </head>
             <body>
@@ -256,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <script>
                             setTimeout(function () {
                                 window.location.href = 'login.php';
-                            }, 5000); // Redirigir después de 5 segundos
+                            }, 5000);
                         </script>
                     </div>
                 </div>

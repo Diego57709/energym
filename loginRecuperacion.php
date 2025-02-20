@@ -30,53 +30,63 @@ if (empty($email)) {
     $linkCambiarPassword = "";
 
     // Verificar en clientes
-    $sqlClientes = "SELECT cliente_id AS id FROM clientes WHERE email = '$email' LIMIT 1";
-    $resClientes = mysqli_query($conn, $sqlClientes);
+    $stmtClientes = mysqli_prepare($conn, "SELECT cliente_id AS id FROM clientes WHERE email = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmtClientes, "s", $email);
+    mysqli_stmt_execute($stmtClientes);
+    $resClientes = mysqli_stmt_get_result($stmtClientes);
     if ($resClientes && mysqli_num_rows($resClientes) === 1) {
         $usuario = mysqli_fetch_assoc($resClientes);
         $idUsuario = $usuario['id'];
         $tablaEncontrada = 'clientes';
         $linkCambiarPassword = "http://energym.ddns.net/cliente/crear_password.php?token=" . urlencode($token);
     }
+    mysqli_stmt_close($stmtClientes);
 
     // Verificar en trabajadores
     if (!$tablaEncontrada) {
-        $sqlTrabajadores = "SELECT trabajador_id AS id FROM trabajadores WHERE email = '$email' LIMIT 1";
-        $resTrabajadores = mysqli_query($conn, $sqlTrabajadores);
+        $stmtTrabajadores = mysqli_prepare($conn, "SELECT trabajador_id AS id FROM trabajadores WHERE email = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmtTrabajadores, "s", $email);
+        mysqli_stmt_execute($stmtTrabajadores);
+        $resTrabajadores = mysqli_stmt_get_result($stmtTrabajadores);
         if ($resTrabajadores && mysqli_num_rows($resTrabajadores) === 1) {
             $usuario = mysqli_fetch_assoc($resTrabajadores);
             $idUsuario = $usuario['id'];
             $tablaEncontrada = 'trabajadores';
             $linkCambiarPassword = "http://energym.ddns.net/trabajador/crear_password.php?token=" . urlencode($token);
         }
+        mysqli_stmt_close($stmtTrabajadores);
     }
 
     // Verificar en entrenadores
     if (!$tablaEncontrada) {
-        $sqlEntrenadores = "SELECT entrenador_id AS id FROM entrenadores WHERE email = '$email' LIMIT 1";
-        $resEntrenadores = mysqli_query($conn, $sqlEntrenadores);
+        $stmtEntrenadores = mysqli_prepare($conn, "SELECT entrenador_id AS id FROM entrenadores WHERE email = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmtEntrenadores, "s", $email);
+        mysqli_stmt_execute($stmtEntrenadores);
+        $resEntrenadores = mysqli_stmt_get_result($stmtEntrenadores);
         if ($resEntrenadores && mysqli_num_rows($resEntrenadores) === 1) {
             $usuario = mysqli_fetch_assoc($resEntrenadores);
             $idUsuario = $usuario['id'];
             $tablaEncontrada = 'entrenadores';
             $linkCambiarPassword = "http://energym.ddns.net/entrenador/crear_password.php?token=" . urlencode($token);
         }
+        mysqli_stmt_close($stmtEntrenadores);
     }
 
     // Si no se encontró en ninguna tabla
     if (!$tablaEncontrada) {
         $status = 'notfound';
     } else {
-        // Actualizar el token en la tabla correspondiente
+        // Actualizar el token en la tabla correspondiente usando consulta preparada
         if ($tablaEncontrada === 'clientes') {
-            $updateSql = "UPDATE clientes SET reset_token = '$token' WHERE cliente_id = $idUsuario";
+            $stmtUpdate = mysqli_prepare($conn, "UPDATE clientes SET reset_token = ? WHERE cliente_id = ?");
         } elseif ($tablaEncontrada === 'trabajadores') {
-            $updateSql = "UPDATE trabajadores SET reset_token = '$token' WHERE trabajador_id = $idUsuario";
+            $stmtUpdate = mysqli_prepare($conn, "UPDATE trabajadores SET reset_token = ? WHERE trabajador_id = ?");
         } elseif ($tablaEncontrada === 'entrenadores') {
-            $updateSql = "UPDATE entrenadores SET reset_token = '$token' WHERE entrenador_id = $idUsuario";
+            $stmtUpdate = mysqli_prepare($conn, "UPDATE entrenadores SET reset_token = ? WHERE entrenador_id = ?");
         }
-
-        mysqli_query($conn, $updateSql);
+        mysqli_stmt_bind_param($stmtUpdate, "si", $token, $idUsuario);
+        mysqli_stmt_execute($stmtUpdate);
+        mysqli_stmt_close($stmtUpdate);
 
         // Configuración de PHPMailer para enviar el correo
         $mail = new PHPMailer(true);
