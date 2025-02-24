@@ -1,7 +1,5 @@
 <?php
-require '../partials/header1.view.php';
 include '../partials/db.php';
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -16,7 +14,15 @@ if (!isset($_SESSION['id'])) {
     header("Location: /login.php");
     exit();
 }
-
+function get_client_ip() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
 $email = $_SESSION['email'];
 $nombre = $_SESSION['usuario'];
 
@@ -50,9 +56,12 @@ try {
     // Contenido del correo
     $mail->isHTML(true);
     $mail->Subject = 'Solicitud de cambio de contraseña - EnerGym';
+    $client_ip = get_client_ip(); // Get the client's IP address
+
     $mail->Body = "
         <h2>Hola, $nombre</h2>
-        <p>Hemos recibido una solicitud para cambiar tu contraseña. Haz clic en el siguiente enlace para crear tu nueva contraseña:</p>
+        <p>Hemos recibido una solicitud para cambiar tu contraseña desde la dirección IP: <strong>$client_ip</strong>.</p>
+        <p>Si has realizado esta solicitud, haz clic en el siguiente enlace para crear tu nueva contraseña:</p>
         <p><a href='$linkCambiarPassword' target='_blank'>Cambiar Contraseña</a></p>
         <p>Si el enlace no funciona, copia y pega esta URL en tu navegador:</p>
         <p>$linkCambiarPassword</p>
@@ -62,6 +71,7 @@ try {
         <p>Atentamente,<br>El equipo de EnerGym</p>
     ";
 
+
     $mail->send();
     $isSuccess = true;
 
@@ -69,6 +79,7 @@ try {
     $isSuccess = false;
     $errorMessage = "No se pudo enviar el correo. Error: {$mail->ErrorInfo}";
 }
+require '../partials/header1.view.php';
 ?>
 
 <!DOCTYPE html>

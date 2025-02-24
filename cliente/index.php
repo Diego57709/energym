@@ -1,8 +1,5 @@
 <?php
 declare(strict_types=1);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 include '../partials/db.php';
 include '../partials/encrypt.php';
 
@@ -14,8 +11,7 @@ use chillerlan\QRCode\QROptions;
 
 session_start();
 
-// Si no hay un usuario autenticado, redirigimos al login
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['id'])) {
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'cliente')) {
     header("Location: ../login.php");
     exit;
 }
@@ -26,7 +22,6 @@ if (time() > $_SESSION['timeout']) {
   exit();
 }
 
-// Obtenemos los datos del cliente
 $id_usuario = $_SESSION['id'];
 $sql = "SELECT * FROM clientes WHERE cliente_id = '$id_usuario'";
 $result = mysqli_query($conn, $sql);
@@ -38,12 +33,10 @@ if (mysqli_num_rows($result) == 1) {
 $nombreCliente   = $clientes['nombre'];
 $apellidosCliente= $clientes['apellidos'];
 
-// Tiempo que le queda del plan
 $fechaFin       = strtotime($clientes['end_sub']);
 $fechaActual    = time();
 $diferenciaSegundos = $fechaFin - $fechaActual;
 
-// Controlar la suscripción expirada
 $mostrarQR = true;
 $mensaje   = "Tu suscripción ha expirado.";
 
@@ -57,10 +50,8 @@ if ($diferenciaSegundos <= 0) {
     $mensaje = "$dias días, $horas horas y $minutos minutos";
 }
 
-// Qué tipo de plan tiene
 $plan = ($clientes['plan'] == 1) ? 'Premiun' : 'Comfort';
 
-// Consultar último pago y definir precio plan
 $sqlLastPayment = "
     SELECT total 
     FROM historial_pagos
@@ -71,11 +62,9 @@ $sqlLastPayment = "
 $resLast = mysqli_query($conn, $sqlLastPayment);
 
 if ($resLast && mysqli_num_rows($resLast) > 0) {
-    // Existe un pago anterior; usamos ese total
     $rowLast    = mysqli_fetch_assoc($resLast);
     $precioPlan = (float)$rowLast['total'];
 } else {
-    // No hay historial de pagos, usamos precio "base" según su plan
     $precioPlan = ($clientes['plan'] == 1) ? 25.99 : 19.99;
 }
 
@@ -123,7 +112,7 @@ if ($resultSiguienteClase && mysqli_num_rows($resultSiguienteClase) > 0) {
 } else {
     $SiguienteClaseDate = false;
 }
-
+// SELECT ci.clase_id, cg.entrenador_id FROM clases_inscripciones ci JOIN clases_grupales cg ON ci.clase_id = cg.clase_id;
 
 //Encriptar ID
 function encryptData($data) {

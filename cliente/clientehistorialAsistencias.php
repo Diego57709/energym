@@ -5,7 +5,7 @@ include '../partials/db.php';
 session_start();
 
 // Redirigir al login si no hay sesión iniciada
-if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
+if (!isset($_SESSION['usuario']) && !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'cliente')) {
     header("Location: ../login.php");
     exit;
 }
@@ -15,9 +15,9 @@ $nombreUsuario = $_SESSION['nombre'];
 $tipo = $_SESSION['usuario'];
 
 // Filtros de mes, año y tipo
-$mesSeleccionado = $_GET['mes'] ?? date('m'); // Mes actual por defecto
-$anioSeleccionado = $_GET['anio'] ?? date('Y'); // Año actual por defecto
-$tipoSeleccionado = $_GET['tipo'] ?? 'todos'; // 'todos' por defecto (sin filtro)
+$mesSeleccionado = $_GET['mes'] ?? date('m');
+$anioSeleccionado = $_GET['anio'] ?? date('Y');
+$tipoSeleccionado = $_GET['tipo'] ?? 'todos';
 
 // Consulta SQL para obtener asistencias del cliente
 $sqlHistorial = "SELECT fecha_hora, tipo FROM asistencias 

@@ -1,40 +1,47 @@
 <?php
 declare(strict_types=1);
+include 'partials/db.php';
+
 include '../partials/db.php';
 session_start();
 
-// Redirigir al login si no hay sesión iniciada
-if (!isset($_SESSION['usuario']) && !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'cliente')) {
-    header("Location: login.php");
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'entrenador')) {
+    header("Location: /login.php");
     exit;
 }
 
-$nombreUsuario = $_SESSION['usuario'];
-$id_cliente = $_SESSION['id'];
+$id_trabajador = $_SESSION['id'];
+$nombreTrabajador = $_SESSION['nombre'];
+$tipo = $_SESSION['usuario'];
 
-// Filtros de mes y año
-$mesSeleccionado = $_GET['mes'] ?? null;
-$anioSeleccionado = $_GET['anio'] ?? null;
+// Filtros de mes, año y tipo
+$mesSeleccionado = $_GET['mes'] ?? date('m'); // Mes actual por defecto
+$anioSeleccionado = $_GET['anio'] ?? date('Y'); // Año actual por defecto
+$tipoSeleccionado = $_GET['tipo'] ?? 'todos'; // 'todos' por defecto (sin filtro)
 
-// Base de la consulta
-$sqlHistorialPagos = "SELECT cliente_id, metodo_pago, fecha_pago, total, recurrente FROM historial_pagos WHERE cliente_id = '$id_cliente' ";
+// Consulta SQL para obtener asistencias del trabajador
+$sqlHistorial = "SELECT fecha_hora, tipo FROM asistencias 
+                 WHERE usuario_id = '$id_trabajador' 
+                 AND tipo_usuario = 'trabajador' 
+                 AND YEAR(fecha_hora) = '$anioSeleccionado'
+                 AND MONTH(fecha_hora) = '$mesSeleccionado'";
 
-// Agregar filtros si se seleccionaron mes y año
-if ($mesSeleccionado && $anioSeleccionado) {
-    $sqlHistorialPagos .= " WHERE YEAR(fecha_pago) = '$anioSeleccionado' AND MONTH(fecha_pago) = '$mesSeleccionado'";
+// Filtrar por tipo de asistencia si se selecciona "entrada" o "salida"
+if ($tipoSeleccionado !== 'todos') {
+    $sqlHistorial .= " AND tipo = '$tipoSeleccionado'";
 }
 
-$sqlHistorialPagos .= " ORDER BY fecha_pago DESC";
+$sqlHistorial .= " ORDER BY fecha_hora DESC";
 
-$resultHistorialPagos = mysqli_query($conn, $sqlHistorialPagos);
-$pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
+$resultHistorial = mysqli_query($conn, $sqlHistorial);
+$asistencias = mysqli_fetch_all($resultHistorial, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Todos los Pagos | EnerGym</title>
+    <title>Historial de Asistencias | EnerGym Trabajadores</title>
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -77,13 +84,12 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
     <div class="main">
         <div class="container my-5">
             <div class="table-container">
-                <h1 class="text-center mb-4">Todos los Pagos</h1>
+                <h1 class="text-center mb-4">Historial de Asistencias de Trabajadores</h1>
 
-                <!-- Filtros de mes y año -->
+                <!-- Filtros de mes, año y tipo -->
                 <form method="GET" class="mb-4 d-flex justify-content-center gap-3 flex-wrap">
                     <!-- Filtro de mes -->
                     <select name="mes" class="form-select" style="width: auto;">
-                        <option value="">Todos los meses</option>
                         <option value="01" <?= $mesSeleccionado == '01' ? 'selected' : '' ?>>Enero</option>
                         <option value="02" <?= $mesSeleccionado == '02' ? 'selected' : '' ?>>Febrero</option>
                         <option value="03" <?= $mesSeleccionado == '03' ? 'selected' : '' ?>>Marzo</option>
@@ -100,7 +106,6 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
 
                     <!-- Filtro de año -->
                     <select name="anio" class="form-select" style="width: auto;">
-                        <option value="">Todos los años</option>
                         <?php for ($anio = date('Y'); $anio >= 2020; $anio--): ?>
                             <option value="<?= $anio ?>" <?= $anioSeleccionado == $anio ? 'selected' : '' ?>>
                                 <?= $anio ?>
@@ -108,34 +113,49 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
                         <?php endfor; ?>
                     </select>
 
+                    <!-- Filtro de tipo -->
+                    <select name="tipo" class="form-select" style="width: auto;">
+                        <option value="todos" <?= $tipoSeleccionado == 'todos' ? 'selected' : '' ?>>Todos</option>
+                        <option value="entrada" <?= $tipoSeleccionado == 'entrada' ? 'selected' : '' ?>>Entradas</option>
+                        <option value="salida" <?= $tipoSeleccionado == 'salida' ? 'selected' : '' ?>>Salidas</option>
+                    </select>
+
                     <button type="submit" class="btn btn-primary">Filtrar</button>
-                    <a href="clientehistorialPagos.php" class="btn btn-secondary">Quitar Filtro</a>
+                    <a href="trabajadorHistorialAsistencias.php" class="btn btn-secondary">Quitar Filtro</a>
                 </form>
 
-                <!-- Tabla de pagos -->
-                <?php if (count($pagos) > 0): ?>
+                <!-- Tabla de asistencias -->
+                <?php if (count($asistencias) > 0): ?>
                     <table class="table table-bordered table-striped">
                         <thead class="table-dark">
                             <tr>
-                                <th>Fecha de Pago</th>
-                                <th>Método de Pago</th>
-                                <th>Total</th>
-                                <th>Recurrente</th>
+                                <th>#</th>
+                                <th>Fecha y Hora</th>
+                                <th>Tipo de Asistencia</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($pagos as $index => $pago): ?>
+                            <?php foreach ($asistencias as $index => $asistencia): ?>
                                 <tr>
-                                    <td><?= date('d F Y, h:i A', strtotime($pago['fecha_pago'])) ?></td>
-                                    <td><?= htmlspecialchars($pago['metodo_pago']) ?></td>
-                                    <td><?= number_format((float)$pago['total'], 2) ?></td>
-                                    <td><?= $pago['recurrente'] ? 'Sí' : 'No' ?></td>
+                                    <td><?= $index + 1 ?></td>
+                                    <td><?= date('d F Y, h:i A', strtotime($asistencia['fecha_hora'])) ?></td>
+                                    <td>
+                                        <?php 
+                                        if (strtolower($asistencia['tipo']) === 'entrada') {
+                                            echo '<span class="text-success">Entrada</span>';
+                                        } elseif (strtolower($asistencia['tipo']) === 'salida') {
+                                            echo '<span class="text-danger">Salida</span>';
+                                        } else {
+                                            echo 'Desconocido';
+                                        }
+                                        ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p class="text-center text-muted">No hay pagos registrados para el periodo seleccionado.</p>
+                    <p class="text-center text-muted">No hay asistencias registradas para el periodo seleccionado.</p>
                 <?php endif; ?>
 
                 <!-- Botón de regreso -->
@@ -145,6 +165,7 @@ $pagos = mysqli_fetch_all($resultHistorialPagos, MYSQLI_ASSOC);
             </div>
         </div>
     </div>
+
     <!-- Footer -->
     <?php require '../partials/footer.view.php'; ?>
 

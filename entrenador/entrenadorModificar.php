@@ -1,25 +1,27 @@
 <?php
 declare(strict_types=1);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 require_once __DIR__ . '/../components/vendor/autoload.php';
 include '../partials/db.php';
 
 session_start();
 
-// Redirigir al login si no hay sesión iniciada
-if (!isset($_SESSION['usuario']) && !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'cliente')) {
+if (!isset($_SESSION['usuario']) && !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'entrenador')) {
     header("Location: ../login.php");
     exit;
 }
 
 $id_usuario = $_SESSION['id'];
 
-$sql = "SELECT * FROM clientes WHERE cliente_id = '$id_usuario'";
+$sql = "SELECT * FROM entrenadores WHERE entrenador_id = '$id_usuario'";
 $result = mysqli_query($conn, $sql);
-$clientes = mysqli_fetch_assoc($result);
+$entrenador = mysqli_fetch_assoc($result);
 
-if (!$clientes) {
-    die("Error al obtener los datos del cliente.");
+if (!$entrenador) {
+    die("Error al obtener los datos del entrenador.");
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,33 +32,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $direccion = trim($_POST['direccion']);
     $codigo_postal = trim($_POST['codigo_postal']);
     $fecha_nacimiento = $_POST['fecha_nacimiento'];
-    $genero = $_POST['genero'];
 
-    $sqlUpdate = "UPDATE clientes SET 
-                    nombre = ?, 
-                    apellidos = ?, 
-                    email = ?, 
-                    telefono = ?, 
-                    direccion = ?, 
-                    codigo_postal = ?, 
-                    fecha_nacimiento = ?, 
-                    genero = ?
-                  WHERE cliente_id = ?";
-    $stmt = $conn->prepare($sqlUpdate);
-    if (!$stmt) {
-        die("Error al preparar la consulta: " . $conn->error);
-    }
+    $sqlUpdate = "UPDATE entrenadores SET 
+    nombre = '$nombre', 
+    apellidos = '$apellidos',
+    email = '$email', 
+    telefono = '$telefono', 
+    direccion = '$direccion', 
+    codigo_postal = '$codigo_postal', 
+    fecha_nacimiento = '$fecha_nacimiento'
+    WHERE entrenador_id = '$id_usuario'";
 
-    $stmt->bind_param("ssssssssi", $nombre, $apellidos, $email, $telefono, $direccion, $codigo_postal, $fecha_nacimiento, $genero, $id_usuario);
-
-    if ($stmt->execute()) {
+    if (mysqli_query($conn, $sqlUpdate)) {
         $mensaje = "Datos actualizados con éxito.";
-        header("Location: clienteModificar.php?mensaje=" . urlencode($mensaje));
+        header("Location: trabajadorModificar.php?mensaje=$mensaje");
         exit;
     } else {
-        $error = "Error al actualizar los datos: " . $stmt->error;
+        $error = "Error al actualizar los datos: " . mysqli_error($conn);
     }
-    $stmt->close();
 }
 ?>
 
@@ -77,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             flex-direction: column;
         }
+
         .main {
             flex: 1;
             display: flex;
@@ -143,55 +137,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <!-- Formulario de modificación -->
-                    <form method="POST" action="clienteModificar.php" class="form-section" id="datos-form">
+                    <form method="POST" action="trabajadorModificar.php" class="form-section" id="datos-form">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="nombre" class="form-label fw-bold">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?= htmlspecialchars($clientes['nombre']) ?>" required>
+                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?= htmlspecialchars($entrenador['nombre']) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="apellidos" class="form-label fw-bold">Apellidos</label>
-                                <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?= htmlspecialchars($clientes['apellidos'] ?? '') ?>" required>
+                                <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?= htmlspecialchars($entrenador['apellidos'] ?? '') ?>" required>
                             </div>
                         </div>
 
                         <div class="row g-3 mt-3">
                             <div class="col-md-6">
                                 <label for="email" class="form-label fw-bold">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($clientes['email']) ?>" required>
+                                <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($entrenador['email']) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="telefono" class="form-label fw-bold">Teléfono</label>
-                                <input type="text" class="form-control" id="telefono" name="telefono" value="<?= htmlspecialchars($clientes['telefono']) ?>" required>
+                                <input type="text" class="form-control" id="telefono" name="telefono" value="<?= htmlspecialchars($entrenador['telefono']) ?>" required>
                             </div>
                         </div>
 
                         <div class="row g-3 mt-3">
                             <div class="col-12">
                                 <label for="direccion" class="form-label fw-bold">Dirección</label>
-                                <input type="text" class="form-control" id="direccion" name="direccion" value="<?= htmlspecialchars($clientes['direccion']) ?>" required>
-                            </div>
-                        </div>
-                        <div class="row g-3 mt-3">
-                            <div class="col-md-6">
-                                <label for="codigo_postal" class="form-label fw-bold">Código Postal</label>
-                                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?= htmlspecialchars($clientes['codigo_postal']) ?>" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="fecha_nacimiento" class="form-label fw-bold">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?= htmlspecialchars($clientes['fecha_nacimiento']) ?>" required>
+                                <input type="text" class="form-control" id="direccion" name="direccion" value="<?= htmlspecialchars($entrenador['direccion']) ?>" required>
                             </div>
                         </div>
 
+
                         <div class="row g-3 mt-3">
-                            <div class="col-12">
-                                <label for="genero" class="form-label fw-bold">Género</label>
-                                <select class="form-control" id="genero" name="genero" required>
-                                    <option value="">Selecciona...</option>
-                                    <option value="M" <?= ($clientes['genero'] === 'M' ? 'selected' : '') ?>>Masculino</option>
-                                    <option value="F" <?= ($clientes['genero'] === 'F' ? 'selected' : '') ?>>Femenino</option>
-                                    <option value="O" <?= ($clientes['genero'] === 'O' ? 'selected' : '') ?>>Otro</option>
-                                </select>
+                            <div class="col-md-6">
+                                <label for="codigo_postal" class="form-label fw-bold">Código Postal</label>
+                                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?= htmlspecialchars($entrenador['codigo_postal']) ?>" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fecha_nacimiento" class="form-label fw-bold">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?= htmlspecialchars($entrenador['fecha_nacimiento']) ?>" required>
                             </div>
                         </div>
 
@@ -223,14 +207,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         // Almacenar valores originales
         const originalData = {
-            nombre: '<?= htmlspecialchars($clientes['nombre']) ?>',
-            apellidos: '<?= htmlspecialchars($clientes['apellidos'] ?? '') ?>',
-            email: '<?= htmlspecialchars($clientes['email']) ?>',
-            telefono: '<?= htmlspecialchars($clientes['telefono']) ?>',     
-            direccion: '<?= htmlspecialchars($clientes['direccion']) ?>',
-            codigo_postal: '<?= htmlspecialchars($clientes['codigo_postal']) ?>',
-            fecha_nacimiento: '<?= htmlspecialchars($clientes['fecha_nacimiento']) ?>',
-            genero: '<?= htmlspecialchars($clientes['genero']) ?>',
+            nombre: '<?= htmlspecialchars($entrenador['nombre']) ?>',
+            apellidos: '<?= htmlspecialchars($entrenador['apellidos'] ?? '') ?>',
+            email: '<?= htmlspecialchars($entrenador['email']) ?>',
+            telefono: '<?= htmlspecialchars($entrenador['telefono']) ?>',
+            direccion: '<?= htmlspecialchars($entrenador['direccion']) ?>',
+            codigo_postal: '<?= htmlspecialchars($entrenador['codigo_postal']) ?>',
+            fecha_nacimiento: '<?= htmlspecialchars($entrenador['fecha_nacimiento']) ?>',
         };
 
         const form = document.getElementById('datos-form');
@@ -249,7 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.getElementById('direccion').value = originalData.direccion;
             document.getElementById('codigo_postal').value = originalData.codigo_postal;
             document.getElementById('fecha_nacimiento').value = originalData.fecha_nacimiento;
-            document.getElementById('genero').value = originalData.genero;
             undoContainer.style.display = 'none';
         });
     </script>

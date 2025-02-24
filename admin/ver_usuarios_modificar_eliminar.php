@@ -1,8 +1,5 @@
 <?php
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'Manager') {
-    header('Location: ../index.php?error=permisos_insuficientes');
-    exit();
-}
+
 
 include '../partials/db.php';
 

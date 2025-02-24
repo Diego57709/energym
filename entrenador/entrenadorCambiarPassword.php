@@ -1,6 +1,8 @@
 <?php
 include '../partials/db.php';
-
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -10,9 +12,9 @@ require '../components/phpmailer/src/SMTP.php';
 
 session_start();
 
-// Verificar si el cliente está logueado
-if (!isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'cliente')) {
-    header("Location: login.php");
+// Verificar si el entrenador está logueado
+if (!isset($_SESSION['id'])) {
+    header("Location: /login.php");
     exit();
 }
 function get_client_ip() {
@@ -27,16 +29,15 @@ function get_client_ip() {
 $email = $_SESSION['email'];
 $nombre = $_SESSION['usuario'];
 
-$token = bin2hex(random_bytes(16)); // Token aleatorio de 32 caracteres
+$token = bin2hex(random_bytes(16));
 
-$idCliente = $_SESSION['id'];
-$updateSql = "UPDATE clientes SET reset_token = '$token' WHERE cliente_id = $idCliente";
+
+$idTrabajador = $_SESSION['id'];
+$updateSql = "UPDATE entrenadores SET reset_token = '$token' WHERE entrenador_id = $idTrabajador";
 mysqli_query($conn, $updateSql);
 
-// Enlace para cambiar contraseña
-$linkCambiarPassword = "http://energym.ddns.net/cliente/crear_password.php?token=" . urlencode($token);
+$linkCambiarPassword = "http://energym.ddns.net/entrenador/crear_password.php?token=" . urlencode($token);
 
-// Configuración de PHPMailer para enviar el correo
 $mail = new PHPMailer(true);
 
 try {
@@ -44,7 +45,7 @@ try {
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'energym.asir@gmail.com';
-    $mail->Password = 'wvaz qdrj yqfm bnub';
+    $mail->Password = 'wvaz qdrj yqfm bnub'; // Sustituye por tu contraseña de aplicación segura
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
@@ -56,7 +57,6 @@ try {
     $mail->isHTML(true);
     $mail->Subject = 'Solicitud de cambio de contraseña - EnerGym';
     $client_ip = get_client_ip();
-
     $mail->Body = "
         <h2>Hola, $nombre</h2>
         <p>Hemos recibido una solicitud para cambiar tu contraseña desde la dirección IP: <strong>$client_ip</strong>.</p>
@@ -72,9 +72,11 @@ try {
 
 
     $mail->send();
+    $isSuccess = true;
+
 } catch (Exception $e) {
-    echo "No se pudo enviar el correo. Error: {$mail->ErrorInfo}";
-    exit();
+    $isSuccess = false;
+    $errorMessage = "No se pudo enviar el correo. Error: {$mail->ErrorInfo}";
 }
 require '../partials/header1.view.php';
 ?>
@@ -107,17 +109,29 @@ require '../partials/header1.view.php';
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
+        .error-container {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
 
 <div class="main">
-    <div class="info-container">
-        <h2 class="mb-4">Solicitud enviada</h2>
-        <p>Hemos enviado un correo a tu dirección <strong><?php echo htmlspecialchars($email); ?></strong>.</p>
-        <p>Por favor, revisa tu bandeja de entrada y sigue el enlace para cambiar tu contraseña.</p>
-        <p class="text-muted mt-3">Si no lo ves, revisa tu carpeta de spam o intenta enviar la solicitud nuevamente.</p>
-        <a href="index.php" class="btn w-100 mt-3" style="background-color: #0f8b8d; color:white;">Volver a mi cuenta</a>
+    <div class="info-container <?php echo $isSuccess ? '' : 'error-container'; ?>">
+        <?php if ($isSuccess): ?>
+            <h2 class="mb-4">Solicitud enviada</h2>
+            <p>Hemos enviado un correo a tu dirección <strong><?php echo htmlspecialchars($email); ?></strong>.</p>
+            <p>Por favor, revisa tu bandeja de entrada y sigue el enlace para cambiar tu contraseña.</p>
+            <p class="text-muted mt-3">Si no lo ves, revisa tu carpeta de spam o intenta enviar la solicitud nuevamente.</p>
+            <a href="index.php" class="btn w-100 mt-3" style="background-color: #0f8b8d; color:white;">Volver a mi cuenta</a>
+        <?php else: ?>
+            <h2 class="mb-4">Error al enviar solicitud</h2>
+            <p><?php echo htmlspecialchars($errorMessage); ?></p>
+            <p class="text-muted mt-3">Por favor, intenta nuevamente más tarde o contacta al soporte técnico.</p>
+            <a href="index.php" class="btn btn-danger w-100 mt-3">Volver a mi cuenta</a>
+        <?php endif; ?>
     </div>
 </div>
 

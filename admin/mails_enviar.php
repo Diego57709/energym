@@ -24,14 +24,14 @@
   >
 
   <style>
-    html, body {
+    body, html {
       height: 100%;
       margin: 0;
     }
     .wrapper {
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh;
     }
     .main-content {
       flex: 1;

@@ -24,11 +24,13 @@ require '../partials/timeout.php';
         .wrapper {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
         }
         .main-content {
             flex: 1;
             padding: 40px;
+        }
+        .flex-grow {
             background-color: #f8f9fa;
         }
         .sidebar {

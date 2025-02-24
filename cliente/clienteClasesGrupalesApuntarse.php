@@ -6,7 +6,7 @@ include '../partials/db.php';
 session_start();
 
 // Redirigir al login si el usuario no está autenticado
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['id'])) {
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'cliente')) {
     header("Location: login.php");
     exit;
 }
