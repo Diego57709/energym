@@ -45,7 +45,7 @@ try {
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'energym.asir@gmail.com';
-    $mail->Password = 'wvaz qdrj yqfm bnub'; // Sustituye por tu contraseña de aplicación segura
+    $mail->Password = 'wvaz qdrj yqfm bnub';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 

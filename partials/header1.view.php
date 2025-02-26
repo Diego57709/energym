@@ -127,47 +127,48 @@
   </style>
 </head>
 <body>
-  <header class="header-bar d-flex align-items-center px-3 py-2">
+  <!-- Cabecera con role="banner" -->
+  <header class="header-bar d-flex align-items-center px-3 py-2" role="banner">
     <!-- Izquierda: Logo -->
     <div class="flex-shrink-0">
-      <a href="/" class="d-flex align-items-center">
-        <img src="/partials/img/icon.webp" alt="Logo" class="header-icon">
+      <a href="/" class="d-flex align-items-center" aria-label="Inicio">
+        <img src="/partials/img/icon.webp" alt="Logo de EnerGym" class="header-icon">
       </a>
     </div>
     
     <!-- Centro: Área Cliente -->
     <div class="flex-grow-1 text-center">
-      <a href="/login.php" class="header-cliente text-decoration-none">Área Cliente</a>
+      <a href="/login.php" class="header-cliente text-decoration-none" aria-label="Área Cliente">Área Cliente</a>
     </div>
     
     <!-- Derecha: Botón para abrir el menú lateral -->
     <div class="flex-shrink-0">
-      <button class="btn p-0 border-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-        <img src="/img/nav.webp" alt="Navigation" class="dropdown-icon">
+      <button class="btn p-0 border-0" data-bs-toggle="offcanvas" data-bs-target="#header-offcanvasMenu" aria-controls="header-offcanvasMenu" aria-label="Abrir menú">
+        <img src="/img/nav.webp" alt="Icono de navegación" class="dropdown-icon">
       </button>
     </div>
   </header>
 
-  <!-- Menú lateral (Offcanvas) sin fade, sin fondo oscuro y permitiendo scroll -->
-  <div class="offcanvas offcanvas-end" data-bs-backdrop="false" data-bs-scroll="true" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+  <!-- Menú lateral (Offcanvas) -->
+  <div class="offcanvas offcanvas-end" data-bs-backdrop="false" data-bs-scroll="true" tabindex="-1" id="header-offcanvasMenu" aria-labelledby="header-offcanvasMenuLabel" role="dialog">
     <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasMenuLabel">Energym</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      <h5 class="offcanvas-title" id="header-offcanvasMenuLabel">EnerGym</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar menú"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column">
       <!-- Opciones de menú -->
-      <div>
-        <ul class="list-unstyled">
-          <li><a class="dropdown-item" href="/index.php">Home</a></li>
-          <li><a class="dropdown-item" href="/nosotros.php">Sobre Nosotros</a></li>
-          <li><a class="dropdown-item" href="/contactanos.php">Contáctanos</a></li>
-          <li><a class="dropdown-item" href="/faq.php">FAQ</a></li>
+      <nav role="navigation">
+        <ul class="list-unstyled" role="menu">
+          <li><a class="dropdown-item" href="/index.php" role="menuitem">Home</a></li>
+          <li><a class="dropdown-item" href="/nosotros.php" role="menuitem">Sobre Nosotros</a></li>
+          <li><a class="dropdown-item" href="/contactanos.php" role="menuitem">Contáctanos</a></li>
+          <li><a class="dropdown-item" href="/faq.php" role="menuitem">FAQ</a></li>
         </ul>
-      </div>
-      <!-- Grupo final: el botón "Inscríbete" y, debajo, el footer -->
+      </nav>
+      <!-- Grupo final: botón "Inscríbete" y footer -->
       <div class="mt-auto">
         <div class="inscribete-btn mb-3">
-          <a href="/planes.php" class="header-cliente text-decoration-none">Inscríbete</a>
+          <a href="/planes.php" class="header-cliente text-decoration-none" aria-label="Inscríbete">Inscríbete</a>
         </div>
         <div class="offcanvas-footer">
           <p>© 2024 EnerGym. All Rights Reserved.</p>

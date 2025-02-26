@@ -112,7 +112,7 @@ session_start();
     <script>
         let html5QrCode;
         let isScanning = false;
-        let scanProcessed = false; // Flag para evitar múltiples ejecuciones
+        let scanProcessed = false;
 
         function toggleScanner() {
             const button = document.getElementById("toggleCamera");
@@ -123,8 +123,8 @@ session_start();
                 }
 
                 const qrCodeSuccessCallback = (decodedText) => {
-                    if (scanProcessed) return;  // Si ya se procesó un escaneo, salir
-                    scanProcessed = true;       // Marcar que ya se procesó el escaneo
+                    if (scanProcessed) return;
+                    scanProcessed = true;
                     window.location.href = `qr_verificacion_e.php?token=${encodeURIComponent(decodedText)}`;
                 };
 
@@ -144,7 +144,7 @@ session_start();
                 html5QrCode.stop()
                     .then(() => {
                         isScanning = false;
-                        scanProcessed = false; // Reiniciar flag al detener la cámara
+                        scanProcessed = false;
                         button.textContent = "Iniciar Cámara";
                         button.classList.remove("btn-danger");
                         button.classList.add("btn-primary");

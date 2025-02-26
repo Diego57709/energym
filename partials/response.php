@@ -1,19 +1,34 @@
 <?php
+// Habilitar reporte de errores (solo para desarrollo, quítalo en producción)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Configurar archivo de log personalizado
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/chatbot.log');
 
 require "../components/vendor/autoload.php";
 
-use GeminiAPI\Client;
-use GeminiAPI\Resources\Parts\TextPart;
+// Función para añadir entradas al archivo de log
+function logMessage($message) {
+    error_log('[' . date('Y-m-d H:i:s') . '] ' . $message);
+}
 
-// Obtenemos el JSON enviado
-$data = json_decode(file_get_contents("php://input"));
+logMessage("Iniciando procesamiento de solicitud de chatbot");
+
+// Obtener el JSON enviado
+$input = file_get_contents("php://input");
+logMessage("Input recibido: " . $input);
+$data = json_decode($input);
 $userMessage = $data->text ?? '';
-$botName = $data->botName ?? 'Lenny'; // Si no se envía un nombre, se usa "Lenny" por defecto
+$botName = $data->botName ?? 'Lenny'; // Valor por defecto si no se envía nombre
 
-// Redirecciones según palabras clave
+logMessage("Mensaje del usuario: " . $userMessage);
+logMessage("Nombre del bot: " . $botName);
+
+// Función para generar respuestas de redirección basadas en palabras clave
 function generateRedirectResponse($text) {
     $lowerText = strtolower($text);
-
     if (strpos($lowerText, 'inicio') !== false || strpos($lowerText, 'home') !== false) {
         return 'Puedes visitar nuestra <a href="/index.php">página de inicio</a>.';
     }
@@ -32,75 +47,114 @@ function generateRedirectResponse($text) {
     return false;
 }
 
-// Lógica para manejar redirecciones antes de enviar al modelo
+// Si se detecta alguna palabra clave para redirección, se envía esa respuesta
 $redirectResponse = generateRedirectResponse($userMessage);
 if ($redirectResponse) {
+    logMessage("Respuesta de redirección generada: " . $redirectResponse);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['response' => $redirectResponse], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
-// Prompt que se envía al modelo
-$text = "Hola, soy $botName, tu asistente virtual de EnerGym. Estoy aquí para ayudarte a alcanzar tus metas fitness y resolver cualquier duda sobre nuestros servicios, instalaciones, planes de membresía, horarios, rutinas de ejercicio, nutrición y más. ¡Juntos haremos que tu experiencia en EnerGym sea increíble!
+// Contexto del sistema y del bot - mejorado para claridad y estructura
+$systemPrompt = "Eres $botName, el asistente virtual de EnerGym. Tu función es proporcionar información clara y precisa sobre el gimnasio, sus servicios y planes de membresía.
 
-¿En qué puedo ayudarte hoy? Aquí tienes algunas opciones:
+Reglas:
+1. **Tono**: Profesional, claro y amigable.
+2. **Identidad**: Siempre preséntate como el asistente de EnerGym. No preguntes '¿Quién eres?' ni permitas que el usuario asuma tu rol.
+3. **Formato**:
+   - Responde en párrafos breves.
+   - Usa viñetas para organizar información.
+   - Prioriza respuestas directas y relevantes.
 
-Planes de Membresía:
+Información de EnerGym:
 
-Plan Comfort (€19,99 promocional | €24,99 regular): Acceso a clases con reserva de hasta 36 horas de antelación, planes de entrenamiento personalizados en la app EnerGym, y YONGO Sports Water por solo €3,90. ¡Sin cuota de inscripción!
+🕒 **Horarios**:  
+- Abierto de 6:00 a 23:30 todos los días.
 
-Plan Premium (€25,99 promocional | €29,99 regular): Todo lo del Plan Comfort, más reserva de hasta dos clases con 48 horas de antelación, YONGO Sports Water a €1,90, y asesoramiento personalizado con inteligencia artificial para optimizar tu progreso.
+🏋️ **Planes de Membresía**:
+- **Comfort (€19,99 promo | €24,99 regular)**:  
+  - Acceso a clases con reserva (36 h de antelación).
+  - Planes de entrenamiento personalizados en la app.
+  - YONGO Sports Water por €3,90.
+  - **Sin cuota de inscripción.**
+- **Premium (€25,99 promo | €29,99 regular)**:  
+  - Todo lo del plan Comfort.
+  - Reserva de hasta 2 clases con 48 h de antelación.
+  - YONGO Sports Water por €1,90.
+  - Asesoramiento personalizado con IA.
 
-Servicios:
+🧘 **Clases Grupales**:
+- **Tipos**: Yoga, Spinning, Pilates, HIIT, Zumba, Body Pump.
+- **Horarios**:  
+  - Mañanas: 7:00 - 12:00  
+  - Tardes: 16:00 - 21:00  
+  - **Disponibilidad según el día.**
+- **Reserva**: Obligatoria con 24-48 horas de antelación (según plan).
 
-Clases grupales (yoga, spinning, pilates).
+Reglas adicionales:
+- No inventes información.
+- Si no tienes la respuesta, sugiere visitar la web o contactar con recepción.
+- Siempre prioriza la experiencia del usuario.";
 
-Rutinas populares y consejos para maximizar tu entrenamiento.
+$userPrompt = $userMessage;
 
-Áreas de entrenamiento personal y equipos de última generación.
+try {
+    logMessage("Preparando solicitud a la API de Gemini");
+    $apiKey = "AIzaSyDvQiMvT4zZ9BUsSSQEWdwxChotB0_o99A";
+    $url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=" . $apiKey;
 
-Fitness y Nutrición:
+    $postData = [
+        'contents' => [
+            ['role' => 'user', 'parts' => [['text' => $systemPrompt]]],
+            ['role' => 'model', 'parts' => [['text' => "Entendido, soy $botName, asistente virtual de EnerGym. Estoy listo para ayudar."]]],
+            ['role' => 'user', 'parts' => [['text' => $userPrompt]]]
+        ],
+        'generationConfig' => [
+            'temperature' => 0.7,
+            'topK' => 40,
+            'topP' => 0.95,
+            'maxOutputTokens' => 1024
+        ]
+    ];
 
-Consejos generales sobre tendencias fitness (HIIT, CrossFit, etc.).
+    $jsonPostData = json_encode($postData);
+    logMessage("Datos enviados a Gemini: " . $jsonPostData);
 
-Información sobre cómo combinar ejercicio y alimentación para un estilo de vida saludable.
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPostData);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    
+    $response = curl_exec($ch);
+    if (curl_errno($ch)) throw new Exception("Error de cURL: " . curl_error($ch));
 
-Inscripción:
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($httpCode != 200) throw new Exception("Error de API (código $httpCode): " . $response);
 
-Regístrate en línea o en recepción. ¿Necesitas ayuda? Te guío paso a paso.
+    curl_close($ch);
 
-Horarios:
+    $responseData = json_decode($response, true);
+    if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
+        $botResponse = $responseData['candidates'][0]['content']['parts'][0]['text'];
+    } else {
+        throw new Exception("Formato de respuesta inesperado.");
+    }
 
-Abrimos de 6:00 a 23:30 todos los días. ¿Quieres saber cuándo hay menos gente? Pregúntame.
+    // Asegurar que SIEMPRE mencione su identidad
+    if (strpos(strtolower($botResponse), "soy") === false) {
+        logMessage("Corrigiendo respuesta: agregando identificación del bot");
+        $botResponse = "Soy $botName, el asistente virtual de EnerGym. " . ucfirst($botResponse);
+    }
 
-Rutinas Personalizadas:
+} catch(Exception $e) {
+    logMessage("Excepción capturada: " . $e->getMessage());
+    $botResponse = "Soy $botName, el asistente virtual de EnerGym. Actualmente tengo problemas técnicos. ¿Podrías intentarlo más tarde o contactar con recepción?";
+}
 
-Respuesta: 'Perdona, no puedo crear rutinas específicas, pero puedes <a href='/planes.php'>contratar</a> sesiones con un entrenador personal adaptadas a tus necesidades.'
-
-Consultas no relacionadas:
-
-Respuesta: 'Disculpa, esa pregunta no está relacionada con el gimnasio. Por favor, realiza consultas sobre servicios, entrenamientos o actividades de EnerGym.'
-
-Enlaces útiles:
-
-<a href='/index.php'>Inicio</a>
-
-<a href='/nosotros.php'>Sobre Nosotros</a>
-
-<a href='/servicios.php'>Servicios</a>
-
-<a href='/contactanos.php'>Contáctanos</a>
-
-<a href='/faq.php'>Preguntas Frecuentes</a>
-
-¡Estoy aquí para ayudarte! Responde de forma clara y breve, adaptándome a tus necesidades. ¿Qué te gustaría saber?" . $userMessage;
-
-
-$client = new Client("AIzaSyBYWTKh3ZUTmqY1wdsS6iS_uvEY522ysxE");
-
-// Enviamos el prompt modificado al modelo
-$response = $client->geminiPro()->generateContent(new TextPart($text));
-
-// Enviar la respuesta del modelo con el encabezado JSON
+logMessage("Enviando respuesta final: " . $botResponse);
 header('Content-Type: application/json; charset=utf-8');
-echo json_encode(['response' => $response->text()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+echo json_encode(['response' => $botResponse], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+logMessage("Solicitud completada");
+?>

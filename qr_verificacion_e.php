@@ -22,18 +22,17 @@ if (isset($parsedUrl['query'])) {
 
 // Función para registrar asistencia
 function registrarAsistencia($conn, $usuarioId, $tipoUsuario, $qrToken, $tabla, $campoId) {
-    // Consulta preparada para revisar si existe una "ENTRADA" previa sin "SALIDA"
-    $sqlCheckPrevious = "SELECT asistencia_id, tipo FROM asistencias WHERE usuario_id = ? AND tipo_usuario = ? ORDER BY fecha_hora DESC LIMIT 1";
-    $stmt = mysqli_prepare($conn, $sqlCheckPrevious);
+    $sqlCheckAnterior = "SELECT asistencia_id, tipo FROM asistencias WHERE usuario_id = ? AND tipo_usuario = ? ORDER BY fecha_hora DESC LIMIT 1";
+    $stmt = mysqli_prepare($conn, $sqlCheckAnterior);
     mysqli_stmt_bind_param($stmt, "is", $usuarioId, $tipoUsuario);
     mysqli_stmt_execute($stmt);
-    $resultCheckPrevious = mysqli_stmt_get_result($stmt);
+    $resultCheckAnterior = mysqli_stmt_get_result($stmt);
     mysqli_stmt_close($stmt);
 
     $fechaHora = date("Y-m-d H:i:s");
 
-    if (mysqli_num_rows($resultCheckPrevious) === 1) {
-        $row = mysqli_fetch_assoc($resultCheckPrevious);
+    if (mysqli_num_rows($resultCheckAnterior) === 1) {
+        $row = mysqli_fetch_assoc($resultCheckAnterior);
         if ($row['tipo'] === 'ENTRADA') {
             // Registrar "SALIDA" con sentencia preparada
             $sqlSalida = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES (?, ?, 'SALIDA', ?)";
@@ -47,14 +46,14 @@ function registrarAsistencia($conn, $usuarioId, $tipoUsuario, $qrToken, $tabla, 
         }
     }
 
-    // Registrar "ENTRADA" con sentencia preparada
+    // Registrar "ENTRADA"
     $sqlEntrada = "INSERT INTO asistencias (usuario_id, fecha_hora, tipo, tipo_usuario) VALUES (?, ?, 'ENTRADA', ?)";
     $stmtEntrada = mysqli_prepare($conn, $sqlEntrada);
     mysqli_stmt_bind_param($stmtEntrada, "iss", $usuarioId, $fechaHora, $tipoUsuario);
     mysqli_stmt_execute($stmtEntrada);
     mysqli_stmt_close($stmtEntrada);
 
-    // Actualizar token: aquí $tabla y $campoId son variables dinámicas (no se pueden parametrizar)
+    // Actualizar token
     $updateTokenSql = "UPDATE $tabla SET qr_token = NULL WHERE $campoId = ?";
     $stmtUpdate = mysqli_prepare($conn, $updateTokenSql);
     mysqli_stmt_bind_param($stmtUpdate, "i", $usuarioId);
