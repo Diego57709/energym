@@ -20,7 +20,6 @@ require '../components/phpmailer/src/SMTP.php';
 $mensaje_exito = '';
 $mensaje_error = '';
 
-
 // 1) CREACIÓN DE USUARIOS (sólo Entrenador / Trabajador) con envío de email
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear_user'])) {
     $rol               = trim($_POST['rol'] ?? '');
@@ -40,6 +39,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear_user'])) {
     }
     if (empty($dni) || empty($nombre) || empty($apellidos) || empty($email)) {
         $mensaje_error = "Los campos DNI, Nombre, Apellidos y Email son obligatorios.";
+    }
+
+    // Verificar duplicados en todas las tablas
+    if (empty($mensaje_error)) {
+        $sqlCheck = "SELECT COUNT(*) AS count FROM (
+            SELECT dni, email FROM entrenadores
+            UNION ALL
+            SELECT dni, email FROM trabajadores
+            UNION ALL
+            SELECT dni, email FROM clientes
+        ) AS users WHERE dni = '$dni' OR email = '$email'";
+        $resultCheck = mysqli_query($conn, $sqlCheck);
+        if ($resultCheck) {
+            $rowCheck = mysqli_fetch_assoc($resultCheck);
+            if ($rowCheck['count'] > 0) {
+                $mensaje_error = "Ya existe un usuario registrado con este DNI o correo electrónico.";
+            }
+        } else {
+            $mensaje_error = "Error al verificar duplicados: " . mysqli_error($conn);
+        }
     }
 
     // Si no hay error, insertamos según el rol
@@ -74,11 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear_user'])) {
             if ($rol === 'Entrenador') {
                 $tabla     = 'entrenadores';
                 $campoId   = 'entrenador_id';
-                $urlCambio = "http://energym.ddns.net/entrenador/crear_password.php?token="; 
+                $urlCambio = "http://energym.ddns.net/entrenador/crear_password.php?token=";
             } else {
                 $tabla     = 'trabajadores';
                 $campoId   = 'trabajador_id';
-                $urlCambio = "http://energym.ddns.net/trabajador/crear_password.php?token="; 
+                $urlCambio = "http://energym.ddns.net/trabajador/crear_password.php?token=";
             }
 
             $updateTokenSQL = "UPDATE $tabla SET reset_token = '$token' WHERE $campoId = $nuevoId";
@@ -92,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear_user'])) {
                 $mail->Host       = 'smtp.gmail.com';
                 $mail->SMTPAuth   = true;
                 $mail->Username   = 'energym.asir@gmail.com';
-                $mail->Password   = 'wvaz qdrj yqfm bnub'; 
+                $mail->Password   = 'wvaz qdrj yqfm bnub';
                 $mail->SMTPSecure = 'ssl';
                 $mail->Port       = 465;
 
@@ -113,11 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear_user'])) {
                 ";
 
                 $mail->send();
-                // Opcionalmente, podrías agregar un mensaje adicional: "Se ha enviado un correo..."
             } catch (Exception $e) {
                 $mensaje_error = "El usuario se creó correctamente, pero hubo un error al enviar el correo: {$mail->ErrorInfo}";
             }
-
         } else {
             $mensaje_error = "Error al insertar: " . mysqli_error($conn);
         }
@@ -263,10 +280,17 @@ $countEntrenadores = countTable($conn, 'entrenadores');
           background-color: #343a40;
           color: white;
       }
+      /* Estilo para los contadores que funcionan como filtro */
+      .counter-card {
+          cursor: pointer;
+          text-decoration: none;
+      }
+      .counter-card:hover {
+          opacity: 0.9;
+      }
     </style>
 </head>
 <body>
-
 <div class="wrapper">
     <!-- Sidebar y contenido -->
     <div class="d-flex flex-grow-1">
@@ -282,38 +306,43 @@ $countEntrenadores = countTable($conn, 'entrenadores');
             <a href="/trabajador/"><i class="fas fa-sign-out-alt"></i> Salir</a>
             <a href="../logoutProcesar.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
-
         <!-- Contenido principal -->
         <div class="flex-grow-1">
             <div class="main-content">
-                <!-- Tarjetas de conteo -->
+                <!-- Tarjetas de conteo con links para filtrar -->
                 <div class="row mb-4">
                     <!-- Clientes -->
                     <div class="col-md-4">
-                        <div class="card text-white bg-primary">
-                            <div class="card-body">
-                                <h5 class="card-title">Clientes</h5>
-                                <p class="card-text fs-4"><?= $countClientes ?></p>
-                            </div>
-                        </div>
+                        <a href="ver_usuarios.php?role=Cliente" class="counter-card">
+                          <div class="card text-white bg-primary">
+                              <div class="card-body text-center">
+                                  <h5 class="card-title">Clientes</h5>
+                                  <p class="card-text fs-4"><?= $countClientes ?></p>
+                              </div>
+                          </div>
+                        </a>
                     </div>
                     <!-- Trabajadores -->
                     <div class="col-md-4">
-                        <div class="card text-white bg-success">
-                            <div class="card-body">
-                                <h5 class="card-title">Trabajadores</h5>
-                                <p class="card-text fs-4"><?= $countTrabajadores ?></p>
-                            </div>
-                        </div>
+                        <a href="ver_usuarios.php?role=Trabajador" class="counter-card">
+                          <div class="card text-white bg-success">
+                              <div class="card-body text-center">
+                                  <h5 class="card-title">Trabajadores</h5>
+                                  <p class="card-text fs-4"><?= $countTrabajadores ?></p>
+                              </div>
+                          </div>
+                        </a>
                     </div>
                     <!-- Entrenadores -->
                     <div class="col-md-4">
-                        <div class="card text-white bg-warning">
-                            <div class="card-body">
-                                <h5 class="card-title">Entrenadores</h5>
-                                <p class="card-text fs-4"><?= $countEntrenadores ?></p>
-                            </div>
-                        </div>
+                        <a href="ver_usuarios.php?role=Entrenador" class="counter-card">
+                          <div class="card text-white bg-warning">
+                              <div class="card-body text-center">
+                                  <h5 class="card-title">Entrenadores</h5>
+                                  <p class="card-text fs-4"><?= $countEntrenadores ?></p>
+                              </div>
+                          </div>
+                        </a>
                     </div>
                 </div>
 
@@ -372,13 +401,11 @@ $countEntrenadores = countTable($conn, 'entrenadores');
                                     <td><?= htmlspecialchars($u['role']) ?></td>
                                     <td>
                                         <!-- Eliminar -->
-                                        <form action="ver_usuarios_modificar_eliminar.php" method="POST" class="d-inline"
-                                              onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
+                                        <form action="ver_usuarios_modificar_eliminar.php" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
                                             <input type="hidden" name="id" value="<?= htmlspecialchars($u['id']) ?>">
                                             <input type="hidden" name="role" value="<?= htmlspecialchars($u['role']) ?>">
                                             <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                                         </form>
-                                        <!-- Podrías añadir un botón de Editar si lo deseas -->
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -402,14 +429,14 @@ $countEntrenadores = countTable($conn, 'entrenadores');
 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="POST" action="ver_usuarios.php">
+      <!-- Se añade 'needs-validation' y 'novalidate' para la validación de Bootstrap -->
+      <form method="POST" action="ver_usuarios.php" class="needs-validation" novalidate>
         <div class="modal-header">
           <h5 class="modal-title" id="addUserModalLabel">Añadir Usuario</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" name="crear_user" value="1" />
-
           <div class="mb-3">
             <label for="rol" class="form-label">Tipo de Usuario</label>
             <select class="form-select" id="rol" name="rol" required>
@@ -417,49 +444,54 @@ $countEntrenadores = countTable($conn, 'entrenadores');
               <option value="Entrenador">Entrenador</option>
               <option value="Trabajador">Trabajador</option>
             </select>
+            <div class="invalid-feedback">
+              Selecciona un tipo de usuario.
+            </div>
           </div>
-
           <div class="mb-3">
             <label for="dni" class="form-label">DNI</label>
             <input type="text" class="form-control" id="dni" name="dni" required>
+            <div class="invalid-feedback">
+              Por favor, ingresa el DNI.
+            </div>
           </div>
-
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="nombre" name="nombre" required>
+            <div class="invalid-feedback">
+              Por favor, ingresa el nombre.
+            </div>
           </div>
-
           <div class="mb-3">
             <label for="apellidos" class="form-label">Apellidos</label>
             <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+            <div class="invalid-feedback">
+              Por favor, ingresa los apellidos.
+            </div>
           </div>
-
           <div class="mb-3">
             <label for="fecha_nacimiento" class="form-label">Fecha Nacimiento</label>
-            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento">
+            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
           </div>
-
           <div class="mb-3">
             <label for="direccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control" id="direccion" name="direccion">
+            <input type="text" class="form-control" id="direccion" name="direccion" required>
           </div>
-
           <div class="mb-3">
             <label for="codigo_postal" class="form-label">Código Postal</label>
-            <input type="text" class="form-control" id="codigo_postal" name="codigo_postal">
+            <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" required>
           </div>
-
           <div class="mb-3">
             <label for="telefono" class="form-label">Teléfono</label>
-            <input type="text" class="form-control" id="telefono" name="telefono">
+            <input type="text" class="form-control" id="telefono" name="telefono" required>
           </div>
-
           <div class="mb-3">
             <label for="email" class="form-label">Correo Electrónico</label>
             <input type="email" class="form-control" id="email" name="email" required>
+            <div class="invalid-feedback">
+              Por favor, ingresa un correo electrónico válido.
+            </div>
           </div>
-
-          <!-- Agrega más campos si son necesarios (password para trabajadores, especialidad, etc.) -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -470,6 +502,24 @@ $countEntrenadores = countTable($conn, 'entrenadores');
   </div>
 </div>
 
+<!-- Script para validación del formulario con Bootstrap -->
+<script>
+  // Deshabilitar el envío del formulario si hay campos inválidos
+  (function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+      .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+        }, false)
+      })
+  })()
+</script>
 <!-- Scripts de Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

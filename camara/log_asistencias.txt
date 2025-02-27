@@ -1,0 +1,49 @@
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:17:35, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:19:59, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:20:35, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:24:44, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:47:59, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:48:56, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:50:23, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:50:38, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:52:32, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:52:42, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:52:52, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:54:10, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:54:17, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:54:46, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 08:54:51, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:00:07, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:00:24, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:00:29, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:02:40, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:02:45, Tipo: SALIDA
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:02:58, Tipo: ENTRADA
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:03:04, Tipo: SALIDA
+Usuario: Diego2, Fecha: 2025-02-27 09:03:51, Tipo: SALIDA
+Usuario: Diego2, Fecha: 2025-02-27 09:04:03, Tipo: ENTRADA
+Usuario: Diego2, Fecha: 2025-02-27 09:04:09, Tipo: SALIDA
+Usuario: Diego2, Fecha: 2025-02-27 09:04:55, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:07:27
+Usuario: Diego2, Fecha: 2025-02-27 09:08:11, Tipo: SALIDA
+Usuario: Diego2, Fecha: 2025-02-27 09:11:39, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 6 el 2025-02-27 09:12:03
+ERROR: Intento de escaneo inválido para usuario ID: 6 el 2025-02-27 09:12:16
+ERROR: Intento de escaneo inválido para usuario ID: 6 el 2025-02-27 09:12:46
+ERROR: Intento de escaneo inválido para usuario ID: 6 el 2025-02-27 09:15:11
+ERROR: Intento de escaneo inválido para usuario ID: 6 el 2025-02-27 09:22:54
+ERROR: Intento de escaneo inválido para usuario ID: 6 el 2025-02-27 09:23:00
+Usuario: Sigma Boy, Fecha: 2025-02-27 09:23:10, Tipo: ENTRADA
+Usuario: Diego2, Fecha: 2025-02-27 09:24:42, Tipo: SALIDA
+Usuario: Diego2, Fecha: 2025-02-27 09:24:53, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:25:04
+Usuario: Diego2, Fecha: 2025-02-27 09:25:29, Tipo: SALIDA
+Usuario: Diego2, Fecha: 2025-02-27 09:25:35, Tipo: ENTRADA
+Usuario: Diego2, Fecha: 2025-02-27 09:27:14, Tipo: SALIDA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:27:23
+Usuario: Diego2, Fecha: 2025-02-27 09:28:07, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:28:16
+Usuario: Diego2, Fecha: 2025-02-27 09:31:25, Tipo: SALIDA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:31:35
+Usuario: Diego2, Fecha: 2025-02-27 09:48:55, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:49:16

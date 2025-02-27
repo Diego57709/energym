@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -163,6 +166,9 @@
           <li><a class="dropdown-item" href="/nosotros.php" role="menuitem">Sobre Nosotros</a></li>
           <li><a class="dropdown-item" href="/contactanos.php" role="menuitem">Contáctanos</a></li>
           <li><a class="dropdown-item" href="/faq.php" role="menuitem">FAQ</a></li>
+          <?php if (isset($_SESSION['usuario'])) {?>
+          <li><a class="dropdown-item" href="/logoutProcesar.php" role="menuitem">Cerrar Sesión</a></li>
+          <?php } ?>
         </ul>
       </nav>
       <!-- Grupo final: botón "Inscríbete" y footer -->

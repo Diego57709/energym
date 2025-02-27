@@ -20,6 +20,14 @@ if (time() > $_SESSION['timeout']) {
   header('Location: /login.html');
   exit();
 }
+if ($_SESSION['rol'] == 'trabajador') {
+    header("Location: /login.php");
+    exit();
+}
+if ($_SESSION['rol'] == 'Camara') {
+  header("Location: /camara.php");
+  exit();
+}
 
 // Obtenemos los datos del trabajador
 $id_trabajador = $_SESSION['id'];
@@ -63,6 +71,7 @@ $mesActual = date('Y-m');
 $sqlAsistenciasMes = "SELECT COUNT(*) AS total_asistencias FROM asistencias WHERE usuario_id = '$id_trabajador' AND DATE_FORMAT(fecha_hora, '%Y-%m') = '$mesActual'";
 $resultAsistenciasMes = mysqli_query($conn, $sqlAsistenciasMes);
 $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistencias'] ?? 0;
+
 ?>
 <!DOCTYPE html>
 <html lang="es">

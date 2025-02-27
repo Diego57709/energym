@@ -102,7 +102,7 @@ $userPrompt = $userMessage;
 try {
     logMessage("Preparando solicitud a la API de Gemini");
     $apiKey = "AIzaSyDvQiMvT4zZ9BUsSSQEWdwxChotB0_o99A";
-    $url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=" . $apiKey;
+    $url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=" . $apiKey;
 
     $postData = [
         'contents' => [
@@ -142,12 +142,6 @@ try {
         throw new Exception("Formato de respuesta inesperado.");
     }
 
-    // Asegurar que SIEMPRE mencione su identidad
-    if (strpos(strtolower($botResponse), "soy") === false) {
-        logMessage("Corrigiendo respuesta: agregando identificación del bot");
-        $botResponse = "Soy $botName, el asistente virtual de EnerGym. " . ucfirst($botResponse);
-    }
-
 } catch(Exception $e) {
     logMessage("Excepción capturada: " . $e->getMessage());
     $botResponse = "Soy $botName, el asistente virtual de EnerGym. Actualmente tengo problemas técnicos. ¿Podrías intentarlo más tarde o contactar con recepción?";
@@ -158,3 +152,4 @@ header('Content-Type: application/json; charset=utf-8');
 echo json_encode(['response' => $botResponse], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 logMessage("Solicitud completada");
 ?>
+

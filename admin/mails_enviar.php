@@ -54,10 +54,9 @@
       text-decoration: none;
     }
     .main-content {
-        padding: 40px;
-        background-color: #f8f9fa;
+      padding: 40px;
+      background-color: #f8f9fa;
     }
-
     .sidebar a:hover {
       background-color: #495057;
     }
@@ -74,11 +73,11 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     footer, footer p {
-        text-align: center;
-        padding: 15px;
-        background-color: #343a40;
-        color: white;
-        }
+      text-align: center;
+      padding: 15px;
+      background-color: #343a40;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -117,26 +116,85 @@
                 required
               >
             </div>
+            
+            <!-- Select de presets -->
+            <div class="mb-3">
+              <label for="preset" class="form-label">Selecciona un preset</label>
+              <select id="preset" class="form-control">
+                <option value="">-- Seleccione un preset --</option>
+                <option value="bienvenida">Correo de Bienvenida</option>
+                <option value="promocion">Promoción Especial</option>
+                <option value="recordatorio">Recordatorio de Clase</option>
+                <option value="cumpleanos">Feliz Cumpleaños</option>
+                <option value="evento">Invitación a Evento</option>
+                <option value="actualizacion">Actualización de Servicios</option>
+              </select>
+            </div>
+
             <div class="mb-3">
               <label for="mensaje" class="form-label">Mensaje del correo</label>
               <textarea id="summernote" name="mensaje" class="form-control"></textarea>
-
             </div>
+            
+            <!-- Checkboxes para destinatarios por grupo -->
             <div class="mb-3">
-              <label for="destinatarios" class="form-label">Destinatarios</label>
-              <select 
-                name="destinatarios" 
-                id="destinatarios" 
-                class="form-control" 
-                required
-              >
-                <option value="todos">Todos</option>
-                <option value="clientes">Clientes</option>
-                <option value="trabajadores">Trabajadores</option>
-                <option value="entrenadores">Entrenadores</option>
-                <option value="newsletter">Usuarios de la newsletter</option>
-              </select>
+              <label class="form-label">Destinatarios por grupo</label>
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  name="destinatarios_grupo[]" 
+                  value="clientes" 
+                  id="destinatarioClientes"
+                >
+                <label class="form-check-label" for="destinatarioClientes">Clientes</label>
+              </div>
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  name="destinatarios_grupo[]" 
+                  value="trabajadores" 
+                  id="destinatarioTrabajadores"
+                >
+                <label class="form-check-label" for="destinatarioTrabajadores">Trabajadores</label>
+              </div>
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  name="destinatarios_grupo[]" 
+                  value="entrenadores" 
+                  id="destinatarioEntrenadores"
+                >
+                <label class="form-check-label" for="destinatarioEntrenadores">Entrenadores</label>
+              </div>
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  name="destinatarios_grupo[]" 
+                  value="newsletter" 
+                  id="destinatarioNewsletter"
+                >
+                <label class="form-check-label" for="destinatarioNewsletter">Usuarios de la newsletter</label>
+              </div>
             </div>
+            
+            <!-- Campo para ingresar destinatarios individuales -->
+            <div class="mb-3">
+              <label for="destinatarios_individuales" class="form-label">
+                Destinatarios individuales (ingresa uno o varios emails, separados por comas)
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="destinatarios_individuales" 
+                name="destinatarios_individuales" 
+                placeholder="correo1@ejemplo.com, correo2@ejemplo.com"
+              >
+            </div>
+            
             <button type="submit" class="btn btn-primary">Enviar</button>
           </form>
         </div>
@@ -176,6 +234,33 @@
         ['para', ['ul', 'ol', 'paragraph']],
         ['view', ['fullscreen', 'codeview', 'help']]
       ]
+    });
+
+    // Presets de correos: se asignan tanto título como mensaje
+    $('#preset').on('change', function() {
+      var preset = $(this).val();
+      if (preset === 'bienvenida') {
+        $('#titulo').val('Bienvenido a EnerGym');
+        $('#summernote').summernote('code', '<p>Hola,</p><p>¡Bienvenido a EnerGym! Nos alegra contar contigo. Explora nuestras instalaciones y servicios diseñados para ti.</p><p>Saludos,</p><p>El equipo de EnerGym</p>');
+      } else if (preset === 'promocion') {
+        $('#titulo').val('Promoción Especial en EnerGym');
+        $('#summernote').summernote('code', '<p>¡No te pierdas nuestra promoción especial!</p><p>Durante este mes, disfruta de descuentos exclusivos en nuestros servicios. ¡Te esperamos!</p>');
+      } else if (preset === 'recordatorio') {
+        $('#titulo').val('Recordatorio de Clase en EnerGym');
+        $('#summernote').summernote('code', '<p>Hola,</p><p>Este es un recordatorio de tu próxima clase en EnerGym. No olvides asistir para aprovechar al máximo tu entrenamiento.</p><p>Saludos,</p><p>El equipo de EnerGym</p>');
+      } else if (preset === 'cumpleanos') {
+        $('#titulo').val('¡Feliz Cumpleaños!');
+        $('#summernote').summernote('code', '<p>¡Feliz cumpleaños!</p><p>Esperamos que tengas un día maravilloso lleno de alegría y sorpresas. ¡Disfruta tu día!</p>');
+      } else if (preset === 'evento') {
+        $('#titulo').val('Invitación a Evento de EnerGym');
+        $('#summernote').summernote('code', '<p>Estimado/a,</p><p>Te invitamos cordialmente a nuestro próximo evento. No te lo pierdas y confirma tu asistencia.</p><p>Saludos,</p><p>El equipo de EnerGym</p>');
+      } else if (preset === 'actualizacion') {
+        $('#titulo').val('Actualización de Servicios en EnerGym');
+        $('#summernote').summernote('code', '<p>Hola,</p><p>Tenemos importantes actualizaciones en nuestros servicios. Por favor, revisa los detalles y mantente informado.</p><p>Gracias,</p><p>El equipo de EnerGym</p>');
+      } else {
+        $('#titulo').val('');
+        $('#summernote').summernote('code', '');
+      }
     });
   });
 </script>

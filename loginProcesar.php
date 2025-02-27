@@ -95,6 +95,9 @@ if ($resClientes && mysqli_num_rows($resClientes) === 1) {
 // -----------------------------------
 // 2) NO ESTÁ EN CLIENTES -> BUSCAR EN TRABAJADORES
 // -----------------------------------
+// -----------------------------------
+// 2) NO ESTÁ EN CLIENTES -> BUSCAR EN TRABAJADORES
+// -----------------------------------
 $stmtTrab = mysqli_prepare($conn, "SELECT * FROM trabajadores WHERE email = ? LIMIT 1");
 mysqli_stmt_bind_param($stmtTrab, "s", $email);
 mysqli_stmt_execute($stmtTrab);
@@ -104,12 +107,17 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
     $trabajador = mysqli_fetch_assoc($resTrab);
 
     if (password_verify($password, $trabajador['password'])) {
-        // Contraseña correcta
-        $_SESSION['nombre']       = $trabajador['nombre'];
-        $_SESSION['id']           = $trabajador['trabajador_id'];
-        $_SESSION['email']        = $trabajador['email'];
-        $_SESSION['usuario']      = "trabajador";
-        $_SESSION['timeout']      = time() + 1800;
+        // Determinar tiempo de sesión según el rol
+        $tiempoSesion = ($trabajador['rol'] === 'camara') ? 43200 : 1800;
+
+        // Iniciar sesión
+        $_SESSION['nombre']    = $trabajador['nombre'];
+        $_SESSION['id']        = $trabajador['trabajador_id'];
+        $_SESSION['email']     = $trabajador['email'];
+        $_SESSION['usuario']   = "trabajador";
+        $_SESSION['rol']       = $trabajador['rol'];
+        $_SESSION['timeout']   = time() + $tiempoSesion;
+
         header('Location: trabajador/');
         exit();
     } else {
@@ -117,6 +125,7 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
         exit();
     }
 }
+
 
 // -----------------------------------
 // 3) NO ESTÁ EN TRABAJADORES -> BUSCAR EN ENTRENADORES

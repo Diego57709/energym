@@ -28,20 +28,25 @@
     justify-content: center;
   }
   .chat-card {
-    width: 320px;
-    max-height: 50dvh;
-    height: 50dvh !important;
-    margin-top: 10px; 
-    display: none;
-    flex-direction: column;
-    border-radius: 12px;
-    overflow: hidden;
-    border: none !important;
-    border-top: 4px solid #0d6efd;
-    border-bottom: 4px solid black;
-    transform: none !important;
-    box-shadow: none !important;
-  }
+  width: 320px;
+  max-height: 50dvh;
+  height: 50dvh !important;
+  margin-top: 10px; 
+  display: none;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: auto; /* Cambiado para permitir el scroll al redimensionar */
+  border: none !important;
+  border-top: 4px solid #0d6efd;
+  border-bottom: 4px solid black;
+  transform: none !important;
+  box-shadow: none !important;
+  resize: both; /* Permite redimensionar horizontal y verticalmente */
+  /* Opcional: restringir el tamaño mínimo */
+  min-width: 250px;
+  min-height: 300px;
+}
+
   .chat-messages {
     flex: 1;
     overflow-y: auto;
@@ -119,26 +124,36 @@
   }
 </style>
 
-<div class="chat-widget-container">
+<div class="chat-widget-container" role="complementary" aria-label="Chat con el asistente">
   <!-- Botón flotante del chat -->
-  <button id="chatToggleBtn" class="btn btn-primary chat-toggle-btn" title="Abrir Chat">
+  <button id="chatToggleBtn" class="btn btn-primary chat-toggle-btn" 
+          title="Abrir Chat" 
+          aria-label="Abrir chat" 
+          aria-expanded="false" 
+          aria-controls="chatCard">
     <i class="bi bi-chat-dots" id="chatIcon"></i>
   </button>
 
   <!-- Tarjeta del chat -->
-  <div id="chatCard" class="card chat-card d-none">
+  <div id="chatCard" class="card chat-card d-none" 
+       role="dialog" 
+       aria-modal="false" 
+       aria-labelledby="chatTitle">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <span id="chatTitle">Chat con Lenny</span>
+      <span id="chatTitle"></span>
       <!-- Botón de cierre en la barra superior -->
-      <button id="closeChatBtn" class="btn btn-sm" style="color:white;">
+      <button id="closeChatBtn" class="btn btn-sm" style="color:white;" aria-label="Cerrar chat">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
-    <div class="chat-messages" id="chatMessages">
+    <!-- Se agrega role="log" y aria-live para mensajes -->
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
     </div>
     <div class="chat-input-container">
-      <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta..." />
-      <button class="btn btn-primary" id="sendBtn">
+      <input type="text" id="chatInput" class="form-control" 
+             placeholder="Escribe tu consulta..." 
+             aria-label="Escribe tu consulta" />
+      <button class="btn btn-primary" id="sendBtn" aria-label="Enviar mensaje">
         <i class="bi bi-send"></i>
       </button>
     </div>
@@ -170,9 +185,17 @@
   closeChatBtn.addEventListener("click", toggleChat);
 
   function toggleChat() {
-    chatCard.classList.toggle("d-none");
-    chatToggleBtn.style.display = chatCard.classList.contains("d-none") ? "flex" : "none"; // Mostrar u ocultar botón
+  const isHidden = chatCard.classList.contains("d-none");
+  chatCard.classList.toggle("d-none");
+  chatToggleBtn.setAttribute("aria-expanded", (!isHidden).toString());
+  chatToggleBtn.style.display = isHidden ? "none" : "flex";
+
+  // Si el chat se abre y aún no hay mensajes, agregamos el mensaje de bienvenida
+  if (isHidden && chatMessages.innerHTML.trim() === "") {
+    addMessage(`Hola, soy ${randomName}, el asistente virtual de EnerGym. ¿En qué puedo ayudarte?`, "bot");
   }
+}
+
 
   // Enviar mensaje con el botón
   sendBtn.addEventListener("click", sendMessage);
@@ -208,12 +231,12 @@
     fetch("/partials/response.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: userText, botName: randomName }), // Enviar nombre aleatorio al backend
+      body: JSON.stringify({ text: userText, botName: randomName }),
     })
       .then((res) => res.json())
       .then((data) => {
         setTimeout(() => {
-          chatMessages.removeChild(typingIndicator); // Quitar "typing" después del delay
+          chatMessages.removeChild(typingIndicator);
           addMessage(data.response || "No entendí tu pregunta. Inténtalo de nuevo.", "bot");
           scrollToBottom();
         }, 1000);

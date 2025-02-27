@@ -1,9 +1,10 @@
 <?php
 session_start();
-// Uncomment this block if you want session validation.
-// if (!isset($_SESSION['id'])) {
-//     header('Location: 404.php');
-// }
+if (!($_SESSION['rol'] == 'Camara')) {
+    header("Location: /index.php");
+    exit();
+  }
+  
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -125,7 +126,7 @@ session_start();
                 const qrCodeSuccessCallback = (decodedText) => {
                     if (scanProcessed) return;
                     scanProcessed = true;
-                    window.location.href = `qr_verificacion_e.php?token=${encodeURIComponent(decodedText)}`;
+                    window.location.href = `qr_verificacion.php?token=${encodeURIComponent(decodedText)}`;
                 };
 
                 const config = { fps: 10, qrbox: { width: 220, height: 220 } };
