@@ -21,7 +21,6 @@
             background-position: 15%;
             background-attachment: fixed;
         }
-
         .main-img::before {
             content: '';
             position: absolute;

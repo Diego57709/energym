@@ -245,15 +245,6 @@
       } else if (preset === 'promocion') {
         $('#titulo').val('Promoción Especial en EnerGym');
         $('#summernote').summernote('code', '<p>¡No te pierdas nuestra promoción especial!</p><p>Durante este mes, disfruta de descuentos exclusivos en nuestros servicios. ¡Te esperamos!</p>');
-      } else if (preset === 'recordatorio') {
-        $('#titulo').val('Recordatorio de Clase en EnerGym');
-        $('#summernote').summernote('code', '<p>Hola,</p><p>Este es un recordatorio de tu próxima clase en EnerGym. No olvides asistir para aprovechar al máximo tu entrenamiento.</p><p>Saludos,</p><p>El equipo de EnerGym</p>');
-      } else if (preset === 'cumpleanos') {
-        $('#titulo').val('¡Feliz Cumpleaños!');
-        $('#summernote').summernote('code', '<p>¡Feliz cumpleaños!</p><p>Esperamos que tengas un día maravilloso lleno de alegría y sorpresas. ¡Disfruta tu día!</p>');
-      } else if (preset === 'evento') {
-        $('#titulo').val('Invitación a Evento de EnerGym');
-        $('#summernote').summernote('code', '<p>Estimado/a,</p><p>Te invitamos cordialmente a nuestro próximo evento. No te lo pierdas y confirma tu asistencia.</p><p>Saludos,</p><p>El equipo de EnerGym</p>');
       } else if (preset === 'actualizacion') {
         $('#titulo').val('Actualización de Servicios en EnerGym');
         $('#summernote').summernote('code', '<p>Hola,</p><p>Tenemos importantes actualizaciones en nuestros servicios. Por favor, revisa los detalles y mantente informado.</p><p>Gracias,</p><p>El equipo de EnerGym</p>');

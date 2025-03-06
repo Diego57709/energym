@@ -14,19 +14,16 @@ $id_trabajador = $_SESSION['id'];
 $nombreTrabajador = $_SESSION['nombre'];
 $tipo = $_SESSION['usuario'];
 
-// Filtros de mes, año y tipo
-$mesSeleccionado = $_GET['mes'] ?? date('m'); // Mes actual por defecto
-$anioSeleccionado = $_GET['anio'] ?? date('Y'); // Año actual por defecto
-$tipoSeleccionado = $_GET['tipo'] ?? 'todos'; // 'todos' por defecto (sin filtro)
+$mesSeleccionado = $_GET['mes'] ?? date('m');
+$anioSeleccionado = $_GET['anio'] ?? date('Y');
+$tipoSeleccionado = $_GET['tipo'] ?? 'todos';
 
-// Consulta SQL para obtener asistencias del trabajador
 $sqlHistorial = "SELECT fecha_hora, tipo FROM asistencias 
                  WHERE usuario_id = '$id_trabajador' 
                  AND tipo_usuario = 'trabajador' 
                  AND YEAR(fecha_hora) = '$anioSeleccionado'
                  AND MONTH(fecha_hora) = '$mesSeleccionado'";
 
-// Filtrar por tipo de asistencia si se selecciona "entrada" o "salida"
 if ($tipoSeleccionado !== 'todos') {
     $sqlHistorial .= " AND tipo = '$tipoSeleccionado'";
 }

@@ -1,17 +1,11 @@
 <?php
 declare(strict_types=1);
-include '../db.php'; // Conexión a la base de datos
+include '../db.php';
 
-// Habilitar la visualización de errores para depuración
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Token del bot de Telegram
 include 'token.php';
 
-// ENCRYPTION KEY
 include '../../partials/encrypt.php';
+
 // Cargar el autoload de Composer y las librerías
 require_once __DIR__ . '/../../components/vendor/autoload.php';
 use chillerlan\QRCode\{QRCode, QROptions};
@@ -81,7 +75,6 @@ if (isset($update['callback_query'])) {
     $data = $update['callback_query']['data'];
 
     if ($data === "generate_qr") {
-        // Si se solicita generar el QR, llamar a la función correspondiente
         generateQRCode($chat_id);
     }
 
@@ -89,7 +82,6 @@ if (isset($update['callback_query'])) {
     $url = "https://api.telegram.org/bot" . TELEGRAM_BOT_TOKEN . "/answerCallbackQuery";
     file_get_contents($url . '?' . http_build_query(["callback_query_id" => $callback_id]));
 
-    // Reenviar el menú para mantener visible el botón
     sendMenu($chat_id);
 }
 
@@ -196,8 +188,6 @@ function generateQRCode($chat_id) {
         sendMessage($chat_id, "⚠️ Error al generar el código QR.");
         return;
     }
-
-    // Enviar el código QR generado al usuario
     sendPhoto($chat_id, "Aquí está tu código QR para acceder al gimnasio:", $qr_path);
 }
 
@@ -232,7 +222,7 @@ function sendPhoto($chat_id, $caption, $photo_path) {
     $error = curl_error($ch);
     curl_close($ch);
 
-    // Registrar la respuesta de Telegram para depuración
+    // Registrar la respuesta de Telegram para los errore
     file_put_contents('bot_debug.log', "[ENVIAR FOTO] Código de respuesta de Telegram: {$http_code}\n", FILE_APPEND);
     file_put_contents('bot_debug.log', "[ENVIAR FOTO] Respuesta de Telegram: {$response}\n", FILE_APPEND);
 
@@ -244,7 +234,7 @@ function sendPhoto($chat_id, $caption, $photo_path) {
     }
 }
 
-// Función para registrar errores y notificar al soporte al usuario
+// Función para registrar errores para ver que falla
 function logAndNotifySupport($chat_id, $errorMessage) {
     file_put_contents('bot_debug.log', "Error: " . $errorMessage . "\n", FILE_APPEND);
     sendMessage($chat_id, "⚠️ Hubo un error generando tu QR. Contacta a soporte: energym.asir@gmail.com.");

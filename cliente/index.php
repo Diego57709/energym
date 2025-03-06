@@ -33,8 +33,8 @@ if (mysqli_num_rows($result) == 1) {
 $nombreCliente   = $clientes['nombre'];
 $apellidosCliente= $clientes['apellidos'];
 
-$fechaFin       = strtotime($clientes['end_sub']);
-$fechaActual    = time();
+$fechaFin = strtotime($clientes['end_sub']);
+$fechaActual = time();
 $diferenciaSegundos = $fechaFin - $fechaActual;
 
 $mostrarQR = true;
@@ -204,7 +204,7 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
               <a href="tg://resolve?domain=energymAsir_bot&start=<?php echo urlencode($encrypted_id); ?>" 
                   class="btn btn-primary">
                   📲 Conectar con Telegram
-                </a>
+              </a>
 
             <?php endif; ?>
 
