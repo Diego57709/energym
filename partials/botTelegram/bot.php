@@ -69,7 +69,6 @@ if (isset($update['message'])) {
 
 // Manejar los clics en los botones (callbacks) de Telegram
 if (isset($update['callback_query'])) {
-    // Obtener la información del callback
     $callback_id = $update['callback_query']['id'];
     $chat_id = $update['callback_query']['message']['chat']['id'];
     $data = $update['callback_query']['data'];

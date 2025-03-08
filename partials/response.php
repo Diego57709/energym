@@ -1,15 +1,10 @@
 <?php
-// Habilitar reporte de errores (solo para desarrollo, quítalo en producción)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
-// Configurar archivo de log personalizado
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/chatbot.log');
 
 require "../components/vendor/autoload.php";
 
-// Función para añadir entradas al archivo de log
 function logMessage($message) {
     error_log('[' . date('Y-m-d H:i:s') . '] ' . $message);
 }
@@ -21,12 +16,11 @@ $input = file_get_contents("php://input");
 logMessage("Input recibido: " . $input);
 $data = json_decode($input);
 $userMessage = $data->text ?? '';
-$botName = $data->botName ?? 'Lenny'; // Valor por defecto si no se envía nombre
+$botName = $data->botName ?? 'Lenny';
 
 logMessage("Mensaje del usuario: " . $userMessage);
 logMessage("Nombre del bot: " . $botName);
 
-// Función para generar respuestas de redirección basadas en palabras clave
 function generateRedirectResponse($text) {
     $lowerText = strtolower($text);
     if (strpos($lowerText, 'inicio') !== false || strpos($lowerText, 'home') !== false) {
@@ -56,7 +50,6 @@ if ($redirectResponse) {
     exit;
 }
 
-// Contexto del sistema y del bot - mejorado para claridad y estructura
 $systemPrompt = "Eres $botName, el asistente virtual de EnerGym. Tu función es proporcionar información clara y precisa sobre el gimnasio, sus servicios y planes de membresía.
 
 Reglas:

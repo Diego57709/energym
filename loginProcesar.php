@@ -5,13 +5,86 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'components/phpmailer/src/Exception.php';
+require 'components/phpmailer/src/PHPMailer.php';
+require 'components/phpmailer/src/SMTP.php';
+
+
+// Función para enviar notificación de inicio de sesión (éxito)
+function enviarNotificacionLogin($destinatario, $nombre, $ip) {
+    $mail = new PHPMailer(true);
+    try {
+        // Configuración SMTP
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'energym.asir@gmail.com';
+        $mail->Password   = 'wvaz qdrj yqfm bnub';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port       = 465;
+        
+        $mail->setFrom('energym.asir@gmail.com', 'EnerGym');
+        $mail->addAddress($destinatario, $nombre);
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'Notificación de inicio de sesión';
+        $mail->Body    = "
+            <h2>Hola, $nombre</h2>
+            <p>Hemos detectado un inicio de sesión exitoso en tu cuenta.</p>
+            <p><strong>Dirección IP:</strong> $ip</p>
+            <p>Si no fuiste tú, por favor revisa la seguridad de tu cuenta.</p>
+            <p>Atentamente,<br>El equipo de EnerGym</p>
+        ";
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Error al enviar correo de inicio de sesión: {$mail->ErrorInfo}");
+    }
+}
+
+// Función para enviar alerta por intentos fallidos
+function enviarAlertaIntentoFallido($destinatario, $nombre, $ip) {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'energym.asir@gmail.com';
+        $mail->Password   = 'wvaz qdrj yqfm bnub';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port       = 465;
+
+        $mail->setFrom('energym.asir@gmail.com', 'EnerGym');
+        $mail->addAddress($destinatario, $nombre);
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'Alerta: Intento de acceso fallido';
+        $mail->Body    = "
+            <h2>Hola, $nombre</h2>
+            <p>Hemos detectado varios intentos fallidos de inicio de sesión en tu cuenta desde la dirección IP <strong>$ip</strong>.</p>
+            <p>Si no has sido tú, te recomendamos cambiar tu contraseña lo antes posible.</p>
+            <p>Atentamente,<br>El equipo de EnerGym</p>
+        ";
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Error al enviar alerta de acceso fallido: {$mail->ErrorInfo}");
+    }
+}
+
+// Configuración de Rate Limiting
+$limite_intentos = 3;
+$ip_usuario = $_SERVER['REMOTE_ADDR'];
+if (!isset($_SESSION['intentos'][$ip_usuario])) {
+    $_SESSION['intentos'][$ip_usuario] = ['contador' => 0, 'ultimo_intento' => time()];
+}
+
 // Recuperar datos del formulario
 $email    = $_POST['email']    ?? '';
 $password = $_POST['password'] ?? '';
 
-// -----------------------------------
 // 1) BUSCAR EN CLIENTES
-// -----------------------------------
 $stmtClientes = mysqli_prepare($conn, "SELECT * FROM clientes WHERE email = ? LIMIT 1");
 mysqli_stmt_bind_param($stmtClientes, "s", $email);
 mysqli_stmt_execute($stmtClientes);
@@ -22,82 +95,35 @@ if ($resClientes && mysqli_num_rows($resClientes) === 1) {
 
     // Verificar si tiene contraseña asignada
     if (empty($cliente['password'])) {
-        // No tiene contraseña asignada
-        ?>
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-            <meta charset="UTF-8">
-            <title>Contraseña no asignada</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <style>
-                html, body {
-                    height: 100%;
-                    margin: 0;
-                    display: flex;
-                    flex-direction: column;
-                }
-                .main {
-                    flex: 1;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .text-container {
-                    max-width: 400px;
-                    padding: 20px;
-                    background-color: #f8f9fa;
-                    border-radius: 10px;
-                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-                    text-align: center;
-                }
-            </style>
-        </head>
-        <body>
-        <div class="main">
-            <div class="text-container">
-                <h3>Contraseña no asignada</h3>
-                <p>Parece que aún no has creado tu contraseña.</p>
-                <p>Por favor, revisa tu correo electrónico para completarlo.</p>
-                <p>Redirigiendo al inicio de sesión en 3 segundos...</p>
-                <a href="login.php" class="btn btn-primary mt-3 w-100">Volver al inicio de sesión</a>
-            </div>
-        </div>
-        <script>
-            setTimeout(function () {
-                window.location.href = 'login.php';
-            }, 3000);
-        </script>
-        <?php include 'partials/footer.view.php'; ?>
-        </body>
-        </html>
-        <?php
+        header("Location: login.php?error=no_password");
         exit();
     }
 
     // Verificar contraseña
     if (password_verify($password, $cliente['password'])) {
-        // Contraseña correcta
+        unset($_SESSION['intentos'][$ip_usuario]);
         $_SESSION['nombre']    = $cliente['nombre'];
         $_SESSION['id']        = $cliente['cliente_id'];
         $_SESSION['email']     = $cliente['email'];
         $_SESSION['usuario']   = "cliente";
         $_SESSION['timeout']   = time() + 1800;
+        
+        enviarNotificacionLogin($cliente['email'], $cliente['nombre'], $ip_usuario);
+        
         header('Location: cliente/');
         exit();
     } else {
-        // Contraseña incorrecta
+        $_SESSION['intentos'][$ip_usuario]['contador']++;
+        if ($_SESSION['intentos'][$ip_usuario]['contador'] >= $limite_intentos) {
+            enviarAlertaIntentoFallido($cliente['email'], $cliente['nombre'], $ip_usuario);
+            $_SESSION['intentos'][$ip_usuario]['contador'] = 0;
+        }
         header('Location: /login.php?error=contraseña_incorrecta');
         exit();
     }
 }
 
-// -----------------------------------
-// 2) NO ESTÁ EN CLIENTES -> BUSCAR EN TRABAJADORES
-// -----------------------------------
-// -----------------------------------
-// 2) NO ESTÁ EN CLIENTES -> BUSCAR EN TRABAJADORES
-// -----------------------------------
+// 2) BUSCAR EN TRABAJADORES
 $stmtTrab = mysqli_prepare($conn, "SELECT * FROM trabajadores WHERE email = ? LIMIT 1");
 mysqli_stmt_bind_param($stmtTrab, "s", $email);
 mysqli_stmt_execute($stmtTrab);
@@ -107,29 +133,31 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
     $trabajador = mysqli_fetch_assoc($resTrab);
 
     if (password_verify($password, $trabajador['password'])) {
-        // Determinar tiempo de sesión según el rol
+        unset($_SESSION['intentos'][$ip_usuario]);
         $tiempoSesion = ($trabajador['rol'] === 'camara') ? 43200 : 1800;
-
-        // Iniciar sesión
         $_SESSION['nombre']    = $trabajador['nombre'];
         $_SESSION['id']        = $trabajador['trabajador_id'];
         $_SESSION['email']     = $trabajador['email'];
         $_SESSION['usuario']   = "trabajador";
         $_SESSION['rol']       = $trabajador['rol'];
         $_SESSION['timeout']   = time() + $tiempoSesion;
-
+        
+        enviarNotificacionLogin($trabajador['email'], $trabajador['nombre'], $ip_usuario);
+        
         header('Location: trabajador/');
         exit();
     } else {
+        $_SESSION['intentos'][$ip_usuario]['contador']++;
+        if ($_SESSION['intentos'][$ip_usuario]['contador'] >= $limite_intentos) {
+            enviarAlertaIntentoFallido($trabajador['email'], $trabajador['nombre'], $ip_usuario);
+            $_SESSION['intentos'][$ip_usuario]['contador'] = 0;
+        }
         header('Location: /login.php?error=contraseña_incorrecta');
         exit();
     }
 }
 
-
-// -----------------------------------
-// 3) NO ESTÁ EN TRABAJADORES -> BUSCAR EN ENTRENADORES
-// -----------------------------------
+// 3) BUSCAR EN ENTRENADORES
 $stmtEntr = mysqli_prepare($conn, "SELECT * FROM entrenadores WHERE email = ? LIMIT 1");
 mysqli_stmt_bind_param($stmtEntr, "s", $email);
 mysqli_stmt_execute($stmtEntr);
@@ -139,23 +167,29 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
     $entrenador = mysqli_fetch_assoc($resEntr);
 
     if (password_verify($password, $entrenador['password'])) {
-        // Contraseña correcta
+        unset($_SESSION['intentos'][$ip_usuario]);
         $_SESSION['nombre']    = $entrenador['nombre'];
         $_SESSION['id']        = $entrenador['entrenador_id'];
         $_SESSION['email']     = $entrenador['email'];
         $_SESSION['usuario']   = "entrenador";
         $_SESSION['timeout']   = time() + 1800;
-        header('Location: entrenador/'); // Ajusta tu ruta si es necesario
+        
+        enviarNotificacionLogin($entrenador['email'], $entrenador['nombre'], $ip_usuario);
+        
+        header('Location: entrenador/');
         exit();
     } else {
+        $_SESSION['intentos'][$ip_usuario]['contador']++;
+        if ($_SESSION['intentos'][$ip_usuario]['contador'] >= $limite_intentos) {
+            enviarAlertaIntentoFallido($entrenador['email'], $entrenador['nombre'], $ip_usuario);
+            $_SESSION['intentos'][$ip_usuario]['contador'] = 0;
+        }
         header('Location: login.php?error=contraseña_incorrecta');
         exit();
     }
 }
 
-// -----------------------------------
-// 4) NO SE ENCONTRÓ EN NINGUNA TABLA
-// -----------------------------------
+// 4) Usuario no encontrado en ninguna tabla
 include 'partials/header1.view.php';
 ?>
 <!DOCTYPE html>
@@ -165,26 +199,9 @@ include 'partials/header1.view.php';
     <title>Usuario no encontrado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .text-container {
-            max-width: 400px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
+        html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
+        .main { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .text-container { max-width: 400px; padding: 20px; background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); text-align: center; }
     </style>
 </head>
 <body>
@@ -197,9 +214,7 @@ include 'partials/header1.view.php';
     </div>
 </div>
 <script>
-    setTimeout(function () {
-        window.location.href = 'login.php';
-    }, 3000);
+    setTimeout(function () { window.location.href = 'login.php'; }, 3000);
 </script>
 <?php include 'partials/footer.view.php'; ?>
 </body>

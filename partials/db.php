@@ -1,8 +1,8 @@
 <?php
 
 $db_server = "localhost";
-$db_user = "root";
-$db_pass = "rootroot";
+$db_user = "energym";
+$db_pass = "energym12345";
 $db_name = "gimnasiodb";
 
 $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name) 
