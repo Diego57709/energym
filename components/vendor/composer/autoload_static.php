@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit5726834464b54df5c26cde494ec31af2
+class ComposerStaticInit57b7b1c71a352389e95275f6baa0e7b4
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -21,6 +21,7 @@ class ComposerStaticInit5726834464b54df5c26cde494ec31af2
             'Symfony\\Contracts\\Service\\' => 26,
             'Symfony\\Contracts\\HttpClient\\' => 29,
             'Symfony\\Component\\HttpClient\\' => 29,
+            'Sonata\\GoogleAuthenticator\\' => 27,
         ),
         'P' => 
         array (
@@ -28,10 +29,12 @@ class ComposerStaticInit5726834464b54df5c26cde494ec31af2
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
             'Psr\\Container\\' => 14,
+            'Psr\\Clock\\' => 10,
+            'ParagonIE\\ConstantTime\\' => 23,
         ),
-        'N' => 
+        'O' => 
         array (
-            'Nyholm\\Psr7\\' => 12,
+            'OTPHP\\' => 6,
         ),
         'H' => 
         array (
@@ -39,7 +42,7 @@ class ComposerStaticInit5726834464b54df5c26cde494ec31af2
         ),
         'G' => 
         array (
-            'GeminiAPI\\' => 10,
+            'Google\\Authenticator\\' => 21,
         ),
         'E' => 
         array (
@@ -76,6 +79,10 @@ class ComposerStaticInit5726834464b54df5c26cde494ec31af2
         array (
             0 => __DIR__ . '/..' . '/symfony/http-client',
         ),
+        'Sonata\\GoogleAuthenticator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sonata-project/google-authenticator/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
@@ -93,17 +100,25 @@ class ComposerStaticInit5726834464b54df5c26cde494ec31af2
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Nyholm\\Psr7\\' => 
+        'Psr\\Clock\\' => 
         array (
-            0 => __DIR__ . '/..' . '/nyholm/psr7/src',
+            0 => __DIR__ . '/..' . '/psr/clock/src',
+        ),
+        'ParagonIE\\ConstantTime\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
+        ),
+        'OTPHP\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/spomky-labs/otphp/src',
         ),
         'Http\\Discovery\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-http/discovery/src',
         ),
-        'GeminiAPI\\' => 
+        'Google\\Authenticator\\' => 
         array (
-            0 => __DIR__ . '/..' . '/gemini-api-php/client/src',
+            0 => __DIR__ . '/..' . '/sonata-project/google-authenticator/src',
         ),
         'Endroid\\QrCode\\' => 
         array (
@@ -126,9 +141,9 @@ class ComposerStaticInit5726834464b54df5c26cde494ec31af2
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit5726834464b54df5c26cde494ec31af2::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit5726834464b54df5c26cde494ec31af2::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit5726834464b54df5c26cde494ec31af2::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit57b7b1c71a352389e95275f6baa0e7b4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit57b7b1c71a352389e95275f6baa0e7b4::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit57b7b1c71a352389e95275f6baa0e7b4::$classMap;
 
         }, null, ClassLoader::class);
     }
