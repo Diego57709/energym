@@ -23,6 +23,9 @@ $email = trim($_POST['email'] ?? '');
 if (empty($email)) {
     $status = 'empty';
 } else {
+    // Obtener la IP del solicitante
+    $ip_usuario = $_SERVER['REMOTE_ADDR'];
+    
     // Inicializar variables
     $tablaEncontrada = null;
     $idUsuario = null;
@@ -103,12 +106,14 @@ if (empty($email)) {
             $mail->setFrom('energym.asir@gmail.com', 'EnerGym');
             $mail->addAddress($email);
 
-            // Contenido del correo
+            // Contenido del correo, incluyendo la IP de la solicitud
             $mail->isHTML(true);
             $mail->Subject = 'Solicitud de cambio de contraseña - EnerGym';
             $mail->Body = "
                 <h2>Hola,</h2>
-                <p>Hemos recibido una solicitud para cambiar tu contraseña. Haz clic en el siguiente enlace para crear tu nueva contraseña:</p>
+                <p>Hemos recibido una solicitud para cambiar tu contraseña.</p>
+                <p><strong>Dirección IP de la solicitud:</strong> $ip_usuario</p>
+                <p>Haz clic en el siguiente enlace para crear tu nueva contraseña:</p>
                 <p><a href='$linkCambiarPassword' target='_blank'>Cambiar Contraseña</a></p>
                 <p>Si el enlace no funciona, copia y pega esta URL en tu navegador:</p>
                 <p>$linkCambiarPassword</p>
