@@ -42,6 +42,8 @@ $mail = new PHPMailer(true);
 try {
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
+    $mail->CharSet = 'UTF-8';
+    $mail->Encoding = 'base64';
     $mail->SMTPAuth = true;
     $mail->Username = 'energym.asir@gmail.com';
     $mail->Password = 'wvaz qdrj yqfm bnub';

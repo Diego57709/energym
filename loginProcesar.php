@@ -12,14 +12,27 @@ require 'components/phpmailer/src/Exception.php';
 require 'components/phpmailer/src/PHPMailer.php';
 require 'components/phpmailer/src/SMTP.php';
 
+// Función para obtener la IP del cliente
+function get_client_ip() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+$ip_usuario = get_client_ip();
 
 // Función para enviar notificación de inicio de sesión (éxito)
 function enviarNotificacionLogin($destinatario, $nombre, $ip) {
     $mail = new PHPMailer(true);
     try {
-        // Configuración SMTP
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'energym.asir@gmail.com';
         $mail->Password   = 'wvaz qdrj yqfm bnub';
@@ -47,9 +60,12 @@ function enviarNotificacionLogin($destinatario, $nombre, $ip) {
 // Función para enviar alerta por intentos fallidos
 function enviarAlertaIntentoFallido($destinatario, $nombre, $ip) {
     $mail = new PHPMailer(true);
+
     try {
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'energym.asir@gmail.com';
         $mail->Password   = 'wvaz qdrj yqfm bnub';
@@ -63,7 +79,8 @@ function enviarAlertaIntentoFallido($destinatario, $nombre, $ip) {
         $mail->Subject = 'Alerta: Intento de acceso fallido';
         $mail->Body    = "
             <h2>Hola, $nombre</h2>
-            <p>Hemos detectado varios intentos fallidos de inicio de sesión en tu cuenta desde la dirección IP <strong>$ip</strong>.</p>
+            <p>Hemos detectado varios intentos fallidos de inicio de sesión en tu cuenta</p>
+            <p><strong>Dirección IP:<strong> $ip.</p>
             <p>Si no has sido tú, te recomendamos cambiar tu contraseña lo antes posible.</p>
             <p>Atentamente,<br>El equipo de EnerGym</p>
         ";
@@ -73,14 +90,11 @@ function enviarAlertaIntentoFallido($destinatario, $nombre, $ip) {
     }
 }
 
-// Configuración de Rate Limiting
 $limite_intentos = 3;
-$ip_usuario = $_SERVER['REMOTE_ADDR'];
 if (!isset($_SESSION['intentos'][$ip_usuario])) {
     $_SESSION['intentos'][$ip_usuario] = ['contador' => 0, 'ultimo_intento' => time()];
 }
 
-// Recuperar datos del formulario
 $email    = $_POST['email']    ?? '';
 $password = $_POST['password'] ?? '';
 
@@ -101,18 +115,28 @@ if ($resClientes && mysqli_num_rows($resClientes) === 1) {
 
     // Verificar contraseña
     if (password_verify($password, $cliente['password'])) {
-        unset($_SESSION['intentos'][$ip_usuario]);
-        $_SESSION['nombre']    = $cliente['nombre'];
-        $_SESSION['id']        = $cliente['cliente_id'];
-        $_SESSION['email']     = $cliente['email'];
-        $_SESSION['usuario']   = "cliente";
-        $_SESSION['timeout']   = time() + 1800;
-        
-        enviarNotificacionLogin($cliente['email'], $cliente['nombre'], $ip_usuario);
-        
-        header('Location: cliente/');
-        exit();
+        // Contraseña correcta, ahora comprobamos si tiene google_2fa_secret
+        if (!empty($cliente['google_2fa_secret'])) {
+            $_SESSION['2fa_user_id']   = $cliente['cliente_id'];
+            $_SESSION['2fa_user_type'] = 'cliente';
+            $_SESSION['2fa_email']     = $cliente['email'];
+            
+            header('Location: loginProcesar2FA.php');
+            exit();
+            unset($_SESSION['intentos'][$ip_usuario]);
+            $_SESSION['nombre']    = $cliente['nombre'];
+            $_SESSION['id']        = $cliente['cliente_id'];
+            $_SESSION['email']     = $cliente['email'];
+            $_SESSION['usuario']   = "cliente";
+            $_SESSION['timeout']   = time() + 1800;
+            
+            enviarNotificacionLogin($cliente['email'], $cliente['nombre'], $ip_usuario);
+            
+            header('Location: cliente/');
+            exit();
+        }
     } else {
+        // Contraseña incorrecta
         $_SESSION['intentos'][$ip_usuario]['contador']++;
         if ($_SESSION['intentos'][$ip_usuario]['contador'] >= $limite_intentos) {
             enviarAlertaIntentoFallido($cliente['email'], $cliente['nombre'], $ip_usuario);
@@ -133,20 +157,31 @@ if ($resTrab && mysqli_num_rows($resTrab) === 1) {
     $trabajador = mysqli_fetch_assoc($resTrab);
 
     if (password_verify($password, $trabajador['password'])) {
-        unset($_SESSION['intentos'][$ip_usuario]);
-        $tiempoSesion = ($trabajador['rol'] === 'camara') ? 43200 : 1800;
-        $_SESSION['nombre']    = $trabajador['nombre'];
-        $_SESSION['id']        = $trabajador['trabajador_id'];
-        $_SESSION['email']     = $trabajador['email'];
-        $_SESSION['usuario']   = "trabajador";
-        $_SESSION['rol']       = $trabajador['rol'];
-        $_SESSION['timeout']   = time() + $tiempoSesion;
-        
-        enviarNotificacionLogin($trabajador['email'], $trabajador['nombre'], $ip_usuario);
-        
-        header('Location: trabajador/');
-        exit();
+        if (!empty($trabajador['google_2fa_secret'])) {
+            $_SESSION['2fa_user_id']   = $trabajador['trabajador_id'];
+            $_SESSION['2fa_user_type'] = 'trabajador';
+            $_SESSION['2fa_email']     = $trabajador['email'];
+
+            header('Location: loginProcesar2FA.php');
+            exit();
+        } else {
+            // NO tiene 2FA => Login normal + Enviar correo
+            unset($_SESSION['intentos'][$ip_usuario]);
+            $tiempoSesion = ($trabajador['rol'] === 'camara') ? 43200 : 1800;
+            $_SESSION['nombre']    = $trabajador['nombre'];
+            $_SESSION['id']        = $trabajador['trabajador_id'];
+            $_SESSION['email']     = $trabajador['email'];
+            $_SESSION['usuario']   = "trabajador";
+            $_SESSION['rol']       = $trabajador['rol'];
+            $_SESSION['timeout']   = time() + $tiempoSesion;
+            
+            enviarNotificacionLogin($trabajador['email'], $trabajador['nombre'], $ip_usuario);
+            
+            header('Location: trabajador/');
+            exit();
+        }
     } else {
+        // Contraseña incorrecta
         $_SESSION['intentos'][$ip_usuario]['contador']++;
         if ($_SESSION['intentos'][$ip_usuario]['contador'] >= $limite_intentos) {
             enviarAlertaIntentoFallido($trabajador['email'], $trabajador['nombre'], $ip_usuario);
@@ -167,18 +202,29 @@ if ($resEntr && mysqli_num_rows($resEntr) === 1) {
     $entrenador = mysqli_fetch_assoc($resEntr);
 
     if (password_verify($password, $entrenador['password'])) {
-        unset($_SESSION['intentos'][$ip_usuario]);
-        $_SESSION['nombre']    = $entrenador['nombre'];
-        $_SESSION['id']        = $entrenador['entrenador_id'];
-        $_SESSION['email']     = $entrenador['email'];
-        $_SESSION['usuario']   = "entrenador";
-        $_SESSION['timeout']   = time() + 1800;
-        
-        enviarNotificacionLogin($entrenador['email'], $entrenador['nombre'], $ip_usuario);
-        
-        header('Location: entrenador/');
-        exit();
+        if (!empty($entrenador['google_2fa_secret'])) {
+            $_SESSION['2fa_user_id']   = $entrenador['entrenador_id'];
+            $_SESSION['2fa_user_type'] = 'entrenador';
+            $_SESSION['2fa_email']     = $entrenador['email'];
+
+            header('Location: loginProcesar2FA.php');
+            exit();
+        } else {
+            // NO tiene 2FA => Login normal + Enviar correo
+            unset($_SESSION['intentos'][$ip_usuario]);
+            $_SESSION['nombre']    = $entrenador['nombre'];
+            $_SESSION['id']        = $entrenador['entrenador_id'];
+            $_SESSION['email']     = $entrenador['email'];
+            $_SESSION['usuario']   = "entrenador";
+            $_SESSION['timeout']   = time() + 1800;
+            
+            enviarNotificacionLogin($entrenador['email'], $entrenador['nombre'], $ip_usuario);
+            
+            header('Location: entrenador/');
+            exit();
+        }
     } else {
+        // Contraseña incorrecta
         $_SESSION['intentos'][$ip_usuario]['contador']++;
         if ($_SESSION['intentos'][$ip_usuario]['contador'] >= $limite_intentos) {
             enviarAlertaIntentoFallido($entrenador['email'], $entrenador['nombre'], $ip_usuario);
@@ -201,7 +247,7 @@ include 'partials/header1.view.php';
     <style>
         html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
         .main { flex: 1; display: flex; align-items: center; justify-content: center; }
-        .text-container { max-width: 400px; padding: 20px; background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); text-align: center; }
+        .text-container { max-width: 400px; padding: 20px; background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.3); text-align: center; }
     </style>
 </head>
 <body>

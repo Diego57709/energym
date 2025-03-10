@@ -15,16 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// Obtener los datos del formulario
 $nombre = trim($_POST['nombre'] ?? '');
 $correo = trim($_POST['correo'] ?? '');
-// Validar datos
 if (empty($nombre) || empty($correo)) {
     header("Location: index.php?status=error&message=Todos los campos son obligatorios.#newsletter");
     exit();
 }
 
-// Insertar datos en la base de datos utilizando una consulta preparada
 $stmt = mysqli_prepare($conn, "INSERT INTO newsletter (nombre, correo, fecha_suscripcion) VALUES (?, ?, NOW())");
 if (!$stmt) {
     $errorMessage = urlencode("Error al preparar la consulta: " . mysqli_error($conn));
@@ -39,11 +36,12 @@ if (!mysqli_stmt_execute($stmt)) {
 }
 mysqli_stmt_close($stmt);
 
-// Configurar PHPMailer sin usar bloques try
-// Se desactivan las excepciones pasando "false" al constructor
 $mail = new PHPMailer(false);
+
 $mail->isSMTP();
 $mail->Host = 'smtp.gmail.com';
+$mail->CharSet = 'UTF-8';
+$mail->Encoding = 'base64';
 $mail->SMTPAuth = true;
 $mail->Username = 'energym.asir@gmail.com';
 $mail->Password = 'wvaz qdrj yqfm bnub';

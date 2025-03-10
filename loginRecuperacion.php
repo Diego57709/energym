@@ -12,6 +12,17 @@ require 'components/phpmailer/src/Exception.php';
 require 'components/phpmailer/src/PHPMailer.php';
 require 'components/phpmailer/src/SMTP.php';
 
+// Función para obtener la IP del cliente
+function get_client_ip() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
 // Verificar si el formulario fue enviado
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: login.php");
@@ -24,7 +35,7 @@ if (empty($email)) {
     $status = 'empty';
 } else {
     // Obtener la IP del solicitante
-    $ip_usuario = $_SERVER['REMOTE_ADDR'];
+    $ip_usuario = get_client_ip();
     
     // Inicializar variables
     $tablaEncontrada = null;
@@ -96,6 +107,8 @@ if (empty($email)) {
         try {
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
+            $mail->CharSet = 'UTF-8';
+            $mail->Encoding = 'base64';
             $mail->SMTPAuth = true;
             $mail->Username = 'energym.asir@gmail.com';
             $mail->Password = 'wvaz qdrj yqfm bnub';
@@ -175,7 +188,6 @@ if (empty($email)) {
             <h2>Solicitud enviada</h2>
             <p>Hemos enviado un correo a <strong><?php echo htmlspecialchars($email); ?></strong>.</p>
             <p>Sigue las instrucciones para recuperar tu contraseña.</p>
-            <p class="text-muted mt-3">Si no lo ves, revisa tu carpeta de spam o intenta enviar la solicitud nuevamente.</p>  
         <?php else: ?>
             <h2>Error al enviar el correo</h2>
             <p>Hubo un problema al intentar enviar el correo. Por favor, inténtalo de nuevo más tarde.</p>
@@ -183,8 +195,6 @@ if (empty($email)) {
         <a href="login.php" class="btn btn-primary mt-3">Volver al inicio de sesión</a>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 <?php include 'partials/footer.view.php'; ?>
 </body>
 </html>

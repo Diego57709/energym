@@ -147,6 +147,9 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
             <img src="<?php echo $qrcode; ?>" alt="QR Code" class="qr-img">
 
             <!-- Botones -->
+            <button type="button" class="btn btn-primary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#modalConexiones">
+                  🔗 Conexión a Aplicaciones
+            </button>
             <div class="d-flex justify-content-center mt-4">
               <a href="trabajadorModificar.php" class="btn-custom me-2">Modificar datos</a>
               <a href="trabajadorCambiarPassword.php" class="btn-custom">Cambiar contraseña</a>
@@ -201,6 +204,32 @@ $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistenc
 
   <!-- Footer -->
   <?php require '../partials/footer.view.php'; ?>
+    <!-- Modal de Conexión a Aplicaciones -->
+    <div class="modal fade" id="modalConexiones" tabindex="-1" aria-labelledby="modalConexionesLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalConexionesLabel">Conectar Aplicaciones</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body text-center">
+                  <!-- 🔒 Conectar con Google Authenticator -->
+                  <p>🔒 Habilitar 2FA con Google Authenticator:</p>
+                  <?php if (!empty($clientes['google_2fa_secret'])): ?>
+                      <p class="text-success">✅ Google 2FA activado</p>
+                      <a href="2FA/trabajadorDesactivar2FA.php" class="btn btn-danger w-100">
+                          ❌ Desactivar Google 2FA
+                      </a>
+                  <?php else: ?>
+                      <a href="2FA/trabajadorHabilitar2FA.php" class="btn btn-outline-dark w-100">
+                          Activar Google 2FA
+                      </a>
+                  <?php endif; ?>
+
+              </div>
+          </div>
+      </div>
+  </div>
 </body>
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

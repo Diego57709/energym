@@ -104,7 +104,14 @@ $sqlAsistenciasMes = "
 $resultAsistenciasMes = mysqli_query($conn, $sqlAsistenciasMes);
 $totalAsistenciasMes = mysqli_fetch_assoc($resultAsistenciasMes)['total_asistencias'] ?? 0;
 
-$sqlSiguienteClase = "SELECT fecha_hora_c FROM clases_grupales WHERE fecha_hora_c > NOW() ORDER BY fecha_hora_c ASC LIMIT 1";
+$sqlSiguienteClase = "
+    SELECT cg.fecha_hora_c 
+    FROM clases_inscripciones ci
+    JOIN clases_grupales cg ON ci.clase_id = cg.clase_id
+    WHERE ci.cliente_id = '$id_usuario' AND cg.fecha_hora_c > NOW()
+    ORDER BY cg.fecha_hora_c ASC
+    LIMIT 1
+";
 $resultSiguienteClase = mysqli_query($conn, $sqlSiguienteClase);
 if ($resultSiguienteClase && mysqli_num_rows($resultSiguienteClase) > 0) {
     $rowSiguienteClase = mysqli_fetch_assoc($resultSiguienteClase);
@@ -198,18 +205,14 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
             <?php if ($mostrarQR): ?>
               <img src="<?php echo $qrcode; ?>" alt="QR Code" class="qr-img mt-3">
             <?php endif; ?>
-            <?php if (!empty($clientes['chat_id'])): ?>
-                <p class="text-success" style="text-align: center;">Conectado a Telegram</p>
-            <?php else: ?>
-              <a href="tg://resolve?domain=energymAsir_bot&start=<?php echo urlencode($encrypted_id); ?>" 
-                  class="btn btn-primary">
-                  📲 Conectar con Telegram
-              </a>
-
-            <?php endif; ?>
 
 
             <!-- Botones -->
+             <!-- Botón para abrir el modal de conexiones -->
+              <button type="button" class="btn btn-primary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#modalConexiones">
+                  🔗 Conexión a Aplicaciones
+              </button>
+
             <div class="d-flex justify-content-center mt-4">
               <!-- Ver datos -->
               <a href="clienteModificar.php" class="btn-rutina me-2">Modificar datos</a>
@@ -233,11 +236,11 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
               <strong>Tienes una clase el día:</strong><br>
               <?php 
                 if ($SiguienteClaseDate) {
-                    echo date('d F Y', $SiguienteClaseDate);
+                  echo date('d F Y, H:i', $SiguienteClaseDate);
                 } else {
-                    echo "No hay clases programadas";
+                    echo "No tienes ninguna clase programada.";
                 }
-                ?>
+              ?>
             </p>
             <div class="d-flex justify-content-center">
               <a href="clienteClasesGrupales.php" class="btn btn-primary me-2">Clases grupales</a>
@@ -337,6 +340,47 @@ payButton.addEventListener('click', function(event) {
 
   <!-- Footer -->
   <?php require '../partials/footer.view.php'; ?>
+  <!-- Modal de Conexión a Aplicaciones -->
+  <div class="modal fade" id="modalConexiones" tabindex="-1" aria-labelledby="modalConexionesLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalConexionesLabel">Conectar Aplicaciones</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body text-center">
+                  
+                  <!-- 🔵 Conectar con Telegram -->
+                  <p>📲 Conecta tu cuenta con Telegram:</p>
+                  <?php if (!empty($clientes['chat_id'])): ?>
+                      <p class="text-success">✅ Conectado a Telegram</p>
+                      <a href="clienteDesconectarTelegram.php" class="btn btn-danger w-100 mb-3">
+                          ❌ Desconectar de Telegram
+                      </a>
+                  <?php else: ?>
+                      <a href="tg://resolve?domain=energymAsir_bot&start=<?php echo urlencode($encrypted_id); ?>" 
+                        class="btn btn-outline-primary w-100 mb-3">
+                          Conectar con Telegram
+                      </a>
+                  <?php endif; ?>
+
+                  <!-- 🔒 Conectar con Google Authenticator -->
+                  <p>🔒 Habilitar 2FA con Google Authenticator:</p>
+                  <?php if (!empty($clientes['google_2fa_secret'])): ?>
+                      <p class="text-success">✅ Google 2FA activado</p>
+                      <a href="2FA/clienteDesactivar2FA.php" class="btn btn-danger w-100">
+                          ❌ Desactivar Google 2FA
+                      </a>
+                  <?php else: ?>
+                      <a href="2FA/clienteHabilitar2FA.php" class="btn btn-outline-dark w-100">
+                          Activar Google 2FA
+                      </a>
+                  <?php endif; ?>
+
+              </div>
+          </div>
+      </div>
+  </div>
 
 </body>
 </html>
