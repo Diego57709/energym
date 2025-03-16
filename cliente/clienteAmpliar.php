@@ -1,8 +1,8 @@
 <?php
+date_default_timezone_set('Europe/Madrid');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Carga de PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -13,7 +13,6 @@ require '../components/phpmailer/src/SMTP.php';
 require '../partials/header2.view.php';
 include '../partials/db.php';
 
-// Validar que el método sea GET
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     header("Location: 404.php");
     exit();
@@ -22,9 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 // Recoger datos enviados por PayPal/form o como necesites
 $cliente_id    = intval(trim($_GET['cliente_id'] ?? ''));
 $monto         = floatval(trim($_GET['monto'] ?? ''));
-$metodo_pago   = trim($_GET['metodo_pago'] ?? 'PayPal');  // valor por defecto: PayPal
+$metodo_pago   = trim($_GET['metodo_pago'] ?? 'PayPal');
 
-// Si no existe el cliente_id o monto, redirige o muestra error
 if (empty($cliente_id) || empty($monto)) {
     header("Location: 404.php");
     exit();
@@ -66,7 +64,7 @@ $email     = $cliente['email'];
 $end_sub   = $cliente['end_sub'];
 
 
-// 2) Obtener la duración (en días) de la extensión desde la tabla planes
+// 2) Obtener la duración
 $plan_id = $cliente['plan'] ?? null;
 if ($plan_id) {
     $sqlPlan = "SELECT duracion_dias FROM planes WHERE plan_id = '$plan_id' LIMIT 1";
@@ -82,13 +80,19 @@ if ($plan_id) {
 }
 
 
-// 3) Extender suscripción sumándole la duración obtenida
-$nuevaFechaFin = date('Y-m-d H:i:s', strtotime($end_sub . " +{$extender_dias} days"));
+// 3) Extender suscripción correctamente
+$fecha_actual = date('Y-m-d H:i:s');
+
+if (strtotime($end_sub) < strtotime($fecha_actual)) {
+    $nuevaFechaFin = date('Y-m-d H:i:s', strtotime("+30 days"));
+} else {
+    $nuevaFechaFin = date('Y-m-d H:i:s', strtotime($end_sub . " +30 days"));
+}
+
 $updateSQL = "UPDATE clientes SET end_sub = '$nuevaFechaFin' WHERE cliente_id = '$cliente_id'";
 mysqli_query($conn, $updateSQL);
 
-
-// 4) Registrar el pago en historial_pagos (usando prepared statements)
+// 4) Registrar el pago en historial_pagos
 $sqlHistorial = "INSERT INTO historial_pagos (cliente_id, metodo_pago, total, recurrente) VALUES (?, ?, ?, ?)";
 $stmt = $conn->prepare($sqlHistorial);
 if (!$stmt) {

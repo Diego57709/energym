@@ -47,3 +47,20 @@ Usuario: Diego2, Fecha: 2025-02-27 09:31:25, Tipo: SALIDA
 ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:31:35
 Usuario: Diego2, Fecha: 2025-02-27 09:48:55, Tipo: ENTRADA
 ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-02-27 09:49:16
+Usuario: Diego2, Fecha: 2025-03-10 18:56:15, Tipo: SALIDA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-10 18:56:29
+Usuario: Diego2, Fecha: 2025-03-11 18:58:42, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-11 18:59:02
+Usuario: Sigma Boy, Fecha: 2025-03-11 19:42:44, Tipo: SALIDA
+Usuario: Diego2, Fecha: 2025-03-11 19:54:36, Tipo: SALIDA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-11 19:54:50
+Usuario: Diego2, Fecha: 2025-03-11 20:21:21, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-11 20:21:33
+Usuario: Diego2, Fecha: 2025-03-11 20:49:44, Tipo: SALIDA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-11 20:50:07
+Usuario: Diego2, Fecha: 2025-03-12 18:25:00, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-12 18:25:13
+Usuario: Diego2, Fecha: 2025-03-13 08:30:17, Tipo: SALIDA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-13 08:30:28
+Usuario: Diego2, Fecha: 2025-03-13 08:36:05, Tipo: ENTRADA
+ERROR: Intento de escaneo inválido para usuario ID: 40 el 2025-03-13 08:36:16

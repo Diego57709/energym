@@ -398,7 +398,7 @@
                        id="telefono"
                        name="telefono"
                        placeholder="Ej: +34 600 123 456"
-                       pattern="^(\+?\\d{1,3})?\\s?\\d{9,13}$"
+                       pattern="^\+?\d{1,3}[\s-]?\d{3}[\s-]?\d{2,3}[\s-]?\d{2,3}$"
                        title="Ej: +34 600 123 456 o 600123456"
                        aria-required="true"
                        required>
@@ -422,7 +422,7 @@
                        id="codigo_postal"
                        name="codigo_postal"
                        placeholder="Ej: 28080"
-                       pattern="^\\d{5}$"
+                       pattern="^\d{5}"
                        title="5 dígitos para el código postal"
                        aria-required="true"
                        required>
@@ -511,7 +511,6 @@
   </div>
   
   <script>
-    // Oculta el preloader al cargar la página
     window.addEventListener('load', function(){
       const preloader = document.getElementById('preloader');
       if(preloader){

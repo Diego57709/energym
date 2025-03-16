@@ -21,18 +21,18 @@ if ($_SERVER['REQUEST_METHOD'] !== "POST") {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Recogemos datos del formulario
-    $dni              = trim($_POST['dni'] ?? '');
-    $plan             = trim($_POST['plan'] ?? '');
-    $extras           = trim($_POST['extrasSelected'] ?? '');
-    $nombre           = trim($_POST['nombre'] ?? '');
-    $apellidos        = trim($_POST['apellidos'] ?? '');
-    $email            = trim($_POST['email'] ?? '');
-    $telefono         = trim($_POST['telefono'] ?? '');
-    $direccion        = trim($_POST['direccion'] ?? '');
-    $codigo_postal    = trim($_POST['codigo_postal'] ?? '');
+    $dni = trim($_POST['dni'] ?? '');
+    $plan = trim($_POST['plan'] ?? '');
+    $extras = trim($_POST['extrasSelected'] ?? '');
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellidos = trim($_POST['apellidos'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $direccion = trim($_POST['direccion'] ?? '');
+    $codigo_postal = trim($_POST['codigo_postal'] ?? '');
     $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
-    $genero           = trim($_POST['genero'] ?? '');
-    $metodo_pago      = trim($_POST['metodo_pago'] ?? '');
+    $genero = trim($_POST['genero'] ?? '');
+    $metodo_pago = trim($_POST['metodo_pago'] ?? '');
 
     // Array para acumular posibles errores (duplicados)
     $errores = [];
@@ -176,6 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
+            $mail->CharSet = 'UTF-8';
+            $mail->Encoding = 'base64';
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'energym.asir@gmail.com';

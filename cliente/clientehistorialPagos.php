@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
+
 include '../partials/db.php';
 session_start();
 
 // Redirigir al login si no hay sesión iniciada
-if (!isset($_SESSION['usuario']) && !isset($_SESSION['id']) || ($_SESSION['usuario'] !== 'cliente')) {
+if (!isset($_SESSION['usuario']) && !isset($_SESSION['id'])) {
     header("Location: login.php");
     exit;
 }

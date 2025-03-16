@@ -146,24 +146,45 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     <?php include 'partials/footer.view.php'; ?>
 
     <script>
-        function moveFocus(current, nextFieldId) {
-            if (current.value.length >= current.maxLength) {
-                document.getElementById(nextFieldId)?.focus();
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll(".code-inputs input");
+
+        inputs[0].addEventListener("paste", function(event) {
+            event.preventDefault();
+            const pastedData = (event.clipboardData || window.clipboardData).getData("text").trim();
+
+            if (pastedData.length === 6) {
+                inputs.forEach((input, index) => {
+                    input.value = pastedData[index] || "";
+                });
+                document.getElementById("2fa_code").value = pastedData;
+                inputs[5].focus();
             }
-        }
+        });
+
+        inputs.forEach((input, index) => {
+            input.addEventListener("input", function() {
+                if (this.value.length >= this.maxLength) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+                combineCode();
+            });
+
+            input.addEventListener("keydown", function(event) {
+                if (event.key === "Backspace" && this.value === "" && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
 
         function combineCode() {
-            const digits = [
-                document.getElementById("digit1").value,
-                document.getElementById("digit2").value,
-                document.getElementById("digit3").value,
-                document.getElementById("digit4").value,
-                document.getElementById("digit5").value,
-                document.getElementById("digit6").value
-            ];
-            document.getElementById("2fa_code").value = digits.join("");
+            const code = Array.from(inputs).map(input => input.value).join("");
+            document.getElementById("2fa_code").value = code;
         }
-    </script>
+    });
+</script>
 
     </body>
     </html>
@@ -211,7 +232,7 @@ if (!$user) {
 
 // 7) Si el usuario no existe, detener la ejecución
 if (!$user) {
-    header("Location: login.php?error=usuario_no_existe");
+    header("Location: login.php?error");
     exit();
 }
 
@@ -279,6 +300,8 @@ function enviarNotificacionLogin($destinatario, $nombre, $ip) {
         // Configuración SMTP
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'energym.asir@gmail.com';
         $mail->Password   = 'wvaz qdrj yqfm bnub';

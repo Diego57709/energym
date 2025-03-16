@@ -59,15 +59,15 @@ if (!($_SESSION['rol'] == 'Camara')) {
             left: 0;
             right: 0;
             bottom: 0;
-            margin: auto;
-            width: 220px;
-            height: 220px;
+            width: 100%;
+            height: 100%;
             border: 4px dotted #28a745;
             border-radius: 12px;
             pointer-events: none;
             box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
             background: transparent;
         }
+
         .alert {
             margin-top: 20px;
         }
@@ -129,7 +129,8 @@ if (!($_SESSION['rol'] == 'Camara')) {
                     window.location.href = `qr_verificacion.php?token=${encodeURIComponent(decodedText)}`;
                 };
 
-                const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+                const config = { fps: 10, qrbox: { width: "100%", height: "100%" } };
+;
                 html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
                     .then(() => {
                         isScanning = true;

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 include '../partials/db.php';
 include '../partials/encrypt.php';
+date_default_timezone_set('Europe/Madrid');
 
 require_once __DIR__ . '/../components/vendor/autoload.php';
 include '../partials/db.php';
@@ -41,7 +42,7 @@ $mostrarQR = true;
 $mensaje   = "Tu suscripción ha expirado.";
 
 if ($diferenciaSegundos <= 0) {
-    $mostrarQR = false; // No mostramos el QR si expiró
+    $mostrarQR = false;
     $dias = 0;
 } else {
     $dias    = floor($diferenciaSegundos / 86400);
@@ -119,7 +120,6 @@ if ($resultSiguienteClase && mysqli_num_rows($resultSiguienteClase) > 0) {
 } else {
     $SiguienteClaseDate = false;
 }
-// SELECT ci.clase_id, cg.entrenador_id FROM clases_inscripciones ci JOIN clases_grupales cg ON ci.clase_id = cg.clase_id;
 
 //Encriptar ID
 function encryptData($data) {
@@ -191,7 +191,7 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
       <div class="row">
         
         <!-- COLUMNA PRINCIPAL -->
-        <div class="<?php echo $mostrarQR ? 'col-md-8' : 'col-md-12'; ?> mb-4">
+        <div class="col-md-8">
           <div class="card p-4">
             <h1 class="text-center mb-4">
               ¡Hola, <?php echo htmlspecialchars($apellidosCliente . ', ' . $nombreCliente); ?>!
@@ -226,7 +226,6 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
           </div>
         </div>
             
-        <?php if ($mostrarQR): ?> 
         <!-- COLUMNA LATERAL -->
         <div class="col-md-4">
           <!-- BLOQUE DE CLASES -->
@@ -286,7 +285,6 @@ $encrypted_id = encryptData((string)$_SESSION['id']);
             </a>
           </div>
         </div>
-        <?php endif; ?> 
         </div>
       </div>
     </div>
